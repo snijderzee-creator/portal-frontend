@@ -12,7 +12,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ children }) => {
   const { theme } = useTheme();
 
   return (
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-2">
       {children || (
         <>
           <MetricsCards />

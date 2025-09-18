@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { Info, ExternalLink, Edit3, MoreHorizontal } from 'lucide-react';
+import { Info, ExternalLink, MoreHorizontal } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 
 const data = [
@@ -20,44 +20,50 @@ const TopRegionsChart: React.FC = () => {
   const { theme } = useTheme();
 
   return (
-    <div className={`p-6 rounded-2xl shadow-md ${
-      theme === 'dark' ? 'bg-[#1E293B]' : 'bg-white border border-gray-200'
-    }`}>
+    <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <h2 className={`text-xl font-semibold ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h2
+            className={`text-xl font-semibold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
             Top Regions
           </h2>
-          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-            theme === 'dark' ? 'border-gray-400' : 'border-gray-500'
-          }`}>
-            <Info size={12} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} />
-          </div>
+          <Info
+            size={18}
+            className={theme === 'dark' ? 'text-[#A2AED4]' : 'text-[#555758]'}
+          />
         </div>
-        <div className={`flex items-center gap-2 border px-3 py-2 rounded-lg ${
-          theme === 'dark' 
-            ? 'text-gray-300 border-gray-600' 
-            : 'text-gray-600 border-gray-300'
-        }`}>
-          <ExternalLink size={16} className={`cursor-pointer ${
-            theme === 'dark' ? 'hover:text-white' : 'hover:text-gray-900'
-          }`} />
-          <Edit3 size={16} className={`cursor-pointer ${
-            theme === 'dark' ? 'hover:text-white' : 'hover:text-gray-900'
-          }`} />
-          <MoreHorizontal size={16} className={`cursor-pointer ${
-            theme === 'dark' ? 'hover:text-white' : 'hover:text-gray-900'
-          }`} />
+        <div
+          className={`flex items-center gap-2 border px-3 py-2 rounded-lg ${
+            theme === 'dark'
+              ? 'text-[#A2AED4] border-[#A2AED4]'
+              : 'text-[#555758] border-[#ececec]'
+          }`}
+        >
+          <ExternalLink
+            size={18}
+            className={`cursor-pointer ${
+              theme === 'dark' ? 'hover:text-white' : 'hover:text-gray-900'
+            }`}
+          />
+          <MoreHorizontal
+            size={18}
+            className={`cursor-pointer ${
+              theme === 'dark' ? 'hover:text-white' : 'hover:text-gray-900'
+            }`}
+          />
         </div>
       </div>
 
       {/* Subtitle */}
-      <p className={`text-lg mb-6 ${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      }`}>
+      <p
+        className={`text-lg mb-3 ${
+          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+        }`}
+      >
         Comparison
       </p>
 
@@ -65,49 +71,60 @@ const TopRegionsChart: React.FC = () => {
       <div className="flex gap-8 mb-8">
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 rounded-full bg-[#4D3DF7]" />
-          <span className={`text-lg font-medium ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <span
+            className={`text-lg font-medium ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
             Oil
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 rounded-full bg-[#22D3EE]" />
-          <span className={`text-lg font-medium ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <span
+            className={`text-lg font-medium ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
             Water
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 rounded-full bg-[#FE44CC]" />
-          <span className={`text-lg font-medium ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <span
+            className={`text-lg font-medium ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
             Gas
           </span>
         </div>
       </div>
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer
+        width="100%"
+        height={300}
+        style={{ outline: 'none', border: 'none' }}
+      >
         <BarChart
+          className="focus:outline-none"
           data={data}
-          margin={{ top: 20, right: 30, left: 40, bottom: 60 }}
+          margin={{ top: 20, right: 30, left: 10, bottom: 30 }}
           barCategoryGap="25%"
         >
-          <CartesianGrid 
-            stroke={theme === 'dark' ? '#334155' : '#E5E7EB'} 
+          <CartesianGrid
+            stroke={theme === 'dark' ? '#334155' : '#E5E7EB'}
             strokeDasharray="3 3"
             horizontal={true}
             vertical={false}
           />
-          <XAxis 
-            dataKey="region" 
+          <XAxis
+            dataKey="region"
             stroke={theme === 'dark' ? '#94A3B8' : '#6B7280'}
             fontSize={16}
             fontWeight={500}
-            tickMargin={20}
+            tickMargin={15}
             axisLine={false}
             tickLine={false}
           />
@@ -132,6 +149,7 @@ const TopRegionsChart: React.FC = () => {
             fill="#4D3DF7"
             radius={[20, 20, 20, 20]}
             barSize={24}
+            tabIndex={-1}
           />
           <Bar
             dataKey="water"

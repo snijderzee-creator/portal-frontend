@@ -87,7 +87,7 @@ const InteractiveMap: React.FC = () => {
   const injectedCss = `
     .leaflet-control-zoom { border: none !important; }
     .leaflet-control-zoom a {
-      background-color: ${theme === 'dark' ? '#1E293B' : 'white'} !important;
+      background-color: ${theme === 'dark' ? '#162345' : 'white'} !important;
       color: ${theme === 'dark' ? '#e2e8f0' : '#374151'} !important;
       border: 1px solid ${theme === 'dark' ? '#374151' : '#d1d5db'} !important;
     }
@@ -109,23 +109,46 @@ const InteractiveMap: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        <h3
+          className={`text-lg font-semibold ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}
+        >
           Production Map - Saudi Arabia
         </h3>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Normal</span>
+            <span
+              className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
+            >
+              Normal
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Alarms</span>
+            <span
+              className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
+            >
+              Alarms
+            </span>
           </div>
         </div>
       </div>
 
-      <div className={`relative h-80 rounded-lg border overflow-hidden ${theme === 'dark' ? 'bg-[#0F172A] border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-        <MapContainer center={[24.7136, 46.6753]} zoom={6} style={{ height: '100%', width: '100%' }} className="z-10">
+      <div
+        className={`relative h-80 rounded-lg border overflow-hidden ${
+          theme === 'dark'
+            ? 'bg-[#162345] border-none'
+            : 'bg-gray-50 border-gray-200'
+        }`}
+      >
+        <MapContainer
+          center={[24.7136, 46.6753]}
+          zoom={6}
+          style={{ height: '100%', width: '100%' }}
+          className="z-10"
+        >
           <TileLayer url={tileUrl} attribution={attribution} />
           <FitBounds bounds={boundsArray} padding={30} />
 
@@ -133,17 +156,76 @@ const InteractiveMap: React.FC = () => {
             <Marker
               key={location.id}
               position={[location.lat, location.lng]}
-              icon={createCustomIcon(location.alarms > 0 ? '#ef4444' : '#22c55e', location.alarms > 0)}
+              icon={createCustomIcon(
+                location.alarms > 0 ? '#ef4444' : '#22c55e',
+                location.alarms > 0
+              )}
               eventHandlers={{ click: () => setSelectedLocation(location.id) }}
             >
-              <Popup className={theme === 'dark' ? 'dark-popup' : 'light-popup'}>
-                <div className={`p-2 min-w-[200px] ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  <div className="font-semibold text-lg mb-2">{location.name}</div>
+              <Popup
+                className={theme === 'dark' ? 'dark-popup' : 'light-popup'}
+              >
+                <div
+                  className={`p-2 min-w-[200px] ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
+                  <div className="font-semibold text-lg mb-2">
+                    {location.name}
+                  </div>
                   <div className="space-y-1 text-sm">
-                    <div className="flex justify-between"><span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Company:</span><span className="font-medium">{location.company}</span></div>
-                    <div className="flex justify-between"><span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Production:</span><span className="font-medium text-blue-500">{location.production}</span></div>
-                    <div className="flex justify-between"><span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Devices:</span><span className="font-medium">{location.devices}</span></div>
-                    <div className="flex justify-between"><span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Status:</span><span className={`font-medium ${location.alarms > 0 ? 'text-red-500' : 'text-green-500'}`}>{location.alarms > 0 ? `${location.alarms} Active Alarms` : 'Normal'}</span></div>
+                    <div className="flex justify-between">
+                      <span
+                        className={
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }
+                      >
+                        Company:
+                      </span>
+                      <span className="font-medium">{location.company}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span
+                        className={
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }
+                      >
+                        Production:
+                      </span>
+                      <span className="font-medium text-blue-500">
+                        {location.production}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span
+                        className={
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }
+                      >
+                        Devices:
+                      </span>
+                      <span className="font-medium">{location.devices}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span
+                        className={
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }
+                      >
+                        Status:
+                      </span>
+                      <span
+                        className={`font-medium ${
+                          location.alarms > 0
+                            ? 'text-red-500'
+                            : 'text-green-500'
+                        }`}
+                      >
+                        {location.alarms > 0
+                          ? `${location.alarms} Active Alarms`
+                          : 'Normal'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Popup>
@@ -157,24 +239,89 @@ const InteractiveMap: React.FC = () => {
 
       {/* Statistics Summary */}
       <div className="grid grid-cols-4 gap-4 mt-4">
-        <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1E293B]' : 'bg-white border border-gray-200'}`}>
-          <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Total Locations</div>
-          <div className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locations.length}</div>
+        <div
+          className={`p-3 rounded-lg ${
+            theme === 'dark'
+              ? 'bg-[#1E293B]'
+              : 'bg-white border border-gray-200'
+          }`}
+        >
+          <div
+            className={`text-sm ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            Total Locations
+          </div>
+          <div
+            className={`text-xl font-bold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            {locations.length}
+          </div>
         </div>
 
-        <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1E293B]' : 'bg-white border border-gray-200'}`}>
-          <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Total Devices</div>
-          <div className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locations.reduce((sum, loc) => sum + loc.devices, 0)}</div>
+        <div
+          className={`p-3 rounded-lg ${
+            theme === 'dark'
+              ? 'bg-[#1E293B]'
+              : 'bg-white border border-gray-200'
+          }`}
+        >
+          <div
+            className={`text-sm ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            Total Devices
+          </div>
+          <div
+            className={`text-xl font-bold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            {locations.reduce((sum, loc) => sum + loc.devices, 0)}
+          </div>
         </div>
 
-        <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1E293B]' : 'bg-white border border-gray-200'}`}>
-          <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Active Alarms</div>
-          <div className="text-xl font-bold text-red-500">{locations.reduce((sum, loc) => sum + loc.alarms, 0)}</div>
+        <div
+          className={`p-3 rounded-lg ${
+            theme === 'dark'
+              ? 'bg-[#1E293B]'
+              : 'bg-white border border-gray-200'
+          }`}
+        >
+          <div
+            className={`text-sm ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            Active Alarms
+          </div>
+          <div className="text-xl font-bold text-red-500">
+            {locations.reduce((sum, loc) => sum + loc.alarms, 0)}
+          </div>
         </div>
 
-        <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1E293B]' : 'bg-white border border-gray-200'}`}>
-          <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Operational</div>
-          <div className="text-xl font-bold text-green-500">{locations.filter(loc => loc.alarms === 0).length}/{locations.length}</div>
+        <div
+          className={`p-3 rounded-lg ${
+            theme === 'dark'
+              ? 'bg-[#1E293B]'
+              : 'bg-white border border-gray-200'
+          }`}
+        >
+          <div
+            className={`text-sm ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            Operational
+          </div>
+          <div className="text-xl font-bold text-green-500">
+            {locations.filter((loc) => loc.alarms === 0).length}/
+            {locations.length}
+          </div>
         </div>
       </div>
     </div>

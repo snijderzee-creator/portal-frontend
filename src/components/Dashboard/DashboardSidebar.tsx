@@ -127,36 +127,44 @@ const DashboardSidebar: React.FC = () => {
     return (
       <div key={item.id}>
         <div
-          className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors ${
-            theme === 'dark' 
-              ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white' 
+          className={`flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors ${
+            theme === 'dark'
+              ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white'
               : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
-          } ${level === 0 ? 'font-semibold' : level === 1 ? 'font-medium ml-4' : level === 2 ? 'ml-8' : 'ml-12'}`}
+          } ${
+            level === 0
+              ? 'font-semibold'
+              : level === 1
+              ? 'font-medium ml-4'
+              : level === 2
+              ? 'ml-8'
+              : 'ml-12'
+          }`}
           onClick={handleClick}
         >
           {hasChildren && (
-            <ChevronRightIcon 
+            <ChevronRightIcon
               className={`w-4 h-4 transition-transform ${
                 isExpanded ? 'rotate-90' : ''
-              } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} 
+              } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
             />
           )}
           {!hasChildren && <div className="w-4"></div>}
-          
+
           {getIconComponent(item.level)}
-          
-          <span className="text-sm flex-1">
-            {item.name}
-          </span>
-          
+
+          <span className="text-sm flex-1">{item.name}</span>
+
           {item.level === 'Well' && (
             <div className="w-2 h-2 bg-green-500 rounded-full" />
           )}
         </div>
-        
+
         {hasChildren && isExpanded && (
           <div>
-            {item.children.map((child: HierarchyNode) => renderNavigationItem(child, level + 1))}
+            {item.children.map((child: HierarchyNode) =>
+              renderNavigationItem(child, level + 1)
+            )}
           </div>
         )}
       </div>
@@ -166,78 +174,86 @@ const DashboardSidebar: React.FC = () => {
   const renderCompanyHierarchy = () => {
     if (!dashboardData?.hierarchy) return null;
 
-    return Object.entries(dashboardData.hierarchy).map(([companyName, companyData]) => {
-      const isExpanded = expandedItems.includes(companyName);
-      
-      return (
-        <div key={companyName}>
-          <div
-            className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors font-semibold ${
-              theme === 'dark' 
-                ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white' 
-                : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
-            }`}
-            onClick={() => toggleExpanded(companyName)}
-          >
-            <ChevronRightIcon 
-              className={`w-4 h-4 transition-transform ${
-                isExpanded ? 'rotate-90' : ''
-              } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} 
-            />
-            <div 
-              className="w-[21px] h-[21px] bg-no-repeat bg-center bg-contain"
-              style={{ 
-               backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0zIDkgOS03IDkgNy05IDEzLTkgN3oiLz48L3N2Zz4=')` 
-              }}
-            />
-            <span className="text-sm">{companyName}</span>
-          </div>
-          
-          {isExpanded && (
-            <div>
-              {companyData.hierarchy.map((item: HierarchyNode) => renderNavigationItem(item, 1))}
+    return Object.entries(dashboardData.hierarchy).map(
+      ([companyName, companyData]) => {
+        const isExpanded = expandedItems.includes(companyName);
+
+        return (
+          <div key={companyName}>
+            <div
+              className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors uppercase font-medium ${
+                theme === 'dark'
+                  ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white'
+                  : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
+              }`}
+              onClick={() => toggleExpanded(companyName)}
+            >
+              <ChevronRightIcon
+                className={`w-4 h-4 transition-transform ${
+                  isExpanded ? 'rotate-90' : ''
+                } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
+              />
+              <div
+                className="w-[21px] h-[21px] bg-no-repeat bg-center bg-contain"
+                style={{
+                  backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0zIDkgOS03IDkgNy05IDEzLTkgN3oiLz48L3N2Zz4=')`,
+                }}
+              />
+              <span className="text-sm">{companyName}</span>
             </div>
-          )}
-        </div>
-      );
-    });
+
+            {isExpanded && (
+              <div>
+                {companyData.hierarchy.map((item: HierarchyNode) =>
+                  renderNavigationItem(item, 1)
+                )}
+              </div>
+            )}
+          </div>
+        );
+      }
+    );
   };
 
   return (
-    <div className={`w-80 h-[calc(100vh-4rem)] border-r transition-colors ${
-      theme === 'dark' 
-        ? 'bg-[#1E293B] border-gray-700' 
-        : 'bg-white border-gray-200'
-    }`}>
+    <div
+      className={`w-80 transition-colors ${
+        theme === 'dark' ? 'bg-[#162345]' : 'bg-white border-gray-200'
+      }`}
+    >
       <div className="p-6">
-        <h1 className={`text-lg font-semibold mb-6 tracking-wide ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        }`}>
+        <h1
+          className={`text-lg font-medium mb-4 tracking-wider ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}
+        >
           Global Production Map
         </h1>
 
-        <div className="relative mb-6">
-          <SearchIcon className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-          }`} />
+        <div className="relative mb-2">
+          <SearchIcon
+            className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            }`}
+          />
           <input
             placeholder="Search"
             className={`w-full pl-10 h-10 rounded-lg border transition-colors ${
-              theme === 'dark' 
-                ? 'bg-[#0F172A] border-gray-600 text-white placeholder-gray-400 focus:border-gray-500' 
+              theme === 'dark'
+                ? 'bg-[#162345] border-[#5e728a] text-white placeholder-gray-400 focus:border-[#526d8d]'
                 : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500 focus:border-gray-300'
             } focus:outline-none focus:ring-1 ${
-              theme === 'dark' ? 'focus:ring-gray-500' : 'focus:ring-gray-300'
+              theme === 'dark' ? 'focus:ring-[]' : 'focus:ring-gray-300'
             }`}
           />
         </div>
       </div>
 
-      <div className="border-t border-gray-200 dark:border-gray-700">
-        <div 
+      <div className="border-t border-gray-200 dark:border-[#364566] ">
+        <div
           className={`max-h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin ${
-            theme === 'dark' 
-              ? 'scrollbar-thumb-white scrollbar-track-transparent' 
+            theme === 'dark'
+              ? 'scrollbar-thumb-white scrollbar-track-transparent'
               : 'scrollbar-thumb-[#38BF9D] scrollbar-track-transparent'
           }`}
         >

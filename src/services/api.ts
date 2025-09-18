@@ -71,35 +71,81 @@ export interface DashboardData {
   };
   hierarchy: HierarchyTree;
   statistics: {
+    totalDevices: number;
     totalLocations: number;
     regions: number;
     areas: number;
+    fields: number;
     wells: number;
-    deviceNodes: number;
-    totalDevices: number;
-    activeAlarms: number;
-    uptime: string;
   };
   deviceTypeStats: Array<{
     type: string;
     count: number;
   }>;
   userRole: string;
+  is_admin: boolean;
 }
 
 export interface Device {
   id: string;
-  name: string;
+  serial_number: string;
   type: string;
-  status: string;
-  statusColor: string;
-  lastReading: {
-    value: number;
-    unit: string;
-    timestamp: string;
-  };
+  logo?: string;
+  metadata: any;
+  created_at: string;
   location: string;
-  serialNumber: string;
+  company: string;
+}
+
+export interface ChartDataPoint {
+  timestamp: string;
+  gfr?: number;
+  gor?: number;
+  gvf?: number;
+  ofr?: number;
+  wfr?: number;
+  wlr?: number;
+  pressure?: number;
+  temperature?: number;
+  dataPoints?: number;
+  // For hierarchy aggregated data
+  totalGfr?: number;
+  totalGor?: number;
+  totalOfr?: number;
+  totalWfr?: number;
+  totalGvf?: number;
+  totalWlr?: number;
+  avgPressure?: number;
+  avgTemperature?: number;
+  deviceCount?: number;
+}
+
+export interface DeviceChartData {
+  device: Device;
+  chartData: ChartDataPoint[];
+  latestData?: {
+    timestamp: string;
+    data: any;
+    longitude?: number;
+    latitude?: number;
+  };
+  timeRange: string;
+  totalDataPoints: number;
+}
+
+export interface HierarchyChartData {
+  hierarchy: HierarchyNode;
+  chartData: ChartDataPoint[];
+  devices: Array<{
+    id: number;
+    serialNumber: string;
+    deviceType: string;
+    hierarchyName: string;
+    metadata: any;
+  }>;
+  timeRange: string;
+  totalDataPoints: number;
+  totalDevices: number;
 }
 
 class ApiService {
@@ -288,8 +334,8 @@ class ApiService {
     });
   }
 
-  async getHierarchyDevices(hierarchyId: string, token: string): Promise<ApiResponse<{ hierarchy: HierarchyNode; devices: Device[] }>> {
-    return this.makeRequest(`/hierarchy/${hierarchyId}/devices`, {
+  async getAllDevices(token: string): Promise<ApiResponse<{ devices: Device[]; total: number; company_id: number }>> {
+    return this.makeRequest('/hierarchy/devices', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -297,8 +343,8 @@ class ApiService {
     });
   }
 
-  async getProductionData(hierarchyId: string, token: string): Promise<ApiResponse<any>> {
-    return this.makeRequest(`/hierarchy/${hierarchyId}/production`, {
+  async getDeviceById(deviceId: string, token: string): Promise<ApiResponse<{ device: Device }>> {
+    return this.makeRequest(`/hierarchy/devices/${deviceId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -324,8 +370,9 @@ class ApiService {
     });
   }
 
-  async getHierarchyChildren(hierarchyId: string, token: string): Promise<ApiResponse<{ children: HierarchyNode[] }>> {
-    return this.makeRequest(`/hierarchy/${hierarchyId}/children`, {
+  // Charts endpoints
+  async getDeviceChartData(deviceId: string, timeRange: string = 'day', token: string): Promise<ApiResponse<DeviceChartData>> {
+    return this.makeRequest(`/charts/device/${deviceId}?timeRange=${timeRange}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -333,8 +380,26 @@ class ApiService {
     });
   }
 
-  async getHierarchyPath(hierarchyId: string, token: string): Promise<ApiResponse<{ path: any[] }>> {
-    return this.makeRequest(`/hierarchy/${hierarchyId}/path`, {
+  async getHierarchyChartData(hierarchyId: string, timeRange: string = 'day', token: string): Promise<ApiResponse<HierarchyChartData>> {
+    return this.makeRequest(`/charts/hierarchy/${hierarchyId}?timeRange=${timeRange}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getDeviceRealtimeData(deviceId: string, token: string): Promise<ApiResponse<{ device: Device; latestData: any }>> {
+    return this.makeRequest(`/charts/device/${deviceId}/realtime`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getChartsDashboardData(token: string): Promise<ApiResponse<any>> {
+    return this.makeRequest('/charts/dashboard', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
