@@ -1,37 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
-import { apiService, DeviceChartData, HierarchyChartData } from '../services/api';
+import { apiService, DeviceChartData, HierarchyChartData, Device } from '../services/api';
 import OFRChart from './Charts/OfrChart';
 import WFRChart from './Charts/WfrChart';
 import GFRChart from './Charts/GfrChart';
 import StatsCard from './Charts/StatsCard';
 import CircularTimer from './Charts/Timer';
 
-export default function ChartsPage() {
+interface ChartsPageProps {
+  selectedDevice?: Device | null;
+}
+
+export default function ChartsPage({ selectedDevice }: ChartsPageProps) {
   const { token } = useAuth();
   const { theme } = useTheme();
   const [chartData, setChartData] = useState<DeviceChartData | null>(null);
   const [hierarchyChartData, setHierarchyChartData] = useState<HierarchyChartData | null>(null);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [selectedHierarchyId, setSelectedHierarchyId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState('day');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Load initial chart data - you can set default device/hierarchy IDs here
-    // For now, we'll just show the components with placeholder data
-  }, [token]);
+    // Load chart data when a device is selected
+    if (selectedDevice) {
+      loadDeviceChartData(selectedDevice.id);
+    }
+  }, [selectedDevice, timeRange, token]);
 
-  const loadDeviceChartData = async (deviceId: string) => {
+  const loadDeviceChartData = async (deviceId: string | number) => {
     if (!token) return;
     
     setIsLoading(true);
     try {
-      const response = await apiService.getDeviceChartData(deviceId, timeRange, token);
+      const response = await apiService.getDeviceChartData(String(deviceId), timeRange, token);
       if (response.success && response.data) {
         setChartData(response.data);
-        setSelectedDeviceId(deviceId);
       }
     } catch (error) {
       console.error('Failed to load device chart data:', error);
@@ -64,6 +68,16 @@ export default function ChartsPage() {
       {/* Time Range Selector */}
       <div className="col-span-2 mb-4">
         <div className="flex items-center gap-4">
+          {selectedDevice && (
+            <div className={`px-4 py-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-[#162345] border-gray-600 text-white'
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}>
+              <span className="text-sm font-medium">Selected Device: </span>
+              <span className="text-sm">{selectedDevice.serial_number}</span>
+            </div>
+          )}
           <label className={`text-sm font-medium ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
@@ -85,6 +99,16 @@ export default function ChartsPage() {
           </select>
         </div>
       </div>
+
+      {!selectedDevice && (
+        <div className="col-span-2 text-center py-8">
+          <p className={`text-lg ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            Please select a device from the sidebar to view charts
+          </p>
+        </div>
+      )}
 
       <OFRChart chartData={chartData} />
       <WFRChart chartData={chartData} />
