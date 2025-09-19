@@ -13,24 +13,41 @@ import { useTheme } from '../../hooks/useTheme';
 
 interface WFRChartProps {
   chartData?: DeviceChartData | null;
+  hierarchyChartData?: HierarchyChartData | null;
 }
 
-export default function WFRChart({ chartData }: WFRChartProps) {
+export default function WFRChart({ chartData, hierarchyChartData }: WFRChartProps) {
   const { theme } = useTheme();
 
-  // Transform API data to chart format
-  const data = chartData?.chartData?.map(point => ({
-    time: new Date(point.timestamp).toLocaleTimeString(),
-    line: point.wfr || 0,
-    standard: (point.wfr || 0) * 0.98, // Simulate standard condition
-  })) || [
-    { time: '14:25:48', line: 12000, standard: 11800 },
-    { time: '14:25:50', line: 9500, standard: 9400 },
-    { time: '14:25:52', line: 9800, standard: 9700 },
-    { time: '14:25:54', line: 7000, standard: 6900 },
-  ];
+  // Transform API data to chart format - handle both device and hierarchy data
+  const data = React.useMemo(() => {
+    if (chartData?.chartData) {
+      // Device data
+      return chartData.chartData.map(point => ({
+        time: new Date(point.timestamp).toLocaleTimeString(),
+        line: point.wfr || 0,
+        standard: (point.wfr || 0) * 0.98,
+      }));
+    } else if (hierarchyChartData?.chartData) {
+      // Hierarchy aggregated data
+      return hierarchyChartData.chartData.map(point => ({
+        time: new Date(point.timestamp).toLocaleTimeString(),
+        line: point.totalWfr || 0,
+        standard: (point.totalWfr || 0) * 0.98,
+      }));
+    }
+    
+    // Fallback data
+    return [
+      { time: '14:25:48', line: 12000, standard: 11800 },
+      { time: '14:25:50', line: 9500, standard: 9400 },
+      { time: '14:25:52', line: 9800, standard: 9700 },
+      { time: '14:25:54', line: 7000, standard: 6900 },
+    ];
+  }, [chartData, hierarchyChartData]);
 
   const latestValue = data.length > 0 ? data[data.length - 1].line : 0;
+  const isHierarchyData = !!hierarchyChartData;
 
   return (
     <div className={`p-4 rounded-2xl shadow-md ${
@@ -41,7 +58,7 @@ export default function WFRChart({ chartData }: WFRChartProps) {
           <h2 className={`text-sm font-semibold ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
-            WFR (bbd)
+            {isHierarchyData ? 'Total WFR (bbd)' : 'WFR (bbd)'}
           </h2>
           <Info size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} />
         </div>
@@ -62,7 +79,7 @@ export default function WFRChart({ chartData }: WFRChartProps) {
         <div className="flex items-center gap-2">
           <span className="w-4 h-[2px] bg-pink-500 rounded" />
           <span className={theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'}>
-            Line Condition
+            {isHierarchyData ? 'Total Production' : 'Line Condition'}
           </span>
           <span className="text-emerald-300 text-xs">{latestValue.toFixed(2)}</span>
         </div>
@@ -73,6 +90,14 @@ export default function WFRChart({ chartData }: WFRChartProps) {
           </span>
           <span className="text-emerald-300 text-xs">{(latestValue * 0.98).toFixed(2)}</span>
         </div>
+        {isHierarchyData && hierarchyChartData && (
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-[2px] bg-green-500 rounded" />
+            <span className={theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'}>
+              Devices: {hierarchyChartData.totalDevices}
+            </span>
+          </div>
+        )}
       </div>
 
       <ResponsiveContainer

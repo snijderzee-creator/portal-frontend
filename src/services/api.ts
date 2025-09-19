@@ -142,6 +142,8 @@ export interface HierarchyChartData {
     deviceType: string;
     hierarchyName: string;
     metadata: any;
+    latestData?: any;
+    latestDataTime?: string;
   }>;
   timeRange: string;
   totalDataPoints: number;

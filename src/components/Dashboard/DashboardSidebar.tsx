@@ -6,12 +6,16 @@ import { apiService, DashboardData, HierarchyNode, Device } from '../../services
 
 interface DashboardSidebarProps {
   onDeviceSelect?: (device: Device) => void;
+  onHierarchySelect?: (hierarchy: HierarchyNode) => void;
   selectedDeviceId?: string | null;
+  selectedHierarchyId?: string | null;
 }
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ 
   onDeviceSelect, 
+  onHierarchySelect,
   selectedDeviceId 
+  selectedHierarchyId
 }) => {
   const { token } = useAuth();
   const { theme } = useTheme();
@@ -95,6 +99,12 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const handleDeviceClick = (device: Device) => {
     if (onDeviceSelect) {
       onDeviceSelect(device);
+    }
+  };
+
+  const handleHierarchyClick = (hierarchy: HierarchyNode) => {
+    if (onHierarchySelect) {
+      onHierarchySelect(hierarchy);
     }
   };
 
@@ -194,18 +204,25 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     const isWell = item.level === 'Well';
     const wellDevices = isWell ? devicesByHierarchy[item.name] || [] : [];
     const hasDevices = wellDevices.length > 0;
+    const isSelected = selectedHierarchyId === item.id;
 
     const handleClick = () => {
       if (hasChildren || hasDevices) {
         toggleExpanded(item.id);
       }
+      // Always call hierarchy select when clicking on any hierarchy node
+      handleHierarchyClick(item);
     };
 
     return (
       <div key={item.id}>
         <div
           className={`flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors ${
-            theme === 'dark'
+            isSelected
+              ? theme === 'dark'
+                ? 'bg-[#6656F5] text-white'
+                : 'bg-[#F97316] text-white'
+              : theme === 'dark'
               ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white'
               : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
           } ${
@@ -264,16 +281,34 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     return Object.entries(dashboardData.hierarchy).map(
       ([companyName, companyData]) => {
         const isExpanded = expandedItems.includes(companyName);
+        const isSelected = selectedHierarchyId === companyName;
 
         return (
           <div key={companyName}>
             <div
               className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors uppercase font-medium ${
-                theme === 'dark'
+                isSelected
+                  ? theme === 'dark'
+                    ? 'bg-[#6656F5] text-white'
+                    : 'bg-[#F97316] text-white'
+                  : theme === 'dark'
                   ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white'
                   : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
               }`}
-              onClick={() => toggleExpanded(companyName)}
+              onClick={() => {
+                toggleExpanded(companyName);
+                // Create a company hierarchy node for selection
+                const companyHierarchy: HierarchyNode = {
+                  id: companyName,
+                  name: companyName,
+                  level: 'Company',
+                  level_order: 0,
+                  can_attach_device: false,
+                  children: companyData.hierarchy,
+                  company_id: companyData.id
+                };
+                handleHierarchyClick(companyHierarchy);
+              }}
             >
               <ChevronRightIcon
                 className={`w-4 h-4 transition-transform ${

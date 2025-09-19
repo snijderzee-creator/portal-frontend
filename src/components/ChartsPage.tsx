@@ -10,23 +10,27 @@ import CircularTimer from './Charts/Timer';
 
 interface ChartsPageProps {
   selectedDevice?: Device | null;
+  selectedHierarchy?: any | null;
 }
 
-export default function ChartsPage({ selectedDevice }: ChartsPageProps) {
+export default function ChartsPage({ selectedDevice, selectedHierarchy }: ChartsPageProps) {
   const { token } = useAuth();
   const { theme } = useTheme();
   const [chartData, setChartData] = useState<DeviceChartData | null>(null);
   const [hierarchyChartData, setHierarchyChartData] = useState<HierarchyChartData | null>(null);
-  const [selectedHierarchyId, setSelectedHierarchyId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState('day');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Load chart data when a device is selected
-    if (selectedDevice) {
+    // Load chart data when a device or hierarchy is selected
+    if (selectedDevice && !selectedHierarchy) {
       loadDeviceChartData(selectedDevice.id);
+      setHierarchyChartData(null); // Clear hierarchy data
+    } else if (selectedHierarchy && !selectedDevice) {
+      loadHierarchyChartData(selectedHierarchy.id);
+      setChartData(null); // Clear device data
     }
-  }, [selectedDevice, timeRange, token]);
+  }, [selectedDevice, selectedHierarchy, timeRange, token]);
 
   const loadDeviceChartData = async (deviceId: string | number) => {
     if (!token) return;
@@ -52,7 +56,6 @@ export default function ChartsPage({ selectedDevice }: ChartsPageProps) {
       const response = await apiService.getHierarchyChartData(hierarchyId, timeRange, token);
       if (response.success && response.data) {
         setHierarchyChartData(response.data);
-        setSelectedHierarchyId(hierarchyId);
       }
     } catch (error) {
       console.error('Failed to load hierarchy chart data:', error);
@@ -78,6 +81,21 @@ export default function ChartsPage({ selectedDevice }: ChartsPageProps) {
               <span className="text-sm">{selectedDevice.serial_number}</span>
             </div>
           )}
+          {selectedHierarchy && (
+            <div className={`px-4 py-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-[#162345] border-gray-600 text-white'
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}>
+              <span className="text-sm font-medium">Selected {selectedHierarchy.level}: </span>
+              <span className="text-sm">{selectedHierarchy.name}</span>
+              {hierarchyChartData && (
+                <span className="text-xs ml-2 px-2 py-1 rounded-full bg-blue-500 text-white">
+                  {hierarchyChartData.totalDevices} devices
+                </span>
+              )}
+            </div>
+          )}
           <label className={`text-sm font-medium ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
@@ -100,19 +118,19 @@ export default function ChartsPage({ selectedDevice }: ChartsPageProps) {
         </div>
       </div>
 
-      {!selectedDevice && (
+      {!selectedDevice && !selectedHierarchy && (
         <div className="col-span-2 text-center py-8">
           <p className={`text-lg ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
-            Please select a device from the sidebar to view charts
+            Please select a device or hierarchy from the sidebar to view charts
           </p>
         </div>
       )}
 
-      <OFRChart chartData={chartData} />
-      <WFRChart chartData={chartData} />
-      <GFRChart chartData={chartData} />
+      <OFRChart chartData={chartData} hierarchyChartData={hierarchyChartData} />
+      <WFRChart chartData={chartData} hierarchyChartData={hierarchyChartData} />
+      <GFRChart chartData={chartData} hierarchyChartData={hierarchyChartData} />
       <div className="flex flex-row gap-6">
         <div className={`flex-1 p-4 rounded-2xl shadow-md flex flex-col justify-between ${
           theme === 'dark' ? 'bg-[#1D2147]' : 'bg-white border border-gray-200'
@@ -122,21 +140,25 @@ export default function ChartsPage({ selectedDevice }: ChartsPageProps) {
           }`}>
             Flow Ratios
           </h2>
-          <StatsCard
-            label="WLR"
-            value={85}
-            style={{ backgroundColor: '#FE44CC' }}
-          />
-          <StatsCard
-            label="GOR"
-            value={70}
-            style={{ backgroundColor: '#4D3DF7' }}
-          />
-          <StatsCard
-            label="GVF"
-            value={20}
-            style={{ backgroundColor: '#10B981' }}
-          />
+          {(chartData || hierarchyChartData) && (
+            <>
+              <StatsCard
+                label="WLR"
+                value={85}
+                style={{ backgroundColor: '#FE44CC' }}
+              />
+              <StatsCard
+                label="GOR"
+                value={70}
+                style={{ backgroundColor: '#4D3DF7' }}
+              />
+              <StatsCard
+                label="GVF"
+                value={20}
+                style={{ backgroundColor: '#10B981' }}
+              />
+            </>
+          )}
         </div>
         <CircularTimer />
       </div>
