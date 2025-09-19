@@ -1,3 +1,6 @@
+// src/components/Charts/GfrChart.tsx
+import React, { useMemo } from 'react';
+
 import {
   LineChart,
   Line,
@@ -8,7 +11,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { Info, ExternalLink, MoreHorizontal } from 'lucide-react';
-import { DeviceChartData } from '../../services/api';
+import { DeviceChartData, HierarchyChartData } from '../../services/api'; // <-- make sure HierarchyChartData is exported from services/api
 import { useTheme } from '../../hooks/useTheme';
 
 interface GFRChartProps {
@@ -20,7 +23,7 @@ export default function GFRChart({ chartData, hierarchyChartData }: GFRChartProp
   const { theme } = useTheme();
 
   // Transform API data to chart format - handle both device and hierarchy data
-  const data = React.useMemo(() => {
+  const data = useMemo(() => {
     if (chartData?.chartData) {
       // Device data
       return chartData.chartData.map(point => ({

@@ -14,9 +14,10 @@ interface DashboardSidebarProps {
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ 
   onDeviceSelect, 
   onHierarchySelect,
-  selectedDeviceId 
-  selectedHierarchyId
+  selectedDeviceId,
+  selectedHierarchyId,
 }) => {
+
   const { token } = useAuth();
   const { theme } = useTheme();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
