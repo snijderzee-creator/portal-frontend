@@ -24,7 +24,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   ];
 
   return (
-    <header className={`w-full h-16 px-6 flex items-center justify-between border-b ${
+    <header className={`w-full h-16 px-6 flex items-center justify-between border-b flex-shrink-0 ${
       theme === 'dark' 
         ? 'bg-[#1E1F2E] border-gray-700' 
         : 'bg-white border-gray-200'
@@ -71,14 +71,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             >
               {item.label}
             </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* Right side: Time + Controls */}
-      <div className="flex items-center gap-6">
-        {/* Controls */}
-        <div className="flex items-center gap-3">
+            <img
+              src={theme === 'dark' 
+                ? "https://res.cloudinary.com/drnak5yb2/image/upload/v1756798056/output-onlinepngtools_1_gybrdb.png"
+                : "https://res.cloudinary.com/drnak5yb2/image/upload/v1755589239/output-onlinepngtools_fnkcov.png"
+              }
+              alt="Saher Flow Solutions"
+              className="h-8 w-auto"
+            />
+            <span className={`font-semibold text-lg ml-2 ${
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}

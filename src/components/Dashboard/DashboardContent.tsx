@@ -71,7 +71,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   };
 
   return (
-    <div className={`flex-1 p-6 overflow-y-auto ${
+    <div className={`h-full p-6 overflow-y-auto ${
       theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
     }`}>
       {children || (

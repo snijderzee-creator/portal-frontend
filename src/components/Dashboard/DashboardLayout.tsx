@@ -40,13 +40,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className={`min-h-screen w-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
-      <DashboardHeader 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        onToggleSidebar={toggleSidebar}
-      />
-
+    <div className={`min-h-screen w-full flex ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
       {/* Sidebar Drawer - Always present */}
       <SidebarDrawer 
         onDeviceSelect={handleDeviceSelect}
@@ -58,27 +52,43 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         onToggle={toggleSidebar}
       />
 
-      {/* Main Content Area */}
-      <div className="h-[calc(100vh-4rem)] w-full">
-        {/* Switch content based on activeTab */}
-        {activeTab === 'Dashboard' && (
-          <DashboardContent 
-            selectedDevice={selectedDevice} 
-            selectedHierarchy={selectedHierarchy}
-          />
-        )}
-        
-        {activeTab === 'Devices' && (
-          <DevicesPage />
-        )}
-        
-        {activeTab === 'Alarms' && (
-          <div className={`p-6 min-h-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
-            <AlarmsTable />
-          </div>
-        )}
+      {/* Main Content Container */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${
+        isSidebarOpen ? 'ml-64' : 'ml-0'
+      }`}>
+        {/* Header */}
+        <DashboardHeader 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          onToggleSidebar={toggleSidebar}
+        />
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-hidden">
+          {/* Switch content based on activeTab */}
+          {activeTab === 'Dashboard' && (
+            <DashboardContent 
+              selectedDevice={selectedDevice} 
+              selectedHierarchy={selectedHierarchy}
+            />
+          )}
+          
+          {activeTab === 'Devices' && (
+            <DevicesPage />
+          )}
+          
+          {activeTab === 'Alarms' && (
+            <div className={`p-6 min-h-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
+              <AlarmsTable />
+            </div>
+          )}
+        </div>
       </div>
     </div>
+  );
+};
+
+export default DashboardLayout;
   );
 };
 
