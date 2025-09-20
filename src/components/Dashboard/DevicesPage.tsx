@@ -91,20 +91,28 @@ const DevicesPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-[#1E1F2E] min-h-screen">
+    <div className={`p-6 min-h-screen ${
+      theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
+    }`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-white">Device List</h1>
+        <h1 className={`text-2xl font-semibold ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>Device List</h1>
         
         <div className="flex items-center gap-4">
           {/* View Toggle */}
-          <div className="flex items-center bg-[#2A2D47] rounded-lg p-1">
+          <div className={`flex items-center rounded-lg p-1 ${
+            theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-gray-200'
+          }`}>
             <button
               onClick={() => setViewMode('list')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 viewMode === 'list'
                   ? 'bg-[#6366F1] text-white'
-                  : 'text-gray-400 hover:text-white'
+                  : theme === 'dark'
+                  ? 'text-gray-400 hover:text-white'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               List View
@@ -114,7 +122,9 @@ const DevicesPage: React.FC = () => {
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 viewMode === 'card'
                   ? 'bg-[#6366F1] text-white'
-                  : 'text-gray-400 hover:text-white'
+                  : theme === 'dark'
+                  ? 'text-gray-400 hover:text-white'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Card View
@@ -125,11 +135,15 @@ const DevicesPage: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-[#6366F1] rounded-full"></div>
-              <span className="text-sm text-gray-300">Online</span>
+              <span className={`text-sm ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              }`}>Online</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-[#EC4899] rounded-full"></div>
-              <span className="text-sm text-gray-300">Offline</span>
+              <span className={`text-sm ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              }`}>Offline</span>
             </div>
           </div>
         </div>
@@ -143,40 +157,92 @@ const DevicesPage: React.FC = () => {
           placeholder="Search Bar"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-[#2A2D47] border border-[#3A3D57] rounded-lg text-white placeholder-gray-400 focus:border-[#6366F1] focus:outline-none focus:ring-1 focus:ring-[#6366F1]"
+          className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6366F1] ${
+            theme === 'dark'
+              ? 'bg-[#2A2D47] border-[#3A3D57] text-white placeholder-gray-400 focus:border-[#6366F1]'
+              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#6366F1]'
+          }`}
         />
       </div>
 
       {/* Content */}
       {viewMode === 'list' ? (
-        <div className="bg-[#2A2D47] rounded-lg overflow-hidden">
+        <div className={`rounded-lg overflow-hidden ${
+          theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
+        }`}>
           {/* Table Header */}
-          <div className="grid grid-cols-10 gap-4 px-6 py-4 bg-[#1E1F2E] border-b border-[#3A3D57]">
-            <div className="text-sm font-medium text-gray-400">Device Name</div>
-            <div className="text-sm font-medium text-gray-400">Well Name</div>
-            <div className="text-sm font-medium text-gray-400">Serial</div>
-            <div className="text-sm font-medium text-gray-400">Last Comm. Time</div>
-            <div className="text-sm font-medium text-gray-400">Water Cut(%)</div>
-            <div className="text-sm font-medium text-gray-400">GVF(%)</div>
-            <div className="text-sm font-medium text-gray-400">WFR (bpd)</div>
-            <div className="text-sm font-medium text-gray-400">OFR(bpd)</div>
-            <div className="text-sm font-medium text-gray-400">GFR</div>
-            <div className="text-sm font-medium text-gray-400">Status</div>
+          <div className={`grid grid-cols-10 gap-4 px-6 py-4 border-b ${
+            theme === 'dark' 
+              ? 'bg-[#1E1F2E] border-[#3A3D57]' 
+              : 'bg-gray-50 border-gray-200'
+          }`}>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Device Name</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Well Name</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Serial</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Last Comm. Time</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Water Cut(%)</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>GVF(%)</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>WFR (bpd)</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>OFR(bpd)</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>GFR</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Status</div>
           </div>
 
           {/* Table Body */}
-          <div className="divide-y divide-[#3A3D57]">
+          <div className={`divide-y ${
+            theme === 'dark' ? 'divide-[#3A3D57]' : 'divide-gray-200'
+          }`}>
             {filteredDevices.map((device, index) => (
-              <div key={device.id} className="grid grid-cols-10 gap-4 px-6 py-4 hover:bg-[#3A3D57] transition-colors">
-                <div className="text-sm text-white font-medium">{device.serial_number}</div>
-                <div className="text-sm text-gray-300">{device.wellName}</div>
-                <div className="text-sm text-gray-300">{device.serial_number}</div>
-                <div className="text-sm text-gray-300">{device.lastCommTime}</div>
-                <div className="text-sm text-gray-300">{device.waterCut}%</div>
-                <div className="text-sm text-gray-300">{device.gvf}%</div>
-                <div className="text-sm text-gray-300">{device.wfr}</div>
-                <div className="text-sm text-gray-300">{device.ofr}</div>
-                <div className="text-sm text-gray-300">{device.gfr}</div>
+              <div key={device.id} className={`grid grid-cols-10 gap-4 px-6 py-4 transition-colors ${
+                theme === 'dark' ? 'hover:bg-[#3A3D57]' : 'hover:bg-gray-50'
+              }`}>
+                <div className={`text-sm font-medium ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>{device.serial_number}</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.wellName}</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.serial_number}</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.lastCommTime}</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.waterCut}%</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.gvf}%</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.wfr}</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.ofr}</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.gfr}</div>
                 <div>
                   <span
                     className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
@@ -197,7 +263,9 @@ const DevicesPage: React.FC = () => {
           {filteredDevices.map((device) => (
             <div
               key={device.id}
-              className="bg-[#2A2D47] rounded-lg p-6 border border-[#3A3D57] hover:border-[#6366F1] transition-colors"
+              className={`rounded-lg p-6 border transition-colors hover:border-[#6366F1] ${
+                theme === 'dark' ? 'bg-[#2A2D47] border-[#3A3D57]' : 'bg-white border-gray-200'
+              }`}
             >
               {/* Card Header */}
               <div className="flex items-center justify-between mb-4">
@@ -208,8 +276,12 @@ const DevicesPage: React.FC = () => {
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold text-sm">{device.serial_number}</h3>
-                    <p className="text-gray-400 text-xs">{device.type}</p>
+                    <h3 className={`font-semibold text-sm ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>{device.serial_number}</h3>
+                    <p className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>{device.type}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -231,44 +303,80 @@ const DevicesPage: React.FC = () => {
               {/* Card Content */}
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-xs">Well Name:</span>
-                  <span className="text-white text-xs font-medium">{device.wellName}</span>
+                  <span className={`text-xs ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>Well Name:</span>
+                  <span className={`text-xs font-medium ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>{device.wellName}</span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-xs">Last Comm:</span>
-                  <span className="text-white text-xs">{device.lastCommTime}</span>
+                  <span className={`text-xs ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>Last Comm:</span>
+                  <span className={`text-xs ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>{device.lastCommTime}</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#3A3D57]">
+                <div className={`grid grid-cols-2 gap-3 pt-2 border-t ${
+                  theme === 'dark' ? 'border-[#3A3D57]' : 'border-gray-200'
+                }`}>
                   <div>
-                    <span className="text-gray-400 text-xs">Water Cut</span>
-                    <p className="text-white font-semibold">{device.waterCut}%</p>
+                    <span className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>Water Cut</span>
+                    <p className={`font-semibold ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>{device.waterCut}%</p>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-xs">GVF</span>
-                    <p className="text-white font-semibold">{device.gvf}%</p>
+                    <span className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>GVF</span>
+                    <p className={`font-semibold ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>{device.gvf}%</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 pt-2">
                   <div>
-                    <span className="text-gray-400 text-xs">WFR</span>
-                    <p className="text-white font-semibold text-xs">{device.wfr}</p>
+                    <span className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>WFR</span>
+                    <p className={`font-semibold text-xs ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>{device.wfr}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-xs">OFR</span>
-                    <p className="text-white font-semibold text-xs">{device.ofr}</p>
+                    <span className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>OFR</span>
+                    <p className={`font-semibold text-xs ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>{device.ofr}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-xs">GFR</span>
-                    <p className="text-white font-semibold text-xs">{device.gfr}</p>
+                    <span className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>GFR</span>
+                    <p className={`font-semibold text-xs ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>{device.gfr}</p>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center pt-2 border-t border-[#3A3D57]">
-                  <span className="text-gray-400 text-xs">Location:</span>
-                  <span className="text-white text-xs">{device.location || 'Not assigned'}</span>
+                <div className={`flex justify-between items-center pt-2 border-t ${
+                  theme === 'dark' ? 'border-[#3A3D57]' : 'border-gray-200'
+                }`}>
+                  <span className={`text-xs ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>Location:</span>
+                  <span className={`text-xs ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>{device.location || 'Not assigned'}</span>
                 </div>
               </div>
             </div>
@@ -278,8 +386,12 @@ const DevicesPage: React.FC = () => {
 
       {filteredDevices.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-gray-400 text-lg mb-2">No devices found</div>
-          <div className="text-gray-500 text-sm">
+          <div className={`text-lg mb-2 ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>No devices found</div>
+          <div className={`text-sm ${
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+          }`}>
             {searchTerm ? 'Try adjusting your search terms' : 'No devices available'}
           </div>
         </div>

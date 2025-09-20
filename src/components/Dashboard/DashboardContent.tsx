@@ -71,7 +71,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   };
 
   return (
-    <div className="flex-1 p-6 bg-[#1E1F2E] min-h-screen">
+    <div className={`flex-1 p-6 overflow-y-auto ${
+      theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
+    }`}>
       {children || (
         <>
           {/* Metrics Cards */}

@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import { ExternalLink, MoreHorizontal } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
+import { useTheme } from '../../hooks/useTheme';
 
 interface FlowRateChartsProps {
   chartData?: DeviceChartData | null;
@@ -23,46 +24,66 @@ interface SingleFlowRateChartProps {
 }
 
 const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({ title, unit, data, dataKey }) => {
+  const { theme } = useTheme();
+
   return (
-    <div className="bg-[#2A2D47] rounded-lg p-4">
+    <div className={`rounded-lg p-4 ${
+      theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
+    }`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-white text-sm font-medium">{title} ({unit})</h3>
-          <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">i</span>
+          <h3 className={`text-sm font-medium ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>{title} ({unit})</h3>
+          <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+            theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
+          }`}>
+            <span className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>i</span>
           </div>
         </div>
-        <div className="flex items-center gap-1 border border-gray-600 px-2 py-1 rounded">
-          <ExternalLink size={12} className="text-gray-400 cursor-pointer hover:text-white" />
-          <MoreHorizontal size={12} className="text-gray-400 cursor-pointer hover:text-white" />
+        <div className={`flex items-center gap-1 border px-2 py-1 rounded ${
+          theme === 'dark' 
+            ? 'border-gray-600 text-gray-400 hover:text-white' 
+            : 'border-gray-300 text-gray-600 hover:text-gray-900'
+        }`}>
+          <ExternalLink size={12} className="cursor-pointer" />
+          <MoreHorizontal size={12} className="cursor-pointer" />
         </div>
       </div>
 
       <div className="mb-3">
-        <p className="text-gray-400 text-xs mb-2">Comparison</p>
+        <p className={`text-xs mb-2 ${
+          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+        }`}>Comparison</p>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
             <div className="w-3 h-1 bg-[#EC4899] rounded"></div>
-            <span className="text-gray-400 text-xs">Line Condition</span>
+            <span className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Line Condition</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-1 bg-[#6366F1] rounded"></div>
-            <span className="text-gray-400 text-xs">Standard Condition</span>
+            <span className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Standard Condition</span>
           </div>
         </div>
       </div>
 
       <ResponsiveContainer width="100%" height={150}>
         <LineChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
-          <CartesianGrid stroke="#4B5563" strokeDasharray="3 3" />
+          <CartesianGrid stroke={theme === 'dark' ? '#4B5563' : '#E5E7EB'} strokeDasharray="3 3" />
           <XAxis 
             dataKey="time" 
-            stroke="#6B7280" 
+            stroke={theme === 'dark' ? '#6B7280' : '#6B7280'} 
             fontSize={10}
             tickMargin={5}
           />
           <YAxis
-            stroke="#6B7280"
+            stroke={theme === 'dark' ? '#6B7280' : '#6B7280'}
             fontSize={10}
             tickMargin={5}
             domain={[0, 12000]}

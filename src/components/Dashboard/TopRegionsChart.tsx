@@ -8,6 +8,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { ExternalLink, MoreHorizontal } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 
 const data = [
   { region: 'Qatar', oil: 65000, water: 50000, gas: 35000 },
@@ -16,38 +17,60 @@ const data = [
 ];
 
 const TopRegionsChart: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
-    <div className="bg-[#2A2D47] rounded-lg p-6">
+    <div className={`rounded-lg p-6 ${
+      theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
+    }`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-white text-base font-medium">Top Regions</h2>
-          <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">i</span>
+          <h2 className={`text-base font-medium ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>Top Regions</h2>
+          <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+            theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
+          }`}>
+            <span className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>i</span>
           </div>
         </div>
-        <div className="flex items-center gap-2 border border-gray-600 px-2 py-1 rounded-lg">
-          <ExternalLink size={14} className="text-gray-400 cursor-pointer hover:text-white" />
+        <div className={`flex items-center gap-2 border px-2 py-1 rounded-lg ${
+          theme === 'dark' 
+            ? 'border-gray-600 text-gray-400 hover:text-white' 
+            : 'border-gray-300 text-gray-600 hover:text-gray-900'
+        }`}>
+            className="cursor-pointer"
           <MoreHorizontal size={14} className="text-gray-400 cursor-pointer hover:text-white" />
         </div>
       </div>
 
       {/* Subtitle */}
-      <p className="text-gray-400 text-xs mb-4">Comparison</p>
+      <p className={`text-xs mb-4 ${
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      }`}>Comparison</p>
 
       {/* Legend */}
       <div className="flex gap-6 mb-6">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-[#6366F1]" />
-          <span className="text-white text-xs">Oil</span>
+          <span className={`text-xs ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>Oil</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-[#06B6D4]" />
-          <span className="text-white text-xs">Water</span>
+          <span className={`text-xs ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>Water</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-[#EC4899]" />
-          <span className="text-white text-xs">Gas</span>
+          <span className={`text-xs ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>Gas</span>
         </div>
       </div>
 
@@ -59,21 +82,21 @@ const TopRegionsChart: React.FC = () => {
           barCategoryGap="25%"
         >
           <CartesianGrid
-            stroke="#4B5563"
+            stroke={theme === 'dark' ? '#4B5563' : '#E5E7EB'}
             strokeDasharray="3 3"
             horizontal={true}
             vertical={false}
           />
           <XAxis
             dataKey="region"
-            stroke="#6B7280"
+            stroke={theme === 'dark' ? '#6B7280' : '#6B7280'}
             fontSize={12}
             tickMargin={10}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            stroke="#6B7280"
+            stroke={theme === 'dark' ? '#6B7280' : '#6B7280'}
             fontSize={12}
             tickMargin={10}
             axisLine={false}

@@ -35,12 +35,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#1E1F2E]">
+    <div className={`min-h-screen w-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
       <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Switch content based on activeTab */}
       {activeTab === 'Dashboard' && (
-        <div className="flex">
+        <div className="flex h-[calc(100vh-4rem)]">
           <DashboardSidebar 
             onDeviceSelect={handleDeviceSelect}
             onHierarchySelect={handleHierarchySelect}
@@ -58,7 +58,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       {activeTab === 'Devices' && <DevicesPage />}
       
       {activeTab === 'Alarms' && (
-        <div className="p-6 bg-[#1E1F2E] min-h-screen">
+        <div className={`p-6 min-h-screen ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
           <AlarmsTable />
         </div>
       )}

@@ -41,13 +41,21 @@ const AlarmsTable: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#2A2D47] rounded-lg border-none">
+    <div className={`rounded-lg ${
+      theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
+    }`}>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold tracking-wide text-white">
+          <h2 className={`text-lg font-semibold tracking-wide ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>
             Alarms
           </h2>
-          <button className="h-9 px-4 border border-gray-600 rounded-lg flex items-center gap-2 transition-colors text-gray-300 hover:bg-[#3A3D57]">
+          <button className={`h-9 px-4 border rounded-lg flex items-center gap-2 transition-colors ${
+            theme === 'dark'
+              ? 'border-gray-600 text-gray-300 hover:bg-[#3A3D57]'
+              : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+          }`}>
             <FilterIcon className="w-4 h-4" />
             Filter
           </button>
@@ -56,20 +64,32 @@ const AlarmsTable: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-600">
-                <th className="text-left py-3 px-4 font-light text-gray-400">
+              <tr className={`border-b ${
+                theme === 'dark' ? 'border-gray-600' : 'border-gray-200'
+              }`}>
+                <th className={`text-left py-3 px-4 font-light ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Device
                 </th>
-                <th className="text-left py-3 px-4 font-light text-gray-400">
+                <th className={`text-left py-3 px-4 font-light ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Type
                 </th>
-                <th className="text-left py-3 px-4 font-light text-gray-400">
+                <th className={`text-left py-3 px-4 font-light ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Severity
                 </th>
-                <th className="text-left py-3 px-4 font-light text-gray-400">
+                <th className={`text-left py-3 px-4 font-light ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Time
                 </th>
-                <th className="text-left py-3 px-4 font-light text-gray-400">
+                <th className={`text-left py-3 px-4 font-light ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Status
                 </th>
               </tr>
@@ -78,12 +98,20 @@ const AlarmsTable: React.FC = () => {
               {alarmData.map((alarm, index) => (
                 <tr
                   key={index}
-                  className="border-b transition-colors border-gray-700 hover:bg-[#3A3D57]"
+                  className={`border-b transition-colors ${
+                    theme === 'dark'
+                      ? 'border-gray-700 hover:bg-[#3A3D57]'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
                 >
-                  <td className="py-4 px-4 font-medium text-white">
+                  <td className={`py-4 px-4 font-medium ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
                     {alarm.device}
                   </td>
-                  <td className="py-4 px-4 text-gray-300">
+                  <td className={`py-4 px-4 ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  }`}>
                     {alarm.type}
                   </td>
                   <td className="py-4 px-4">
@@ -100,10 +128,14 @@ const AlarmsTable: React.FC = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-gray-300">
+                  <td className={`py-4 px-4 ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  }`}>
                     {alarm.time}
                   </td>
-                  <td className="py-4 px-4 text-gray-300">
+                  <td className={`py-4 px-4 ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  }`}>
                     {alarm.status}
                   </td>
                 </tr>

@@ -1,7 +1,10 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { useTheme } from '../../hooks/useTheme';
 
 const GVFWLRCharts: React.FC = () => {
+  const { theme } = useTheme();
+
   const gvfData = [
     { name: 'GVF', value: 65, color: '#FE44CC' },
     { name: 'Remaining', value: 35, color: '#4D3DF7' }
@@ -13,11 +16,19 @@ const GVFWLRCharts: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#2A2D47] rounded-lg p-6">
+    <div className={`rounded-lg p-6 ${
+      theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
+    }`}>
       <div className="flex items-center gap-3 mb-6">
-        <h2 className="text-white text-base font-medium">Average GVF/WLR</h2>
-        <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center">
-          <span className="text-gray-400 text-xs">i</span>
+        <h2 className={`text-base font-medium ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>Average GVF/WLR</h2>
+        <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+          theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
+        }`}>
+          <span className={`text-xs ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>i</span>
         </div>
       </div>
 
@@ -44,8 +55,12 @@ const GVFWLRCharts: React.FC = () => {
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-white text-2xl font-bold">65%</span>
-            <span className="text-gray-400 text-xs">GVF</span>
+            <span className={`text-2xl font-bold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>65%</span>
+            <span className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>GVF</span>
           </div>
         </div>
 
@@ -71,8 +86,12 @@ const GVFWLRCharts: React.FC = () => {
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-white text-2xl font-bold">85%</span>
-            <span className="text-gray-400 text-xs">WLR</span>
+            <span className={`text-2xl font-bold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>85%</span>
+            <span className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>WLR</span>
           </div>
         </div>
       </div>
