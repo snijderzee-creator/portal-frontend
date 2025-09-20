@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Bell, User } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
 interface DashboardHeaderProps {
   activeTab: string;
@@ -10,27 +11,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   activeTab,
   setActiveTab,
 }) => {
-  const [currentTime, setCurrentTime] = useState('');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const timeString = now.toLocaleString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      }).replace(/[/]/g, '.').replace(',', ':');
-      setCurrentTime(timeString);
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const { user } = useAuth();
 
   const navigationItems = [
     { label: 'Dashboard', active: true },
@@ -70,11 +51,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
       {/* Right side: Time + Controls */}
       <div className="flex items-center gap-6">
-        {/* Time Display */}
-        <div className="text-white text-lg font-mono font-bold">
-          {currentTime}
-        </div>
-
         {/* Controls */}
         <div className="flex items-center gap-3">
           {/* Theme Toggle */}

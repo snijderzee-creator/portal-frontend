@@ -142,7 +142,7 @@ const Signup: React.FC = () => {
       />
     <AuthLayout leftContent={<SignInLeftContent />}>
       {/* Right Side - Signup Form */}
-      <div className="w-full flex flex-col justify-center bg-gradient-to-b from-navy-900 to-navy-800 min-h-screen">
+   
         <div className="md:w-[80%] w-[90%] mx-auto">
           <div className="bg-white rounded-2xl shadow-xl w-full md:p-10 p-6 my-8">
             {/* Back to Home Link */}
@@ -376,7 +376,7 @@ const Signup: React.FC = () => {
             </p>
           </div>
         </div>
-      </div>
+      
     </AuthLayout>
     </>
   );
