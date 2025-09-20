@@ -341,17 +341,19 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
 
   return (
     <div
-      className={`h-screen z-40 transition-all duration-300 ease-in-out ${
+      className={`fixed left-0 top-0 h-screen z-40 transition-all duration-300 ease-in-out ${
         isOpen ? 'w-64' : 'w-0'
       } ${
         theme === 'dark'
           ? 'bg-[#1E1F2E] border-r border-[#2A2D47]'
           : 'bg-white border-r border-gray-200'
-      } flex flex-col overflow-hidden`}
+      } flex flex-col overflow-hidden shadow-lg`}
     >
       <div className={`w-64 h-full flex flex-col ${isOpen ? 'block' : 'hidden'}`}>
         {/* Header with close button */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#2A2D47]">
+        <div className={`flex items-center justify-between p-4 border-b ${
+          theme === 'dark' ? 'border-[#2A2D47]' : 'border-gray-200'
+        }`}>
           <h1 className={`text-base font-medium tracking-wider ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
@@ -370,7 +372,9 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-200 dark:border-[#2A2D47]">
+        <div className={`p-4 border-b ${
+          theme === 'dark' ? 'border-[#2A2D47]' : 'border-gray-200'
+        }`}>
           <div className="relative">
             <SearchIcon className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
@@ -391,6 +395,14 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           {renderCompanyHierarchy()}
         </div>
       </div>
+      
+      {/* Overlay for mobile when drawer is open */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={onToggle}
+        />
+      )}
     </div>
   );
 };

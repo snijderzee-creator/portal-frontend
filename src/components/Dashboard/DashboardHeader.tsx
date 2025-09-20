@@ -24,7 +24,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   ];
 
   const logoSrcDark =
-    'https://res.cloudinary.com/drnak5yb2/image/upload/v1756798056/output-onlinepngtools_1_gybrdb.png';
+    'https://res.cloudinary.com/drnak5yb2/image/upload/v1756278804/light_mode_logo_saher_btbdos.svg';
   const logoSrcLight =
     'https://res.cloudinary.com/drnak5yb2/image/upload/v1755589239/output-onlinepngtools_fnkcov.png';
 
@@ -35,38 +35,33 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       }`}
     >
       {/* Left side: Logo + Navigation */}
-      <div className="flex items-center gap-8">
-        {/* Logo and Menu Button */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onToggleSidebar}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'text-gray-400 hover:text-white hover:bg-gray-700'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+<div className="flex items-center gap-8">
+  {/* Logo and Menu Button */}
+  <div className="flex items-center gap-2">
+    <button
+      onClick={onToggleSidebar}
+      className={`p-2 rounded-lg transition-colors ${
+        theme === 'dark'
+          ? 'text-gray-400 hover:text-white hover:bg-gray-700'
+          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+      }`}
+    >
+      <Menu className="h-6 w-6 md:h-7 md:w-7" />
+    </button>
 
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              theme === 'dark' ? 'bg-white' : 'bg-[#1E1F2E]'
-            }`}
-          >
-            <span
-              className={`font-bold text-sm ${
-                theme === 'dark' ? 'text-[#1E1F2E]' : 'text-white'
-              }`}
-            >
-              S
-            </span>
-          </div>
+    {/* Replaced the 'S' circle and 'SAHER' text with the Saher logo image */}
+    <div className="flex items-center">
+      <img
+        src={theme === 'dark' ? logoSrcDark : logoSrcLight}
+        alt="Saher Logo"
+        className={`w-auto transition-all duration-300 ${
+          theme === 'dark' ? 'h-8 md:h-8' : 'h-20 md:h-24 lg:h-28'
+        }`}
+      />
+    </div>
+  </div>
 
-          <span className={`font-semibold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            SAHER
-          </span>
-        </div>
+
 
         {/* Navigation */}
         <nav className="flex items-center gap-1">
@@ -90,12 +85,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
       {/* Right side: Logo image, theme toggle, notifications, user */}
       <div className="flex items-center gap-3">
-        <img
-          src={theme === 'dark' ? logoSrcDark : logoSrcLight}
-          alt="Saher Flow Solutions"
-          className="h-8 w-auto"
-        />
-
+    
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}

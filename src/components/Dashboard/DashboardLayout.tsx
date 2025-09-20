@@ -40,7 +40,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className={`min-h-screen w-full flex ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen w-full relative ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
       {/* Sidebar Drawer - Always present */}
       <SidebarDrawer 
         onDeviceSelect={handleDeviceSelect}
@@ -53,9 +53,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       />
 
       {/* Main Content Container */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${
-        isSidebarOpen ? 'ml-64' : 'ml-0'
-      }`}>
+      <div className="w-full flex flex-col">
         {/* Header */}
         <DashboardHeader 
           activeTab={activeTab} 
