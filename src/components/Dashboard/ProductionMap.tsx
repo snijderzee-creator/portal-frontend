@@ -41,22 +41,24 @@ const ProductionMap: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#2A2D47] rounded-xl p-6">
+    <div className="bg-[#3C3F58] rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-white text-lg font-medium">Production Map - Saudi Arabia</h2>
+        <h2 className="text-white text-base font-medium">Production Map - Saudi Arabia</h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#4D3DF7]"></div>
-            <span className="text-gray-400 text-sm">Normal</span>
+            <div className="w-2 h-2 rounded-full bg-[#6366F1]"></div>
+            <span className="text-gray-400 text-xs">Normal</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#FE44CC]"></div>
-            <span className="text-gray-400 text-sm">Signal</span>
+            <div className="w-2 h-2 rounded-full bg-[#EC4899]"></div>
+            <span className="text-gray-400 text-xs">Signal</span>
           </div>
         </div>
       </div>
 
-      <div className="relative h-80 rounded-lg overflow-hidden bg-[#1E1F2E]">
+      <div className="grid grid-cols-3 gap-6">
+        {/* Map */}
+        <div className="col-span-2 relative h-64 rounded-lg overflow-hidden bg-[#2B2D42]">
         <MapContainer
           center={[24.7136, 46.6753]}
           zoom={6}
@@ -83,39 +85,42 @@ const ProductionMap: React.FC = () => {
           ))}
         </MapContainer>
 
-        {/* Map Controls */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2">
-          <button className="w-8 h-8 bg-[#2A2D47] rounded flex items-center justify-center text-white hover:bg-[#3A3D57]">
+          {/* Map Controls */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2">
+            <button className="w-8 h-8 bg-[#3C3F58] rounded flex items-center justify-center text-white hover:bg-[#4C4F68]">
             +
           </button>
-          <button className="w-8 h-8 bg-[#2A2D47] rounded flex items-center justify-center text-white hover:bg-[#3A3D57]">
-            ⛶
+            <button className="w-8 h-8 bg-[#3C3F58] rounded flex items-center justify-center text-white hover:bg-[#4C4F68]">
+              ⛶
           </button>
+          </div>
         </div>
-      </div>
 
-      {/* Statistics */}
-      <div className="mt-6 space-y-3">
-        <div className="text-white text-2xl font-bold">25</div>
-        <div className="text-gray-400 text-sm">Total Devices</div>
-        
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-4 h-4 bg-[#4D3DF7] rounded"></div>
-            <span className="text-white font-bold">15</span>
-            <span className="text-gray-400 text-sm">Active Alarms</span>
+        {/* Statistics */}
+        <div className="space-y-4">
+          <div className="text-center">
+            <div className="text-white text-4xl font-bold">25</div>
+            <div className="text-gray-400 text-sm">Total Devices</div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <div className="w-4 h-4 bg-[#10B981] rounded"></div>
-            <span className="text-white font-bold">15</span>
-            <span className="text-gray-400 text-sm">Online</span>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="w-4 h-4 bg-gray-600 rounded"></div>
-            <span className="text-white font-bold">15</span>
-            <span className="text-gray-400 text-sm">Offline</span>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-[#6366F1] rounded"></div>
+              <span className="text-white font-bold text-lg">15</span>
+              <span className="text-gray-400 text-sm">Active Alarms</span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-[#10B981] rounded"></div>
+              <span className="text-white font-bold text-lg">15</span>
+              <span className="text-gray-400 text-sm">Online</span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-gray-600 rounded"></div>
+              <span className="text-white font-bold text-lg">15</span>
+              <span className="text-gray-400 text-sm">Offline</span>
+            </div>
           </div>
         </div>
       </div>

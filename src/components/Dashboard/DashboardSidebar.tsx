@@ -229,10 +229,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           className={`flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors ${
             isSelected
               ? theme === 'dark'
-                ? 'bg-[#6656F5] text-white'
+                ? 'bg-[#6366F1] text-white'
                 : 'bg-[#F97316] text-white'
               : theme === 'dark'
-              ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white'
+              ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
               : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
           } ${
             level === 0
@@ -260,7 +260,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
           {isWell && hasDevices && (
             <span className={`text-xs px-2 py-1 rounded-full ${
-              theme === 'dark' ? 'bg-[#6656F5] text-white' : 'bg-[#F97316] text-white'
+              theme === 'dark' ? 'bg-[#6366F1] text-white' : 'bg-[#F97316] text-white'
             }`}>
               {wellDevices.length}
             </span>
@@ -298,10 +298,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
               className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors uppercase font-medium ${
                 isSelected
                   ? theme === 'dark'
-                    ? 'bg-[#6656F5] text-white'
+                    ? 'bg-[#6366F1] text-white'
                     : 'bg-[#F97316] text-white'
                   : theme === 'dark'
-                  ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white'
+                  ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
                   : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
               }`}
               onClick={() => {
@@ -348,20 +348,20 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   return (
     <div
-      className={`w-80 transition-colors ${
-        theme === 'dark' ? 'bg-[#162345]' : 'bg-white border-gray-200'
+      className={`w-64 transition-colors ${
+        theme === 'dark' ? 'bg-[#2B2D42]' : 'bg-white border-gray-200'
       }`}
     >
-      <div className="p-6">
+      <div className="p-4">
         <h1
-          className={`text-lg font-medium mb-4 tracking-wider ${
+          className={`text-base font-medium mb-4 tracking-wider ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}
         >
-          Global Production Map
+          Production Map
         </h1>
 
-        <div className="relative mb-2">
+        <div className="relative mb-4">
           <SearchIcon
             className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
@@ -369,9 +369,9 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           />
           <input
             placeholder="Search"
-            className={`w-full pl-10 h-10 rounded-lg border transition-colors ${
+            className={`w-full pl-10 h-9 rounded-lg border transition-colors ${
               theme === 'dark'
-                ? 'bg-[#162345] border-[#5e728a] text-white placeholder-gray-400 focus:border-[#526d8d]'
+                ? 'bg-[#2B2D42] border-gray-600 text-white placeholder-gray-400 focus:border-gray-500'
                 : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500 focus:border-gray-300'
             } focus:outline-none focus:ring-1 ${
               theme === 'dark' ? 'focus:ring-[]' : 'focus:ring-gray-300'
@@ -380,9 +380,9 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         </div>
       </div>
 
-      <div className="border-t border-gray-200 dark:border-[#364566] ">
+      <div className="border-t border-gray-600">
         <div
-          className={`max-h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin ${
+          className={`max-h-[calc(100vh-10rem)] overflow-y-auto scrollbar-thin ${
             theme === 'dark'
               ? 'scrollbar-thumb-white scrollbar-track-transparent'
               : 'scrollbar-thumb-[#38BF9D] scrollbar-track-transparent'

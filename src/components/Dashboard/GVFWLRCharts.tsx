@@ -26,25 +26,25 @@ const GVFWLRCharts: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#2A2D47] rounded-xl p-6">
+    <div className="bg-[#3C3F58] rounded-lg p-6">
       <div className="flex items-center gap-3 mb-6">
-        <h2 className="text-white text-lg font-medium">Average GVF/WLR</h2>
+        <h2 className="text-white text-base font-medium">Average GVF/WLR</h2>
         <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center">
           <span className="text-gray-400 text-xs">i</span>
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-around">
         {/* GVF Chart */}
-        <div className="relative w-48 h-48">
+        <div className="relative w-32 h-32">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={gvfData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={90}
+                innerRadius={40}
+                outerRadius={60}
                 startAngle={90}
                 endAngle={450}
                 dataKey="value"
@@ -57,21 +57,21 @@ const GVFWLRCharts: React.FC = () => {
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-white text-3xl font-bold">65%</span>
-            <span className="text-gray-400 text-sm">GVF</span>
+            <span className="text-white text-2xl font-bold">65%</span>
+            <span className="text-gray-400 text-xs">GVF</span>
           </div>
         </div>
 
         {/* WLR Chart */}
-        <div className="relative w-48 h-48">
+        <div className="relative w-32 h-32">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={wlrData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={90}
+                innerRadius={40}
+                outerRadius={60}
                 startAngle={90}
                 endAngle={450}
                 dataKey="value"
@@ -84,8 +84,8 @@ const GVFWLRCharts: React.FC = () => {
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-white text-3xl font-bold">85%</span>
-            <span className="text-gray-400 text-sm">WLR</span>
+            <span className="text-white text-2xl font-bold">85%</span>
+            <span className="text-gray-400 text-xs">WLR</span>
           </div>
         </div>
       </div>

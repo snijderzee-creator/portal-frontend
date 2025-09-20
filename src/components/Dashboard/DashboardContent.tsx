@@ -72,20 +72,72 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   };
 
   return (
-    <div className="flex-1 p-6 bg-[#1E1F2E] min-h-screen">
+    <div className="flex-1 p-6 bg-[#2B2D42] min-h-screen">
       {children || (
         <>
-          <MetricsCards />
+          {/* Metrics Cards */}
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="bg-[#3C3F58] rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm">🛢️</span>
+                </div>
+                <span className="text-gray-400 text-sm">Oil flow rate</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-white text-3xl font-bold">264.93</span>
+                <span className="text-gray-400 text-lg">bpd</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-400 text-sm">+35%</span>
+                <span className="text-gray-500 text-sm">vs last month</span>
+              </div>
+            </div>
+
+            <div className="bg-[#3C3F58] rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm">💧</span>
+                </div>
+                <span className="text-gray-400 text-sm">Water flow rate</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-white text-3xl font-bold">264.93</span>
+                <span className="text-gray-400 text-lg">bpd</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-400 text-sm">+35%</span>
+                <span className="text-gray-500 text-sm">vs last month</span>
+              </div>
+            </div>
+
+            <div className="bg-[#3C3F58] rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm">🔥</span>
+                </div>
+                <span className="text-gray-400 text-sm">Gas flow rate</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-white text-3xl font-bold">264.93</span>
+                <span className="text-gray-400 text-lg">bpd</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-400 text-sm">+35%</span>
+                <span className="text-gray-500 text-sm">vs last month</span>
+              </div>
+            </div>
+          </div>
           
           {/* Main Content Grid */}
           <div className="grid grid-cols-12 gap-6 mb-6">
             {/* Top Regions Chart */}
-            <div className="col-span-6">
+            <div className="col-span-7">
               <TopRegionsChart />
             </div>
             
             {/* GVF/WLR Charts */}
-            <div className="col-span-6">
+            <div className="col-span-5">
               <GVFWLRCharts />
             </div>
           </div>
@@ -96,7 +148,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           </div>
           
           {/* Flow Rate Charts */}
-          <FlowRateCharts />
+          <FlowRateCharts chartData={chartData} hierarchyChartData={hierarchyChartData} />
         </>
       )}
     </div>

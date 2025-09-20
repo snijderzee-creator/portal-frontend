@@ -20,64 +20,65 @@ const TopRegionsChart: React.FC = () => {
   const { theme } = useTheme();
 
   return (
-    <div className="bg-[#2A2D47] rounded-xl p-6">
+    <div className="bg-[#3C3F58] rounded-lg p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-white text-lg font-medium">Top Regions</h2>
-          <Info size={16} className="text-gray-400" />
+          <h2 className="text-white text-base font-medium">Top Regions</h2>
+          <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center">
+            <span className="text-gray-400 text-xs">i</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2 border border-gray-600 px-3 py-1 rounded-lg">
-          <ExternalLink size={16} className="text-gray-400 cursor-pointer hover:text-white" />
-          <MoreHorizontal size={16} className="text-gray-400 cursor-pointer hover:text-white" />
+        <div className="flex items-center gap-2 border border-gray-600 px-2 py-1 rounded-lg">
+          <ExternalLink size={14} className="text-gray-400 cursor-pointer hover:text-white" />
+          <MoreHorizontal size={14} className="text-gray-400 cursor-pointer hover:text-white" />
         </div>
       </div>
 
       {/* Subtitle */}
-      <p className="text-gray-400 text-sm mb-6">Comparison</p>
+      <p className="text-gray-400 text-xs mb-4">Comparison</p>
 
       {/* Legend */}
-      <div className="flex gap-8 mb-8">
+      <div className="flex gap-6 mb-6">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#4D3DF7]" />
-          <span className="text-white text-sm">Oil</span>
+          <div className="w-2 h-2 rounded-full bg-[#6366F1]" />
+          <span className="text-white text-xs">Oil</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#22D3EE]" />
-          <span className="text-white text-sm">Water</span>
+          <div className="w-2 h-2 rounded-full bg-[#06B6D4]" />
+          <span className="text-white text-xs">Water</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#FE44CC]" />
-          <span className="text-white text-sm">Gas</span>
+          <div className="w-2 h-2 rounded-full bg-[#EC4899]" />
+          <span className="text-white text-xs">Gas</span>
         </div>
       </div>
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={250}>
         <BarChart
           data={data}
-          margin={{ top: 20, right: 30, left: 10, bottom: 30 }}
+          margin={{ top: 10, right: 20, left: 10, bottom: 20 }}
           barCategoryGap="25%"
         >
           <CartesianGrid
-            stroke="#374151"
+            stroke="#4B5563"
             strokeDasharray="3 3"
             horizontal={true}
             vertical={false}
           />
           <XAxis
             dataKey="region"
-            stroke="#9CA3AF"
-            fontSize={14}
-            fontWeight={500}
-            tickMargin={15}
+            stroke="#6B7280"
+            fontSize={12}
+            tickMargin={10}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            stroke="#9CA3AF"
+            stroke="#6B7280"
             fontSize={12}
-            tickMargin={15}
+            tickMargin={10}
             axisLine={false}
             tickLine={false}
             domain={[0, 75000]}
@@ -92,21 +93,21 @@ const TopRegionsChart: React.FC = () => {
           />
           <Bar
             dataKey="oil"
-            fill="#4D3DF7"
+            fill="#6366F1"
             radius={[20, 20, 20, 20]}
-            barSize={24}
+            barSize={20}
           />
           <Bar
             dataKey="water"
-            fill="#22D3EE"
+            fill="#06B6D4"
             radius={[20, 20, 20, 20]}
-            barSize={24}
+            barSize={20}
           />
           <Bar
             dataKey="gas"
-            fill="#FE44CC"
+            fill="#EC4899"
             radius={[20, 20, 20, 20]}
-            barSize={24}
+            barSize={20}
           />
         </BarChart>
       </ResponsiveContainer>
