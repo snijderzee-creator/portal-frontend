@@ -41,7 +41,7 @@ const AlarmsTable: React.FC = () => {
   ];
 
   return (
-    <div className={`rounded-lg ${
+    <div className={`rounded-lg h-full ${
       theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
     }`}>
       <div className="p-6">

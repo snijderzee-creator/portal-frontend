@@ -91,7 +91,7 @@ const DevicesPage: React.FC = () => {
   }
 
   return (
-    <div className={`p-6 min-h-screen ${
+    <div className={`p-6 min-h-full overflow-y-auto ${
       theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
     }`}>
       {/* Header */}

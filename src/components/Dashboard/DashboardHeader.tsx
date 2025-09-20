@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Bell, User } from 'lucide-react';
+import { Moon, Bell, User, Menu } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 
 interface DashboardHeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onToggleSidebar?: () => void;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   activeTab,
   setActiveTab,
+  onToggleSidebar,
 }) => {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -31,6 +33,18 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       <div className="flex items-center gap-8">
         {/* Logo */}
         <div className="flex items-center gap-2">
+          {onToggleSidebar && (
+            <button
+              onClick={onToggleSidebar}
+              className={`lg:hidden p-2 rounded-lg transition-colors ${
+                theme === 'dark'
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          )}
           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
             theme === 'dark' ? 'bg-white' : 'bg-[#1E1F2E]'
           }`}>
