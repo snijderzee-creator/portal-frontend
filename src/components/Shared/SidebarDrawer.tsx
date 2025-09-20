@@ -340,25 +340,16 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
   };
 
   return (
-    <>
-      {/* Overlay for mobile and desktop when drawer is open */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onToggle}
-        />
-      )}
-
-      {/* Sidebar Drawer */}
-      <div
-        className={`fixed top-0 left-0 h-screen z-50 transition-all duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } ${
-          theme === 'dark'
-            ? 'bg-[#1E1F2E] border-r border-[#2A2D47]'
-            : 'bg-white border-r border-gray-200'
-        } w-64 flex flex-col`}
-      >
+    <div
+      className={`h-screen z-40 transition-all duration-300 ease-in-out ${
+        isOpen ? 'w-64' : 'w-0'
+      } ${
+        theme === 'dark'
+          ? 'bg-[#1E1F2E] border-r border-[#2A2D47]'
+          : 'bg-white border-r border-gray-200'
+      } flex flex-col overflow-hidden`}
+    >
+      <div className={`w-64 h-full flex flex-col ${isOpen ? 'block' : 'hidden'}`}>
         {/* Header with close button */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#2A2D47]">
           <h1 className={`text-base font-medium tracking-wider ${
@@ -400,7 +391,7 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           {renderCompanyHierarchy()}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

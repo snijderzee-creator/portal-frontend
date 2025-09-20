@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Moon, Bell, User, Menu } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
@@ -23,12 +23,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     { label: 'Alarms', active: false },
   ];
 
+  const logoSrcDark =
+    'https://res.cloudinary.com/drnak5yb2/image/upload/v1756798056/output-onlinepngtools_1_gybrdb.png';
+  const logoSrcLight =
+    'https://res.cloudinary.com/drnak5yb2/image/upload/v1755589239/output-onlinepngtools_fnkcov.png';
+
   return (
-    <header className={`w-full h-16 px-6 flex items-center justify-between border-b ${
-      theme === 'dark' 
-        ? 'bg-[#1E1F2E] border-gray-700' 
-        : 'bg-white border-gray-200'
-    }`}>
+    <header
+      className={`w-full h-16 px-6 flex items-center justify-between border-b flex-shrink-0 ${
+        theme === 'dark' ? 'bg-[#1E1F2E] border-gray-700' : 'bg-white border-gray-200'
+      }`}
+    >
       {/* Left side: Logo + Navigation */}
       <div className="flex items-center gap-8">
         {/* Logo and Menu Button */}
@@ -43,16 +48,24 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            theme === 'dark' ? 'bg-white' : 'bg-[#1E1F2E]'
-          }`}>
-            <span className={`font-bold text-sm ${
-              theme === 'dark' ? 'text-[#1E1F2E]' : 'text-white'
-            }`}>S</span>
+
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              theme === 'dark' ? 'bg-white' : 'bg-[#1E1F2E]'
+            }`}
+          >
+            <span
+              className={`font-bold text-sm ${
+                theme === 'dark' ? 'text-[#1E1F2E]' : 'text-white'
+              }`}
+            >
+              S
+            </span>
           </div>
-          <span className={`font-semibold text-lg ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>SAHER</span>
+
+          <span className={`font-semibold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            SAHER
+          </span>
         </div>
 
         {/* Navigation */}
@@ -75,40 +88,43 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </nav>
       </div>
 
-      {/* Right side: Time + Controls */}
-      <div className="flex items-center gap-6">
-        {/* Controls */}
-        <div className="flex items-center gap-3">
-          {/* Theme Toggle */}
-          <button 
-            onClick={toggleTheme}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-              theme === 'dark'
-                ? 'bg-gray-700 text-gray-400 hover:text-white'
-                : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <Moon className="h-5 w-5" />
-          </button>
+      {/* Right side: Logo image, theme toggle, notifications, user */}
+      <div className="flex items-center gap-3">
+        <img
+          src={theme === 'dark' ? logoSrcDark : logoSrcLight}
+          alt="Saher Flow Solutions"
+          className="h-8 w-auto"
+        />
 
-          {/* Notifications */}
-          <button className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors relative ${
-            theme === 'dark'
-              ? 'bg-gray-700 text-gray-400 hover:text-white'
-              : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-          }`}>
-            <Bell className="h-5 w-5" />
-            <div className="absolute -top-1 -right-1 h-3 w-3 bg-[#6366F1] rounded-full"></div>
-          </button>
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+            theme === 'dark' ? 'bg-gray-700 text-gray-400 hover:text-white' : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          <Moon className="h-5 w-5" />
+        </button>
 
-          {/* User Avatar */}
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+        {/* Notifications */}
+        <button
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors relative ${
+            theme === 'dark' ? 'bg-gray-700 text-gray-400 hover:text-white' : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          <Bell className="h-5 w-5" />
+          <div className="absolute -top-1 -right-1 h-3 w-3 bg-[#6366F1] rounded-full"></div>
+        </button>
+
+        {/* User Avatar */}
+        <div
+          className={`w-10 h-10 rounded-full flex items-center justify-center ${
             theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'
-          }`}>
-            <User className={`h-5 w-5 ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`} />
-          </div>
+          }`}
+        >
+          <User
+            className={`h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+          />
         </div>
       </div>
     </header>
