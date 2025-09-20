@@ -20,117 +20,63 @@ const TopRegionsChart: React.FC = () => {
   const { theme } = useTheme();
 
   return (
-    <div>
+    <div className="bg-[#2A2D47] rounded-xl p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <h2
-            className={`text-xl font-semibold ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Top Regions
-          </h2>
-          <Info
-            size={18}
-            className={theme === 'dark' ? 'text-[#A2AED4]' : 'text-[#555758]'}
-          />
+          <h2 className="text-white text-lg font-medium">Top Regions</h2>
+          <Info size={16} className="text-gray-400" />
         </div>
-        <div
-          className={`flex items-center gap-2 border px-3 py-2 rounded-lg ${
-            theme === 'dark'
-              ? 'text-[#A2AED4] border-[#A2AED4]'
-              : 'text-[#555758] border-[#ececec]'
-          }`}
-        >
-          <ExternalLink
-            size={18}
-            className={`cursor-pointer ${
-              theme === 'dark' ? 'hover:text-white' : 'hover:text-gray-900'
-            }`}
-          />
-          <MoreHorizontal
-            size={18}
-            className={`cursor-pointer ${
-              theme === 'dark' ? 'hover:text-white' : 'hover:text-gray-900'
-            }`}
-          />
+        <div className="flex items-center gap-2 border border-gray-600 px-3 py-1 rounded-lg">
+          <ExternalLink size={16} className="text-gray-400 cursor-pointer hover:text-white" />
+          <MoreHorizontal size={16} className="text-gray-400 cursor-pointer hover:text-white" />
         </div>
       </div>
 
       {/* Subtitle */}
-      <p
-        className={`text-lg mb-3 ${
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-        }`}
-      >
-        Comparison
-      </p>
+      <p className="text-gray-400 text-sm mb-6">Comparison</p>
 
       {/* Legend */}
       <div className="flex gap-8 mb-8">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-[#4D3DF7]" />
-          <span
-            className={`text-lg font-medium ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Oil
-          </span>
+          <span className="text-white text-sm">Oil</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-[#22D3EE]" />
-          <span
-            className={`text-lg font-medium ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Water
-          </span>
+          <span className="text-white text-sm">Water</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-[#FE44CC]" />
-          <span
-            className={`text-lg font-medium ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Gas
-          </span>
+          <span className="text-white text-sm">Gas</span>
         </div>
       </div>
 
       {/* Chart */}
-      <ResponsiveContainer
-        width="100%"
-        height={300}
-        style={{ outline: 'none', border: 'none' }}
-      >
+      <ResponsiveContainer width="100%" height={300}>
         <BarChart
-          className="focus:outline-none"
           data={data}
           margin={{ top: 20, right: 30, left: 10, bottom: 30 }}
           barCategoryGap="25%"
         >
           <CartesianGrid
-            stroke={theme === 'dark' ? '#334155' : '#E5E7EB'}
+            stroke="#374151"
             strokeDasharray="3 3"
             horizontal={true}
             vertical={false}
           />
           <XAxis
             dataKey="region"
-            stroke={theme === 'dark' ? '#94A3B8' : '#6B7280'}
-            fontSize={16}
+            stroke="#9CA3AF"
+            fontSize={14}
             fontWeight={500}
             tickMargin={15}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            stroke={theme === 'dark' ? '#94A3B8' : '#6B7280'}
-            fontSize={14}
+            stroke="#9CA3AF"
+            fontSize={12}
             tickMargin={15}
             axisLine={false}
             tickLine={false}
@@ -149,7 +95,6 @@ const TopRegionsChart: React.FC = () => {
             fill="#4D3DF7"
             radius={[20, 20, 20, 20]}
             barSize={24}
-            tabIndex={-1}
           />
           <Bar
             dataKey="water"

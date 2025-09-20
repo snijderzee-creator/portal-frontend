@@ -26,106 +26,78 @@ const MetricsCards: React.FC = () => {
     loadDashboardData();
   }, [token]);
 
-  // Safe formatter that won't throw on undefined/null
-  const formatValue = (v: unknown) => {
-    if (v == null) return '0';
-    if (typeof v === 'number') return new Intl.NumberFormat().format(v);
-    return String(v);
-  };
-
-  const metricsData = React.useMemo(() => {
-    if (!dashboardData?.statistics) {
-      return [
-        { value: "72,150m³", label: "Total Production", color: theme === 'dark' ? 'text-white' : 'text-gray-900' },
-        { value: "96%", label: "Uptime", color: theme === 'dark' ? 'text-white' : 'text-gray-900' },
-        { value: "0", label: "Total Devices", color: theme === 'dark' ? 'text-white' : 'text-gray-900' },
-        { value: "0", label: "Total Locations", color: theme === 'dark' ? 'text-white' : 'text-gray-900' },
-      ];
+  const metricsData = [
+    {
+      icon: '🛢️',
+      title: 'Oil flow rate',
+      value: '264.93',
+      unit: 'bpd',
+      change: '+35%',
+      changeText: 'vs last month',
+      changeColor: 'text-green-400'
+    },
+    {
+      icon: '💧',
+      title: 'Water flow rate',
+      value: '264.93',
+      unit: 'bpd',
+      change: '+35%',
+      changeText: 'vs last month',
+      changeColor: 'text-green-400'
+    },
+    {
+      icon: '🔥',
+      title: 'Gas flow rate',
+      value: '264.93',
+      unit: 'bpd',
+      change: '+35%',
+      changeText: 'vs last month',
+      changeColor: 'text-green-400'
     }
+  ];
 
-    const stats = dashboardData.statistics;
-
-    return [
-      {
-        value: "72,150m³",
-        label: "Total Production",
-        color: theme === 'dark' ? 'text-white' : 'text-gray-900',
-      },
-      {
-        value: formatValue(stats.totalDevices),
-        label: "Total Devices",
-        color: theme === 'dark' ? 'text-white' : 'text-gray-900',
-      },
-      {
-        value: formatValue(stats.totalLocations),
-        label: "Total Locations",
-        color: theme === 'dark' ? 'text-white' : 'text-gray-900',
-      },
-      {
-        value: formatValue(stats.regions + stats.areas + stats.fields + stats.wells),
-        label: "Hierarchy Nodes",
-        color: theme === 'dark' ? 'text-white' : 'text-gray-900',
-      },
-    ];
-  }, [dashboardData, theme]);
+  // Current time display
+  const currentTime = new Date().toLocaleString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).replace(/[/]/g, '.').replace(',', ':');
 
   return (
-    <div className="grid grid-cols-5 gap-4 mb-6">
-      {metricsData.map((metric, index) => (
-        <div
-          key={index}
-          className={`rounded-lg border p-6 ${
-            theme === 'dark'
-              ? 'bg-[#162345] border-none'
-              : 'bg-white border-gray-200'
-          }`}
-        >
-          <div className={`text-2xl font-bold mb-2 ${metric.color}`}>
-            {metric.value}
-          </div>
+    <div className="flex justify-between items-start mb-8">
+      {/* Metrics Cards */}
+      <div className="flex gap-6">
+        {metricsData.map((metric, index) => (
           <div
-            className={`text-sm font-medium ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}
+            key={index}
+            className="bg-[#2A2D47] rounded-xl p-6 min-w-[280px]"
           >
-            {metric.label}
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">{metric.icon}</span>
+              <span className="text-gray-400 text-sm">{metric.title}</span>
+            </div>
+            
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-white text-3xl font-bold">{metric.value}</span>
+              <span className="text-gray-400 text-lg">{metric.unit}</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${metric.changeColor}`}>{metric.change}</span>
+              <span className="text-gray-500 text-sm">{metric.changeText}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      {/* Timeframe Card */}
-      <div
-        className={`rounded-lg border p-6 flex items-center gap-4 ${
-          theme === 'dark'
-            ? 'bg-[#162345] border-none'
-            : 'bg-white border-gray-200'
-        }`}
-      >
-        <CalendarIcon
-          className={`h-8 w-8 ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}
-        />
-        <div>
-          <div
-            className={`text-sm font-medium mb-1 ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}
-          >
-            Timeframe
-          </div>
-          <div
-            className={`text-lg font-bold flex items-center gap-2 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            October 2025
-            <ChevronDownIcon
-              className={`h-4 w-4 ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-              }`}
-            />
-          </div>
+      {/* Time Display */}
+      <div className="text-right">
+        <div className="text-white text-4xl font-mono font-bold">
+          {currentTime}
         </div>
       </div>
     </div>

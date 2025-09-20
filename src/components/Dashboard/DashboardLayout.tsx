@@ -14,37 +14,29 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { theme } = useTheme();
-  const [activeTab, setActiveTab] = useState('Dashboard'); // <-- moved here
+  const [activeTab, setActiveTab] = useState('Dashboard');
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [selectedHierarchy, setSelectedHierarchy] = useState<any>(null);
 
   const handleDeviceSelect = (device: Device) => {
     setSelectedDevice(device);
-    setSelectedHierarchy(null); // Clear hierarchy selection when device is selected
-    // Stay on Dashboard tab when a device is selected to show charts
+    setSelectedHierarchy(null);
     setActiveTab('Dashboard');
   };
 
   const handleHierarchySelect = (hierarchy: any) => {
     setSelectedHierarchy(hierarchy);
-    setSelectedDevice(null); // Clear device selection when hierarchy is selected
-    // Stay on Dashboard tab when a hierarchy is selected to show charts
+    setSelectedDevice(null);
     setActiveTab('Dashboard');
   };
 
   const handleInitialHierarchyLoad = (hierarchy: any) => {
-    // Auto-select the first hierarchy for initial chart loading
     setSelectedHierarchy(hierarchy);
     setSelectedDevice(null);
   };
 
   return (
-    <div
-      className={`min-h-screen w-full ${
-        theme === 'dark' ? 'bg-[#0F172A]' : 'bg-[#F8FAFC]'
-      }`}
-    >
-      {/* Pass state + setter to header */}
+    <div className="min-h-screen w-full bg-[#1E1F2E]">
       <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="flex">
@@ -57,7 +49,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         />
 
         {/* Switch content based on activeTab */}
-        <div className="flex-1 p-6">
+        <div className="flex-1">
           {activeTab === 'Dashboard' && (
             <DashboardContent 
               selectedDevice={selectedDevice} 
@@ -65,16 +57,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             />
           )}
           {activeTab === 'Alarms' && (
-            <div className="space-y-6">
-              <h2 className={`text-2xl font-bold ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              }`}>
-                Alarms & Notifications
-              </h2>
-              <AlarmsTable />
+            <div className="p-6 bg-[#1E1F2E] min-h-screen">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-white">
+                  Alarms & Notifications
+                </h2>
+                <AlarmsTable />
+              </div>
             </div>
           )}
-          {activeTab === 'Devices' && <DevicesPage />}
+          {activeTab === 'Devices' && (
+            <div className="p-6 bg-[#1E1F2E] min-h-screen">
+              <DevicesPage />
+            </div>
+          )}
         </div>
       </div>
     </div>
