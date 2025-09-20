@@ -341,44 +341,46 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
 
   return (
     <>
-      {/* Mobile Toggle Button */}
-      <button
-        onClick={onToggle}
-        className={`lg:hidden fixed top-20 left-4 z-50 p-2 rounded-lg shadow-lg transition-colors ${
-          theme === 'dark'
-            ? 'bg-[#2A2D47] text-white hover:bg-[#3A3D57]'
-            : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
-        }`}
-      >
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile and desktop when drawer is open */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={onToggle}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar Drawer */}
       <div
-        className={`fixed lg:relative top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed top-0 left-0 h-screen z-50 transition-all duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
         } ${
           theme === 'dark'
             ? 'bg-[#1E1F2E] border-r border-[#2A2D47]'
             : 'bg-white border-r border-gray-200'
-        } w-64`}
+        } w-64 flex flex-col`}
       >
-        <div className="p-4">
-          <h1 className={`text-base font-medium mb-4 tracking-wider ${
+        {/* Header with close button */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#2A2D47]">
+          <h1 className={`text-base font-medium tracking-wider ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
             Production Map
           </h1>
+          <button
+            onClick={onToggle}
+            className={`p-1.5 rounded-lg transition-colors ${
+              theme === 'dark'
+                ? 'text-gray-400 hover:text-white hover:bg-[#2A2D47]'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
+          >
+            <X size={18} />
+          </button>
+        </div>
 
-          <div className="relative mb-4">
+        {/* Search */}
+        <div className="p-4 border-b border-gray-200 dark:border-[#2A2D47]">
+          <div className="relative">
             <SearchIcon className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
             }`} />
@@ -393,12 +395,9 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           </div>
         </div>
 
-        <div className={`border-t ${
-          theme === 'dark' ? 'border-[#2A2D47]' : 'border-gray-200'
-        }`}>
-          <div className="h-[calc(100vh-10rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
-            {renderCompanyHierarchy()}
-          </div>
+        {/* Scrollable content area - takes remaining space */}
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+          {renderCompanyHierarchy()}
         </div>
       </div>
     </>

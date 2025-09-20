@@ -16,7 +16,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [selectedHierarchy, setSelectedHierarchy] = useState<any>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleDeviceSelect = (device: Device) => {
     setSelectedDevice(device);
@@ -41,68 +41,43 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div className={`min-h-screen w-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
-      <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      <DashboardHeader 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        onToggleSidebar={toggleSidebar}
+      />
 
-      {/* Switch content based on activeTab */}
-      {activeTab === 'Dashboard' && (
-        <div className="flex h-[calc(100vh-4rem)] relative">
-          <SidebarDrawer 
-            onDeviceSelect={handleDeviceSelect}
-            onHierarchySelect={handleHierarchySelect}
-            onInitialHierarchyLoad={handleInitialHierarchyLoad}
-            selectedDeviceId={selectedDevice?.id}
-            selectedHierarchyId={selectedHierarchy?.id}
-            isOpen={isSidebarOpen}
-            onToggle={toggleSidebar}
+      {/* Sidebar Drawer - Always present */}
+      <SidebarDrawer 
+        onDeviceSelect={handleDeviceSelect}
+        onHierarchySelect={handleHierarchySelect}
+        onInitialHierarchyLoad={handleInitialHierarchyLoad}
+        selectedDeviceId={selectedDevice?.id}
+        selectedHierarchyId={selectedHierarchy?.id}
+        isOpen={isSidebarOpen}
+        onToggle={toggleSidebar}
+      />
+
+      {/* Main Content Area */}
+      <div className="h-[calc(100vh-4rem)] w-full">
+        {/* Switch content based on activeTab */}
+        {activeTab === 'Dashboard' && (
+          <DashboardContent 
+            selectedDevice={selectedDevice} 
+            selectedHierarchy={selectedHierarchy}
           />
-          <div className={`flex-1 transition-all duration-300 ${
-            isSidebarOpen ? 'lg:ml-0' : 'lg:ml-0'
-          }`}>
-            <DashboardContent 
-              selectedDevice={selectedDevice} 
-              selectedHierarchy={selectedHierarchy}
-            />
+        )}
+        
+        {activeTab === 'Devices' && (
+          <DevicesPage />
+        )}
+        
+        {activeTab === 'Alarms' && (
+          <div className={`p-6 min-h-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
+            <AlarmsTable />
           </div>
-        </div>
-      )}
-      
-      {activeTab === 'Devices' && (
-        <div className="flex h-[calc(100vh-4rem)] relative">
-          <SidebarDrawer 
-            onDeviceSelect={handleDeviceSelect}
-            onHierarchySelect={handleHierarchySelect}
-            selectedDeviceId={selectedDevice?.id}
-            selectedHierarchyId={selectedHierarchy?.id}
-            isOpen={isSidebarOpen}
-            onToggle={toggleSidebar}
-          />
-          <div className={`flex-1 transition-all duration-300 ${
-            isSidebarOpen ? 'lg:ml-0' : 'lg:ml-0'
-          }`}>
-            <DevicesPage />
-          </div>
-        </div>
-      )}
-      
-      {activeTab === 'Alarms' && (
-        <div className="flex h-[calc(100vh-4rem)] relative">
-          <SidebarDrawer 
-            onDeviceSelect={handleDeviceSelect}
-            onHierarchySelect={handleHierarchySelect}
-            selectedDeviceId={selectedDevice?.id}
-            selectedHierarchyId={selectedHierarchy?.id}
-            isOpen={isSidebarOpen}
-            onToggle={toggleSidebar}
-          />
-          <div className={`flex-1 transition-all duration-300 ${
-            isSidebarOpen ? 'lg:ml-0' : 'lg:ml-0'
-          }`}>
-            <div className={`p-6 min-h-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
-              <AlarmsTable />
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
