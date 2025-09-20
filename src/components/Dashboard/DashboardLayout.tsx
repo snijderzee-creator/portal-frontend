@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import SidebarDrawer from '../Shared/SidebarDrawer';
@@ -93,6 +92,3 @@ export default DashboardLayout;
 
 
 
-=======
-{"code":"rate-limited","message":"You have hit the rate limit. Please upgrade to keep chatting.","providerLimitHit":false,"isRetryable":true}
->>>>>>> cd7b4b6a768ba3ee2bfc05f500a687d148551ac0
