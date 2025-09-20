@@ -3,7 +3,7 @@ import { useTheme } from '../../hooks/useTheme';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardContent from './DashboardContent';
 import { Device } from '../../services/api';
-import NewDashboardHeader from './NewDashboardHeader';
+import DashboardHeader from './DashboardHeader';
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -33,8 +33,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#2B2D42]">
-      <NewDashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="min-h-screen w-full bg-[#1E1F2E]">
+      <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="flex">
         <DashboardSidebar 

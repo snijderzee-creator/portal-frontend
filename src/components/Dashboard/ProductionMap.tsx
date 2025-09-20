@@ -41,7 +41,7 @@ const ProductionMap: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#3C3F58] rounded-lg p-6">
+    <div className="bg-[#2A2D47] rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-white text-base font-medium">Production Map - Saudi Arabia</h2>
         <div className="flex items-center gap-4">
@@ -58,41 +58,41 @@ const ProductionMap: React.FC = () => {
 
       <div className="grid grid-cols-3 gap-6">
         {/* Map */}
-        <div className="col-span-2 relative h-64 rounded-lg overflow-hidden bg-[#2B2D42]">
-        <MapContainer
-          center={[24.7136, 46.6753]}
-          zoom={6}
-          style={{ height: '100%', width: '100%' }}
-          className="z-10"
-        >
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          />
+        <div className="col-span-2 relative h-64 rounded-lg overflow-hidden bg-[#1E1F2E]">
+          <MapContainer
+            center={[24.7136, 46.6753]}
+            zoom={6}
+            style={{ height: '100%', width: '100%' }}
+            className="z-10"
+          >
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            />
 
-          {locations.map((location) => (
-            <Marker
-              key={location.id}
-              position={[location.lat, location.lng]}
-              icon={createCustomIcon(location.color)}
-            >
-              <Popup className="dark-popup">
-                <div className="p-2 text-white bg-[#1E1F2E]">
-                  <div className="font-semibold">{location.name}</div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+            {locations.map((location) => (
+              <Marker
+                key={location.id}
+                position={[location.lat, location.lng]}
+                icon={createCustomIcon(location.color)}
+              >
+                <Popup className="dark-popup">
+                  <div className="p-2 text-white bg-[#1E1F2E]">
+                    <div className="font-semibold">{location.name}</div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
 
           {/* Map Controls */}
           <div className="absolute top-4 right-4 flex flex-col gap-2">
-            <button className="w-8 h-8 bg-[#3C3F58] rounded flex items-center justify-center text-white hover:bg-[#4C4F68]">
-            +
-          </button>
-            <button className="w-8 h-8 bg-[#3C3F58] rounded flex items-center justify-center text-white hover:bg-[#4C4F68]">
+            <button className="w-8 h-8 bg-[#2A2D47] rounded flex items-center justify-center text-white hover:bg-[#3A3D57]">
+              +
+            </button>
+            <button className="w-8 h-8 bg-[#2A2D47] rounded flex items-center justify-center text-white hover:bg-[#3A3D57]">
               ⛶
-          </button>
+            </button>
           </div>
         </div>
 

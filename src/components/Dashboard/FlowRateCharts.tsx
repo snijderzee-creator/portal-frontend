@@ -24,7 +24,7 @@ interface SingleFlowRateChartProps {
 
 const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({ title, unit, data, dataKey }) => {
   return (
-    <div className="bg-[#3C3F58] rounded-lg p-4">
+    <div className="bg-[#2A2D47] rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <h3 className="text-white text-sm font-medium">{title} ({unit})</h3>

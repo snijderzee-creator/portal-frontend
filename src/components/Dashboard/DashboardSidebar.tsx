@@ -118,9 +118,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   };
 
   const getIconComponent = (level: string) => {
-    const iconClass = `w-[21px] h-[21px] bg-no-repeat bg-center bg-contain ${
-      theme === 'dark' ? 'filter brightness-0 invert' : ''
-    }`;
+    const iconClass = `w-[16px] h-[16px] bg-no-repeat bg-center bg-contain filter brightness-0 invert`;
     
     switch (level) {
       case "Region":
@@ -128,7 +126,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <div 
             className={iconClass}
             style={{ 
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTg1NC40IDgwMC45Yy4yLS4zLjUtLjYuNy0uOUM5MjAuNiA3MjIuMSA5NjAgNjIxLjcgOTYwIDUxMnMtMzkuNC0yMTAuMS0xMDQuOC0yODhjLS4yLS4zLS41LS41LS43LS44Yy0xLjEtMS4zLTIuMS0yLjUtMy4yLTMuN2MtLjQtLjUtLjgtLjktMS4yLTEuNGwtNC4xLTQuN2wtLjEtLjFjLTEuNS0xLjctMy4xLTMuNC00LjYtNS4xbC0uMS0uMWMtMy4yLTMuNC02LjQtNi44LTkuNy0xMC4xbC0uMS0uMWwtNC44LTQuOGwtLjMtLjNjLTEuNS0xLjUtMy0yLjktNC41LTQuM2MtLjUtLjUtMS0xLTEuNi0xLjVjLTEtMS0yLTEuOS0zLTIuOGMtLjMtLjMtLjctLjYtMS0xQzczNi40IDEwOS4yIDYyOS41IDY0IDUxMiA2NHMtMjI0LjQgNDUuMi0zMDQuMyAxMTkuMmMtLjMuMy0uNy42LTEgMWMtMSAuOS0yIDEuOS0zIDIuOWMtLjUuNS0xIDEtMS42IDEuNWMtMS41IDEuNC0zIDIuOS00LjUgNC4zbC0uMy4zbC00LjggNC44bC0uMS4xYy0zLjMgMy4zLTYuNSA2LjctOS43IDEwLjFsLS4xLjFjLTEuNiAxLjctMy4xIDMuNC00LjYgNS4xbC0uMS4xYy0xLjQgMS41LTIuOCAzLjEtNC4xIDQuN2MtLjQuNS0uOC45LTEuMiAxLjRjLTEuMSAxLjItMi4xIDIuNS0zLjIgMy43Yy0uMi4zLS41LjUtLjcuOEMxMDMuNCAzMDEuOSA2NCA0MDIuMyA2NCA1MTJzMzkuNCAyMTAuMSAxMDQuOCAyODhjLjIuMy41LjYuNy45bDMuMSAzLjdjLjQuNS44LjkgMS4yIDEuNGw0LjEgNC43YzAgLjEuMS4xLjEuMmMxLjUgMS43IDMgMy40IDQuNiA1bC4xLjFjMy4yIDMuNCA2LjQgNi44IDkuNiAxMC4xbC4xLjFjMS42IDEuNiAzLjEgMy4yIDQuNyA0LjdsLjMuM2MzLjMgMy4zIDYuNyA2LjUgMTAuMSA5LjZjODAuMSA3NCAxODcgMTE5LjIgMzA0LjUgMTE5LjJzMjI0LjQtNDUuMiAzMDQuMy0xMTkuMmEzMDAgMzAwIDAgMCAwIDEwLTkuNmwuMy0uM2MxLjYtMS42IDMuMi0zLjEgNDcuNy00LjdsLjEtLjFjMy4zLTMuMyA2LjUtNi43IDkuNi0xMC4xbC4xLS4xYzEuNS0xLjcgMy4xLTMuMyA0LjYtNWMwLS4xLjEtLjEuMS0uMmMxLjQtMS41IDIuOC0zLjEgNC4xLTQuN2MuNC0uNS44LS45IDEuMi0xLjRhOTkgOTkgMCAwIDAgMy4zLTMuN200LjEtMTQyLjZjLTEzLjggMzIuNi0zMiA2Mi44LTU0LjIgOTAuMmE0NDQgNDQ0IDAgMCAwLTgxLjUtNTUuOWMxMS42LTQ2LjkgMTguOC05OC40IDIwLjctMTUyLjZIODg3Yy0zIDQwLjktMTIuNiA4MC42LTI4LjUgMTE4LjNNODg3IDQ4NEg3NDMuNWMtMS45LTU0LjItOS4xLTEwNS43LTIwLjctMTUyLjZjMjkuMy0xNS42IDU2LjYtMzQuNCA4MS41LTU1LjlBMzczLjg2IDM3My44NiAwIDAgMSA4ODcgNDg0TTY1OC4zIDE2NS41YzM5LjcgMTYuOCA3NS44IDQwIDEwNy42IDY5LjJhMzk0LjcgMzk0LjcgMCAwIDEtNTkuNCA0MS44Yy0xNS43LTQ1LTM1LjgtODQuMS01OS4yLTExNS40YzMuNyAxLjQgNy40IDIuOSAxMSA0LjRtLTkwLjYgNzAwLjZjLTkuMiA3LjItMTguNCA4LjctMjcuNyAxNi40VjY5N2EzODkuMSAzODkuMSAwIDAgMSAxMTUuNyAyNi4yYy04LjMgMjQuNi0xNy45IDQ3LjMtMjkgNjcuOGMtMTcuNCAzMi40LTM3LjggNTguMy01OSA3NS4xbTU5LTYzMy4xYzExIDIwLjYgMjAuNyA0My4zIDI5IDY3LjhBMzg5LjEgMzg5LjEgMCAwIDEgNTQwIDMyN1YxNDEuNmM5LjIgMy43IDE4LjUgOS4xIDI3LjcgMTYuNGMyMS4yIDE2LjcgNDEuNiA0Mi42IDU5IDc1TTU0MCA2NDAuOVY1NDBoMTQ3LjVjLTEuNiA0NC4yLTcuMSA4Ny4xLTE2LjMgMTI3LjhsLS4zIDEuMkE0NDUgNDQ1IDAgMCAwIDU0MCA2NDAuOW0wLTE1Ni45VjM4My4xYzQ1LjgtMi44IDg5LjgtMTIuNSAxMzAuOS0yOC4xbC4zIDEuMmM5LjIgNDAuNyAxNC43IDgzLjUgMTYuMyAxMjcuOHptLTU2IDU2djEwMC45Yy00NS44IDIuOC04OS44IDEyLjUtMTMwLjkgMjguMWwtLjMtMS4yYy05LjItNDAuNy0xNC43LTgzLjUtMTYuMy0xMjcuOHptLTE0Ny41LTU2YzEuNi00NC4yIDcuMS04Ny4xIDE2LjMtMTI3LjhsLjMtMS4yYzQxLjEgMTUuNiA4NSAyNS4zIDEzMC45IDI4LjFWNDg0ek00ODQgNjk3djE4NS40Yy05LjItMy43LTE4LjUtOS4xLTI3LjctMTYuNGMtMjEuMi0xNi43LTQxLjctNDIuNy01OS4xLTc1LjFjLTExLTIwLjYtMjAuNy00My4zLTI5LTY3LjhjMzcuMi0xNC42IDc1LjktMjMuMyAxMTUuOC0yNi4xbTAtMzcwYTM4OS4xIDM4OS4xIDAgMCAxLTExNS43LTI2LjJjOC4zLTI0LjYgMTcuOS00Ny4zIDI5LTY3LjhjMTcuNC0zMi40IDM3LjgtNTguNCA1OS4xLTc1LjFjOS4yLTcuMiAxOC40LTEyLjcgMjcuNy0xNi40VjMyN3pNMzY1LjcgMTY1LjVjMy43LTEuNSA3LjMtMyAxMS00LjRjLTIzLjQgMzEuMy00My41IDcwLjQtNTkuMiAxMTUuNGMtMjEtMTItNDAuOS0yNi01OS40LTQxLjhjMzEuOC0yOS4yIDY3LjktNTIuNCAxMDcuNi02OS4yTTE2NS41IDM2NS43YzEzLjgtMzIuNiAzMi02Mi44IDU0LjItOTAuMmMyNC45IDIxLjUgNTIuMiA0MC4zIDgxLjUgNTUuOWMtMTEuNiA0Ni45LTE4LjggOTguNC0yMC43IDE1Mi42SDEzN2MzLTQwLjkgMTIuNi04MC42IDI4LjUtMTE4LjNNMTM3IDU0MGgxNDMuNWMxLjkgNTQuMiA5LjEgMTA1LjcgMjAuNyAxNTIuNmE0NDQgNDQ0IDAgMCAwLTgxLjUgNTUuOUEzNzMuODYgMzczLjg2IDAgMCAxIDEzNyA1NDBtMjI4LjcgMzE4LjVjLTM5LjctMTYuOC03NS44LTQwLTEwNy42LTY5LjJjMTguNS0xNS44IDM4LjQtMjkuNyA1OS40LTQxLjhjMTUuNyA0NSAzNS44IDg0LjEgNTkuMiAxMTUuNGMtMy43LTEuNC03LjQtMi45LTExLTQuNG0yOTIuNiAwYy0zLjcgMS41LTcuMyAzLTExIDQuNGMyMy40LTMxLjMgNDMuNS03MC40IDU5LjItMTE1LjRjMjEgMTIgNDAuOSAyNiA1OS40IDQxLjhhMzczLjggMzczLjggMCAwIDEtMTA3LjYgNjkuMiIvPjwvc3ZnPg==')` 
+              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTg1NC40IDgwMC45Yy4yLS4zLjUtLjYuNy0uOUM5MjAuNiA3MjIuMSA5NjAgNjIxLjcgOTYwIDUxMnMtMzkuNC0yMTAuMS0xMDQuOC0yODhjLS4yLS4zLS41LS41LS43LS44Yy0xLjEtMS4zLTIuMS0yLjUtMy4yLTMuN2MtLjQtLjUtLjgtLjktMS4yLTEuNGwtNC4xLTQuN2wtLjEtLjFjLTEuNS0xLjctMy4xLTMuNC00LjYtNS4xbC0uMS0uMWMtMy4yLTMuNC02LjQtNi44LTkuNy0xMC4xbC0uMS0uMWwtNC44LTQuOGwtLjMtLjNjLTEuNS0xLjUtMy0yLjktNC41LTQuM2MtLjUtLjUtMS0xLTEuNi0xLjVjLTEtMS0yLTEuOS0zLTIuOGMtLjMtLjMtLjctLjYtMS0xQzczNi40IDEwOS4yIDYyOS41IDY0IDUxMiA2NHMtMjI0LjQgNDUuMi0zMDQuMyAxMTkuMmMtLjMuMy0uNy42LTEgMWMtMSAuOS0yIDEuOS0zIDIuOWMtLjUuNS0xIDEtMS42IDEuNWMtMS41IDEuNC0zIDIuOS00LjUgNC4zbC0uMy4zbC00LjggNC44bC0uMS4xYy0zLjMgMy4zLTYuNSA2LjctOS43IDEwLjFsLS4xLjFjLTEuNiAxLjctMy4xIDMuNC00LjYgNS4xbC0uMS4xYy0xLjQgMS41LTIuOCAzLjEtNC4xIDQuN2MtLjQuNS0uOC45LTEuMiAxLjRjLTEuMSAxLjItMi4xIDIuNS0zLjIgMy43Yy0uMi4zLS41LjUtLjcuOEMxMDMuNCAzMDEuOSA2NCA0MDIuMyA2NCA1MTJzMzkuNCAyMTAuMSAxMDQuOCAyODhjLjIuMy41LjYuNy45bDMuMSAzLjdjLjQuNS44LjkgMS4yIDEuNGw0LjEgNC43YzAgLjEuMS4xLjEuMmMxLjUgMS43IDMgMy40IDQuNiA1bC4xLjFjMy4yIDMuNCA2LjQgNi44IDkuNiAxMC4xbC4xLjFjMS42IDEuNiAzLjEgMy4yIDQuNyA0LjdsLjMuM2MzLjMgMy4zIDYuNyA2LjUgMTAuMSA5LjZjODAuMSA3NCAxODcgMTE5LjIgMzA0LjUgMTE5LjJzMjI0LjQtNDUuMiAzMDQuMy0xMTkuMmEzMDAgMzAwIDAgMCAwIDEwLTkuNmwuMy0uM2MxLjYtMS42IDMuMi0zLjEgNDcuNy00LjdsLjEtLjFjMy4zLTMuMyA2LjUtNi43IDkuNi0xMC4xbC4xLS4xYzEuNS0xLjcgMy4xLTMuMyA0LjYtNWMwLS4xLjEtLjEuMS0uMmMxLjQtMS41IDIuOC0zLjEgNC4xLTQuN2MuNC0uNS44LS45IDEuMi0xLjRhOTkgOTkgMCAwIDAgMy4zLTMuN200LjEtMTQyLjZjLTEzLjggMzIuNi0zMiA2Mi44LTU0LjIgOTAuMmE0NDQgNDQ0IDAgMCAwLTgxLjUtNTUuOWMxMS42LTQ2LjkgMTguOC05OC40IDIwLjctMTUyLjZIODg3Yy0zIDQwLjktMTIuNiA4MC42LTI4LjUgMTE4LjNNODg3IDQ4NEg3NDMuNWMtMS45LTU0LjItOS4xLTEwNS43LTIwLjctMTUyLjZjMjkuMy0xNS42IDU2LjYtMzQuNCA4MS41LTU1LjlBMzczLjg2IDM3My44NiAwIDAgMSA4ODcgNDg0TTY1OC4zIDE2NS41YzM5LjcgMTYuOCA3NS44IDQwIDEwNy42IDY5LjJhMzk0LjcgMzk0LjcgMCAwIDEtNTkuNCA0MS44Yy0xNS43LTQ1LTM1LjgtODQuMS01OS4yLTExNS40YzMuNyAxLjQgNy40IDIuOSAxMSA0LjRtLTkwLjYgNzAwLjZjLTkuMiA3LjItMTguNCA4LjctMjcuNyAxNi40VjY5N2EzODkuMSAzODkuMSAwIDAgMSAxMTUuNyAyNi4yYy04LjMgMjQuNi0xNy45IDQ3LjMtMjkgNjcuOGMtMTcuNCAzMi40LTM3LjggNTguMy01OSA3NS4xbTU5LTYzMy4xYzExIDIwLjYgMjAuNyA0My4zIDI5IDY3LjhBMzg5LjEgMzg5LjEgMCAwIDEgNTQwIDMyN1YxNDEuNmM5LjIgMy43IDE4LjUgOS4xIDI3LjcgMTYuNGMyMS4yIDE2LjcgNDEuNiA0Mi42IDU5IDc1TTU0MCA2NDAuOVY1NDBoMTQ3LjVjLTEuNiA0NC4yLTcuMSA87LjEtMTYuMyAxMjcuOGwtLjMgMS4yQTQ0NSA0NDUgMCAwIDAgNTQwIDY0MC45bTAtMTU2LjlWMzgzLjFjNDUuOC0yLjggODkuOC0xMi41IDEzMC45LTI4LjFsLjMgMS4yYzkuMiA0MC43IDE0LjcgODMuNSAxNi4zIDEyNy44em0tNTYgNTZ2MTAwLjljLTQ1LjggMi44LTg5LjggMTIuNS0xMzAuOSAyOC4xbC0uMy0xLjJjLTkuMi00MC43LTE0LjctODMuNS0xNi4zLTEyNy44em0tMTQ3LjUtNTZjMS42LTQ0LjIgNy4xLTg3LjEgMTYuMy0xMjcuOGwuMy0xLjJjNDEuMSAxNS42IDg1IDI1LjMgMTMwLjkgMjguMVY0ODR6TTQ4NCA2OTd2MTg1LjRjLTkuMi0zLjctMTguNS05LjEtMjcuNy0xNi40Yy0yMS4yLTE2LjctNDEuNy00Mi43LTU5LjEtNzUuMWMtMTEtMjAuNi0yMC43LTQzLjMtMjktNjcuOGMzNy4yLTE0LjYgNzUuOS0yMy4zIDExNS44LTI2LjFtMC0zNzBhMzg5LjEgMzg5LjEgMCAwIDEtMTE1LjctMjYuMmM4LjMtMjQuNiAxNy45LTQ3LjMgMjktNjcuOGMxNy40LTMyLjQgMzcuOC01OC40IDU5LjEtNzUuMWM5LjItNy4yIDE4LjQtMTIuNyAyNy43LTE2LjRWMzI3ek0zNjUuNyAxNjUuNWMzLjctMS41IDcuMy0zIDExLTQuNGMtMjMuNCAzMS4zLTQzLjUgNzAuNC01OS4yIDExNS40Yy0yMS0xMi00MC45LTI2LTU5LjQtNDEuOGMzMS44LTI5LjIgNjcuOS01Mi40IDEwNy42LTY5LjJNMTY1LjUgMzY1LjdjMTMuOC0zMi42IDMyLTYyLjggNTQuMi05MC4yYzI0LjkgMjEuNSA1Mi4yIDQwLjMgODEuNSA1NS45Yy0xMS42IDQ2LjktMTguOCA5OC40LTIwLjcgMTUyLjZIMTM3YzMtNDAuOSAxMi42LTgwLjYgMjguNS0xMTguM00xMzcgNTQwaDE0My41YzEuOSA1NC4yIDkuMSAxMDUuNyAyMC43IDE1Mi42YTQ0NCA0NDQgMCAwIDAtODEuNSA1NS45QTM3My44NiAzNzMuODYgMCAwIDEgMTM3IDU0MG0yMjguNyAzMTguNWMtMzkuNy0xNi44LTc1LjgtNDAtMTA3LjYtNjkuMmMxOC41LTE1LjggMzguNC0yOS43IDU5LjQtNDEuOGMxNS43IDQ1IDM1LjggODQuMSA1OS4yIDExNS40Yy0zLjctMS40LTcuNC0yLjktMTEtNC40bTI5Mi42IDBjLTMuNyAxLjUtNy4zIDMtMTEgNC40YzIzLjQtMzEuMyA0My41LTcwLjQgNTkuMi0xMTUuNGMyMSAxMiA0MC45IDI2IDU5LjQgNDEuOGEzNzMuOCAzNzMuOCAwIDAgMS0xMDcuNiA2OS4yIi8+PC9zdmc+')` 
             }}
           />
         );
@@ -146,7 +144,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <div 
             className={iconClass}
             style={{ 
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMzI1LjkgMjMuOTgxTDMxMS45NCA0NS4yNWMzOC4xODIgMjQuODQ1IDY3LjY3NSA1OS4wMjQgOTYuODc4IDEyMy4xNzhsMTYuODI4LTI0LjgwN2MtNS4xNTUtMTcuNDAzLTEwLjgwMS0zNS44Ni0xNi01MS4zNTFjLTUuNTk3LTE2LjY4Mi0xMS41MzgtMzAuODY2LTEzLjEwNS0zMy4xOTRjLTEuMzItMS45Ni0xMC43NDgtOS40NTItMjQuNTMtMTYuMzRjLTEyLjI4NS02LjE0LTI4LjI3Mi0xMi42NTUtNDYuMTEtMTguNzU0em04LjMzIDYxLjUzbC01NC40NiA0Mi45OTRjMTAuNzYxIDYuMTc1IDE4LjUgMTcuMDgyIDIwLjMxNCAyOS44MjhsNTcuNS00NS4zOTZjLTcuNTIyLTEwLjQ4OS0xNS4yMzgtMTkuNDg1LTIzLjM1NC0yNy40MjZtLTc0LjczIDU1LjU3OGMtMTIuODEgMC0yMyAxMC4xOS0yMyAyM2MwIDEyLjgwOSAxMC4xOSAyMyAyMyAyM3MyMy0xMC4xOTEgMjMtMjNjMC0xMi44MS0xMC4xOS0yMy0yMy0yM20tMzkuMzQyIDM0LjQ3Nkw4Ny40OSAyODAuMzA0YzExLjgzOCA0LjY3IDIwLjQwNiAxNi4wMTMgMjAuOTc1IDI5LjMwNkwyNDQuNSAyMDIuMjE0Yy0xMS42NzYtNC42MzUtMjAuNzY2LTE0LjQ5Mi0yNC4zNDItMjYuNjQ5bTE3NC4zNDIgNC40NDh2MjEwLjAwNmgxOFYxOTUuMDYzbC03LjA4MiAxMC40NGwtNi40NTMtMTUuMjE5YTY4MyA2ODMgMCAwIDAtNC40NjUtMTAuMjcxbS05Mi42MzcuNTQzTDI4Ni4wNDcgMTkyLjhsMy43OTMgMTguMDE1bC0xNC41MjYtOS43MDdsLTE1LjAxIDExLjYyMWwyOC43OTYgMTkuMjQzbC03MS4zMDUgMzIuODMybDQuODItMjIuODk3bC0yMS45NzYgMTcuMDE0bC0yNC4zNTQgMTE1LjY3OGwtLjQ0LjE5NWwuMjcyLjYxbC0xOS45MiA5NC42MTVIMTQwLjV2MThoMjIyVjQ2OC41OHptLTQuMjI2IDY3LjNsMTIuMDIgNTcuMDg4bC03OS4wNTctMjYuMjE4em0tODUuNDc3IDQzLjcxN2w4Ni40MzIgMjguNjY2bC0xMDIuMDEyIDQ1LjMzOHpNNzUuNSAyOTYuMDJjLTguMzkgMC0xNSA2LjYwOS0xNSAxNXM2LjYxIDE1IDE1IDE1czE1LTYuNjEgMTUtMTVzLTYuNjEtMTUtMTUtMTVtMjM5Ljk0NSAzNi40MjdsMTQuOTUzIDcxLjAyOGwtMTExLjk1My0yNy45MTZ6bS0yMTguODI0IDMuODUyYy00LjU5NSAzLjg1MS0xMC4yNCA2LjQ4MS0xNi40MiA7LjM3N2wyMS4yNjYgNDYuMzQ0aDE5LjgwNHptLTQyLjIzMi4wMDhsLTI0LjY2IDUzLjcxM2gxOS44MDhsMjEuMjc2LTQ2LjM0MmMtNi4xODEtLjg5My0xMS44MjgtMy41MjEtMTYuNDI0LTcuMzcxbTEzNy41NzQgNTEuMmwxMTYuNzgxIDI5LjExOGwtMTMzLjEwMSA0OC40MDN6TTI4LjUgNDA4LjAxOHY2Mmg5NHYtNjJ6bTM1MiAwdjE2aDQ2di0xNnptLTQ1LjMyNCAxOC4xNWw5LjIzMiA0My44NWgtMTI5Ljgyem00NS4zMjQgMTUuODV2MjhoNDZ2LTI4em02NCAyOHYxOGgzOXYtMTh6Ii8+PC9zdmc+')` 
+              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMzI1LjkgMjMuOTgxTDMxMS45NCA0NS4yNWMzOC4xODIgMjQuODQ1IDY3LjY3NSA1OS4wMjQgOTYuODc4IDEyMy4xNzhsMTYuODI4LTI0LjgwN2MtNS4xNTUtMTcuNDAzLTEwLjgwMS0zNS44Ni0xNi01MS4zNTFjLTUuNTk3LTE2LjY4Mi0xMS41MzgtMzAuODY2LTEzLjEwNS0zMy4xOTRjLTEuMzItMS45Ni0xMC43NDgtOS40NTItMjQuNTMtMTYuMzRjLTEyLjI4NS02LjE0LTI4LjI3Mi0xMi42NTUtNDYuMTEtMTguNzU0em04LjMzIDYxLjUzbC01NC40NiA0Mi45OTRjMTAuNzYxIDYuMTc1IDE4LjUgMTcuMDgyIDIwLjMxNCAyOS44MjhsNTcuNS00NS4zOTZjLTcuNTIyLTEwLjQ4OS0xNS4yMzgtMTkuNDg1LTIzLjM1NC0yNy40MjZtLTc0LjczIDU1LjU3OGMtMTIuODEgMC0yMyAxMC4xOS0yMyAyM2MwIDEyLjgwOSAxMC4xOSAyMyAyMyAyM3MyMy0xMC4xOTEgMjMtMjNjMC0xMi44MS0xMC4xOS0yMy0yMy0yM20tMzkuMzQyIDM0LjQ3Nkw4Ny40OSAyODAuMzA0YzExLjgzOCA0LjY3IDIwLjQwNiAxNi4wMTMgMjAuOTc1IDI5LjMwNkwyNDQuNSAyMDIuMjE0Yy0xMS42NzYtNC42MzUtMjAuNzY2LTE0LjQ5Mi0yNC4zNDItMjYuNjQ5bTE3NC4zNDIgNC40NDh2MjEwLjAwNmgxOFYxOTUuMDYzbC03LjA4MiAxMC40NGwtNi40NTMtMTUuMjE5YTY4MyA2ODMgMCAwIDAtNC40NjUtMTAuMjcxbS05Mi42MzcuNTQzTDI4Ni4wNDcgMTkyLjhsMy43OTMgMTguMDE1bC0xNC41MjYtOS43MDdsLTE1LjAxIDExLjYyMWwyOC43OTYgMTkuMjQzbC03MS4zMDUgMzIuODMybDQuODItMjIuODk3bC0yMS45NzYgMTcuMDE0bC0yNC4zNTQgMTE1LjY3OGwtLjQ0LjE5NWwuMjcyLjYxbC0xOS45MiA5NC42MTVIMTQwLjV2MThoMjIyVjQ2OC41OHptLTQuMjI2IDY3LjNsMTIuMDIgNTcuMDg4bC03OS4wNTctMjYuMjE4em0tODUuNDc3IDQzLjcxN2w4Ni40MzIgMjguNjY2bC0xMDIuMDEyIDQ1LjMzOHpNNzUuNSAyOTYuMDJjLTguMzkgMC0xNSA2LjYwOS0xNSAxNXM2LjYxIDE1IDE1IDE1czE1LTYuNjEgMTUtMTVzLTYuNjEtMTUtMTUtMTVtMjM5Ljk0NSAzNi40MjdsMTQuOTUzIDcxLjAyOGwtMTExLjk1My0yNy45MTZ6bS0yMTguODI0IDMuODUyYy00LjU5NSAzLjg1MS0xMC4yNCA2LjQ4MS0xNi40MiA3LjM3N2wyMS4yNjYgNDYuMzQ0aDE5LjgwNHptLTQyLjIzMi4wMDhsLTI0LjY2IDUzLjcxM2gxOS44MDhsMjEuMjc2LTQ2LjM0MmMtNi4xODEtLjg5My0xMS44MjgtMy41MjEtMTYuNDI0LTcuMzcxbTEzNy41NzQgNTEuMmwxMTYuNzgxIDI5LjExOGwtMTMzLjEwMSA0OC40MDN6TTI4LjUgNDA4LjAxOHY2Mmg5NHYtNjJ6bTM1MiAwdjE2aDQ2di0xNnptLTQ1LjMyNCAxOC4xNWw5LjIzMiA0My44NWgtMTI5Ljgyem00NS4zMjQgMTUuODV2MjhoNDZ2LTI4em02NCAyOHYxOGgzOXYtMTh6Ii8+PC9zdmc+')` 
             }}
           />
         );
@@ -188,14 +186,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     return hierarchyDevices.map((device) => (
       <div
         key={`device-${device.id}`}
-        className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors ml-16 ${
+        className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors ml-8 ${
           selectedDeviceId === device.id
-            ? theme === 'dark'
-              ? 'bg-[#6656F5] text-white'
-              : 'bg-[#F97316] text-white'
-            : theme === 'dark'
-            ? 'hover:bg-[#1a2847] text-gray-300 hover:text-white'
-            : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
+            ? 'bg-[#6656F5] text-white'
+            : 'hover:bg-[#2A2D47] text-gray-300 hover:text-white'
         }`}
         onClick={() => handleDeviceClick(device)}
       >
@@ -226,22 +220,18 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     return (
       <div key={item.id}>
         <div
-          className={`flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors ${
+          className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors ${
             isSelected
-              ? theme === 'dark'
-                ? 'bg-[#6366F1] text-white'
-                : 'bg-[#F97316] text-white'
-              : theme === 'dark'
-              ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
-              : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
+              ? 'bg-[#6366F1] text-white'
+              : 'hover:bg-[#2A2D47] text-gray-300 hover:text-white'
           } ${
             level === 0
-              ? 'font-semibold'
+              ? 'font-medium'
               : level === 1
-              ? 'font-medium ml-4'
+              ? 'ml-4'
               : level === 2
-              ? 'ml-8'
-              : 'ml-12'
+              ? 'ml-6'
+              : 'ml-8'
           }`}
           onClick={handleClick}
         >
@@ -249,7 +239,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             <ChevronRightIcon
               className={`w-4 h-4 transition-transform ${
                 isExpanded ? 'rotate-90' : ''
-              } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
+              } text-gray-400`}
             />
           )}
           {!hasChildren && !hasDevices && <div className="w-4"></div>}
@@ -259,9 +249,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <span className="text-sm flex-1">{item.name}</span>
 
           {isWell && hasDevices && (
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              theme === 'dark' ? 'bg-[#6366F1] text-white' : 'bg-[#F97316] text-white'
-            }`}>
+            <span className="text-xs px-2 py-1 rounded-full bg-[#6366F1] text-white">
               {wellDevices.length}
             </span>
           )}
@@ -295,14 +283,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         return (
           <div key={companyName}>
             <div
-              className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors uppercase font-medium ${
+              className={`flex items-center gap-3 py-2 px-4 cursor-pointer transition-colors font-medium ${
                 isSelected
-                  ? theme === 'dark'
-                    ? 'bg-[#6366F1] text-white'
-                    : 'bg-[#F97316] text-white'
-                  : theme === 'dark'
-                  ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
-                  : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
+                  ? 'bg-[#6366F1] text-white'
+                  : 'hover:bg-[#2A2D47] text-gray-300 hover:text-white'
               }`}
               onClick={() => {
                 toggleExpanded(companyName);
@@ -322,10 +306,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
               <ChevronRightIcon
                 className={`w-4 h-4 transition-transform ${
                   isExpanded ? 'rotate-90' : ''
-                } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
+                } text-gray-400`}
               />
               <div
-                className="w-[21px] h-[21px] bg-no-repeat bg-center bg-contain"
+                className="w-[16px] h-[16px] bg-no-repeat bg-center bg-contain filter brightness-0 invert"
                 style={{
                   backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0zIDkgOS03IDkgNy05IDEzLTkgN3oiLz48L3N2Zz4=')`,
                 }}
@@ -347,47 +331,23 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   };
 
   return (
-    <div
-      className={`w-64 transition-colors ${
-        theme === 'dark' ? 'bg-[#2B2D42]' : 'bg-white border-gray-200'
-      }`}
-    >
+    <div className="w-64 bg-[#1E1F2E] border-r border-[#2A2D47]">
       <div className="p-4">
-        <h1
-          className={`text-base font-medium mb-4 tracking-wider ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}
-        >
+        <h1 className="text-white text-base font-medium mb-4 tracking-wider">
           Production Map
         </h1>
 
         <div className="relative mb-4">
-          <SearchIcon
-            className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            }`}
-          />
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             placeholder="Search"
-            className={`w-full pl-10 h-9 rounded-lg border transition-colors ${
-              theme === 'dark'
-                ? 'bg-[#2B2D42] border-gray-600 text-white placeholder-gray-400 focus:border-gray-500'
-                : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500 focus:border-gray-300'
-            } focus:outline-none focus:ring-1 ${
-              theme === 'dark' ? 'focus:ring-[]' : 'focus:ring-gray-300'
-            }`}
+            className="w-full pl-10 h-9 rounded-lg border bg-[#2A2D47] border-[#3A3D57] text-white placeholder-gray-400 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
           />
         </div>
       </div>
 
-      <div className="border-t border-gray-600">
-        <div
-          className={`max-h-[calc(100vh-10rem)] overflow-y-auto scrollbar-thin ${
-            theme === 'dark'
-              ? 'scrollbar-thumb-white scrollbar-track-transparent'
-              : 'scrollbar-thumb-[#38BF9D] scrollbar-track-transparent'
-          }`}
-        >
+      <div className="border-t border-[#2A2D47]">
+        <div className="max-h-[calc(100vh-10rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent">
           {renderCompanyHierarchy()}
         </div>
       </div>

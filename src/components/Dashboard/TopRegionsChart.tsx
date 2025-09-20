@@ -7,8 +7,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { Info, ExternalLink, MoreHorizontal } from 'lucide-react';
-import { useTheme } from '../../hooks/useTheme';
+import { ExternalLink, MoreHorizontal } from 'lucide-react';
 
 const data = [
   { region: 'Qatar', oil: 65000, water: 50000, gas: 35000 },
@@ -17,10 +16,8 @@ const data = [
 ];
 
 const TopRegionsChart: React.FC = () => {
-  const { theme } = useTheme();
-
   return (
-    <div className="bg-[#3C3F58] rounded-lg p-6">
+    <div className="bg-[#2A2D47] rounded-lg p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

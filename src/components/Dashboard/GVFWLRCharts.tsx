@@ -12,21 +12,8 @@ const GVFWLRCharts: React.FC = () => {
     { name: 'Remaining', value: 15, color: '#4D3DF7' }
   ];
 
-  const renderCustomLabel = (data: any[], mainValue: number, label: string) => {
-    return (
-      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
-        <tspan x="50%" dy="-10" className="fill-white text-3xl font-bold">
-          {mainValue}%
-        </tspan>
-        <tspan x="50%" dy="25" className="fill-gray-400 text-sm">
-          {label}
-        </tspan>
-      </text>
-    );
-  };
-
   return (
-    <div className="bg-[#3C3F58] rounded-lg p-6">
+    <div className="bg-[#2A2D47] rounded-lg p-6">
       <div className="flex items-center gap-3 mb-6">
         <h2 className="text-white text-base font-medium">Average GVF/WLR</h2>
         <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center">
