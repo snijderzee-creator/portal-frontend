@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardContent from './DashboardContent';
+import DevicesPage from './DevicesPage';
+import AlarmsTable from './AlarmsTable';
 import { Device } from '../../services/api';
 import DashboardHeader from './DashboardHeader';
 
@@ -36,23 +38,30 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     <div className="min-h-screen w-full bg-[#1E1F2E]">
       <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="flex">
-        <DashboardSidebar 
-          onDeviceSelect={handleDeviceSelect}
-          onHierarchySelect={handleHierarchySelect}
-          onInitialHierarchyLoad={handleInitialHierarchyLoad}
-          selectedDeviceId={selectedDevice?.id}
-          selectedHierarchyId={selectedHierarchy?.id}
-        />
-
-        {/* Switch content based on activeTab */}
-        <div className="flex-1">
+      {/* Switch content based on activeTab */}
+      {activeTab === 'Dashboard' && (
+        <div className="flex">
+          <DashboardSidebar 
+            onDeviceSelect={handleDeviceSelect}
+            onHierarchySelect={handleHierarchySelect}
+            onInitialHierarchyLoad={handleInitialHierarchyLoad}
+            selectedDeviceId={selectedDevice?.id}
+            selectedHierarchyId={selectedHierarchy?.id}
+          />
           <DashboardContent 
             selectedDevice={selectedDevice} 
             selectedHierarchy={selectedHierarchy}
           />
         </div>
-      </div>
+      )}
+      
+      {activeTab === 'Devices' && <DevicesPage />}
+      
+      {activeTab === 'Alarms' && (
+        <div className="p-6 bg-[#1E1F2E] min-h-screen">
+          <AlarmsTable />
+        </div>
+      )}
     </div>
   );
 };
