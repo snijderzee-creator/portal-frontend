@@ -9,6 +9,7 @@ interface DashboardSidebarProps {
   onHierarchySelect?: (hierarchy: HierarchyNode) => void;
   selectedDeviceId?: string | null;
   selectedHierarchyId?: string | null;
+  onInitialHierarchyLoad?: (hierarchy: HierarchyNode) => void;
 }
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ 
@@ -16,6 +17,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   onHierarchySelect,
   selectedDeviceId,
   selectedHierarchyId,
+  onInitialHierarchyLoad,
 }) => {
 
   const { token } = useAuth();
@@ -42,6 +44,12 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             
             if (hierarchy.length > 0) {
               expanded.push(hierarchy[0].id);
+              
+              // Auto-select the first hierarchy node for initial chart loading
+              if (onInitialHierarchyLoad) {
+                onInitialHierarchyLoad(hierarchy[0]);
+              }
+              
               if (hierarchy[0].children.length > 0) {
                 expanded.push(hierarchy[0].children[0].id);
                 if (hierarchy[0].children[0].children.length > 0) {

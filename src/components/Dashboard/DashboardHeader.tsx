@@ -18,7 +18,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const navigationItems = [
     { label: 'Dashboard' },
     { label: 'Devices' },
-    { label: 'Charts' },
+    { label: 'Alarms' },
   ];
 
   return (
