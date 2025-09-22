@@ -29,14 +29,14 @@ export default function WFRChart({ chartData, hierarchyChartData }: WFRChartProp
       return chartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.wfr || 0,
-        standard: (point.wfr || 0) * 0.98,
+        standard: point.wfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       // Hierarchy aggregated data
       return hierarchyChartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.totalWfr || 0,
-        standard: (point.totalWfr || 0) * 0.98,
+        standard: point.totalWfr || 0,
       }));
     }
     

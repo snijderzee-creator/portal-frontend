@@ -29,14 +29,14 @@ export default function GFRChart({ chartData, hierarchyChartData }: GFRChartProp
       return chartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.gfr || 0,
-        standard: (point.gfr || 0) * 0.98,
+        standard: point.gfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       // Hierarchy aggregated data
       return hierarchyChartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.totalGfr || 0,
-        standard: (point.totalGfr || 0) * 0.98,
+        standard: point.totalGfr || 0,
       }));
     }
     

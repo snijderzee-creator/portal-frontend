@@ -8,6 +8,7 @@ import TopRegionsChart from './TopRegionsChart';
 import GVFWLRCharts from './GVFWLRCharts';
 import ProductionMap from './ProductionMap';
 import FlowRateCharts from './FlowRateCharts';
+import FractionsChart from './FractionsChart';
 
 interface DashboardContentProps {
   children?: React.ReactNode;
@@ -99,6 +100,15 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     }
   };
 
+  // Determine if we should show TopRegionsChart or FractionsChart
+  const shouldShowFractions = selectedHierarchy?.level === 'Well' || selectedDevice;
+  const shouldShowTopRegions = !shouldShowFractions && (
+    !selectedHierarchy || 
+    selectedHierarchy.level === 'Region' || 
+    selectedHierarchy.level === 'Area' || 
+    selectedHierarchy.level === 'Field' ||
+    selectedHierarchy.id === selectedHierarchy.name // Company level
+  );
   return (
     <div
       className={`h-full p-4 overflow-y-auto ${
@@ -117,18 +127,29 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 
           {/* Main Content Grid */}
           <div className="flex gap-4 mb-4">
-            {/* Top Regions Chart */}
-            <div className="flex-1">
-              <div
-                className={`rounded-lg p-2 h-full ${
-                  theme === 'dark'
-                    ? 'bg-[#162345]'
-                    : 'bg-white border border-gray-200'
-                }`}
-              >
-                <TopRegionsChart />
+            {/* Conditional Chart Display */}
+            {shouldShowTopRegions && (
+              <div className="flex-1">
+                <div
+                  className={`rounded-lg p-2 h-full ${
+                    theme === 'dark'
+                      ? 'bg-[#162345]'
+                      : 'bg-white border border-gray-200'
+                  }`}
+                >
+                  <TopRegionsChart />
+                </div>
               </div>
-            </div>
+            )}
+
+            {shouldShowFractions && (
+              <div className="flex-1">
+                <FractionsChart 
+                  chartData={chartData}
+                  hierarchyChartData={hierarchyChartData}
+                />
+              </div>
+            )}
 
             {/* GVF/WLR Charts */}
             <div className="flex-1">

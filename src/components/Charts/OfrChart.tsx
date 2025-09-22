@@ -29,14 +29,14 @@ export default function OFRChart({ chartData, hierarchyChartData }: OFRChartProp
       return chartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.ofr || 0,
-        standard: (point.ofr || 0) * 0.98,
+        standard: point.ofr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       // Hierarchy aggregated data
       return hierarchyChartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.totalOfr || 0,
-        standard: (point.totalOfr || 0) * 0.98,
+        standard: point.totalOfr || 0,
       }));
     }
     

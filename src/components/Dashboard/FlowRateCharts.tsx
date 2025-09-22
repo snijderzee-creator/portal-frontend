@@ -158,40 +158,68 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
       return chartData.chartData.map((point) => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.ofr || 0,
-        standard: (point.ofr || 0) * 0.95,
+        standard: point.ofr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.totalOfr || 0,
-        standard: (point.totalOfr || 0) * 0.95,
+        standard: point.totalOfr || 0,
       }));
     }
     // Default data if no API data
     return [
-      { time: '14:25:48', line: 10000, standard: 9500 },
-      { time: '14:25:50', line: 8000, standard: 7500 },
-      { time: '14:25:52', line: 6000, standard: 5500 },
-      { time: '14:25:54', line: 4000, standard: 3500 },
+      { time: '14:25:48', line: 10000, standard: 10000 },
+      { time: '14:25:50', line: 8000, standard: 8000 },
+      { time: '14:25:52', line: 6000, standard: 6000 },
+      { time: '14:25:54', line: 4000, standard: 4000 },
     ];
   }, [chartData, hierarchyChartData]);
 
   const wfrData = useMemo(() => {
-    // Similar logic for WFR data
-    return ofrData.map((point) => ({
-      ...point,
-      line: point.line * 0.8, // Simulate different values
-      standard: point.standard * 0.8,
-    }));
+    if (chartData?.chartData) {
+      return chartData.chartData.map((point) => ({
+        time: new Date(point.timestamp).toLocaleTimeString(),
+        line: point.wfr || 0,
+        standard: point.wfr || 0,
+      }));
+    } else if (hierarchyChartData?.chartData) {
+      return hierarchyChartData.chartData.map((point) => ({
+        time: new Date(point.timestamp).toLocaleTimeString(),
+        line: point.totalWfr || 0,
+        standard: point.totalWfr || 0,
+      }));
+    }
+    // Default data if no API data
+    return [
+      { time: '14:25:48', line: 8000, standard: 8000 },
+      { time: '14:25:50', line: 6400, standard: 6400 },
+      { time: '14:25:52', line: 4800, standard: 4800 },
+      { time: '14:25:54', line: 3200, standard: 3200 },
+    ];
   }, [ofrData]);
 
   const gfrData = useMemo(() => {
-    // Similar logic for GFR data
-    return ofrData.map((point) => ({
-      ...point,
-      line: point.line * 1.2, // Simulate different values
-      standard: point.standard * 1.2,
-    }));
+    if (chartData?.chartData) {
+      return chartData.chartData.map((point) => ({
+        time: new Date(point.timestamp).toLocaleTimeString(),
+        line: point.gfr || 0,
+        standard: point.gfr || 0,
+      }));
+    } else if (hierarchyChartData?.chartData) {
+      return hierarchyChartData.chartData.map((point) => ({
+        time: new Date(point.timestamp).toLocaleTimeString(),
+        line: point.totalGfr || 0,
+        standard: point.totalGfr || 0,
+      }));
+    }
+    // Default data if no API data
+    return [
+      { time: '14:25:48', line: 12000, standard: 12000 },
+      { time: '14:25:50', line: 9600, standard: 9600 },
+      { time: '14:25:52', line: 7200, standard: 7200 },
+      { time: '14:25:54', line: 4800, standard: 4800 },
+    ];
   }, [ofrData]);
 
   return (
