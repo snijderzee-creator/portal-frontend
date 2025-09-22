@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { ExternalLink, MoreHorizontal } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 
 const data = [
@@ -19,58 +19,98 @@ const data = [
 const TopRegionsChart: React.FC = () => {
   const { theme } = useTheme();
 
+  // Define bar colors based on theme
+  const colors = {
+    oil: theme === 'dark' ? '#4D3DF7' : '#38BF9D',
+    water: theme === 'dark' ? '#46B8E9' : '#F6CA58',
+    gas: theme === 'dark' ? '#F35DCB' : '#F56C44',
+  };
+
   return (
-    <div className={`rounded-lg p-6 ${
-      theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
-    }`}>
+    <div className="p-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h2 className={`text-base font-medium ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>Top Regions</h2>
-          <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-            theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
-          }`}>
-            <span className={`text-xs ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>i</span>
-          </div>
+          <h2
+            className={`text-xl font-medium ${
+              theme === 'dark' ? 'text-[#fff]' : 'text-[#0f0f0f]'
+            }`}
+          >
+            Top Regions
+          </h2>
+          <Info
+            className={`text-xs ${
+              theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+            }`}
+          />
         </div>
-        <div className={`flex items-center gap-2 border px-2 py-1 rounded-lg ${
-          theme === 'dark' 
-            ? 'border-gray-600 text-gray-400 hover:text-white' 
-            : 'border-gray-300 text-gray-600 hover:text-gray-900'
-        }`}>
-            className="cursor-pointer"
-          <MoreHorizontal size={14} className="text-gray-400 cursor-pointer hover:text-white" />
+        <div
+          className={`flex items-center gap-2 border px-2 py-1 rounded-lg ${
+            theme === 'dark'
+              ? 'border-[#D0CCD8] text-gray-400 hover:text-white'
+              : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          <ExternalLink />
+          <MoreHorizontal
+            size={14}
+            className="text-gray-400 cursor-pointer hover:text-gray-800"
+          />
         </div>
       </div>
 
       {/* Subtitle */}
-      <p className={`text-xs mb-4 ${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      }`}>Comparison</p>
+      <p
+        className={`text-base mb-4 ${
+          theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+        }`}
+      >
+        Comparison
+      </p>
 
       {/* Legend */}
-      <div className="flex gap-6 mb-6">
+      <div className="flex gap-10 mb-6">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#6366F1]" />
-          <span className={`text-xs ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>Oil</span>
+          <div
+            className={`w-4 h-4 rounded-full ${
+              theme === 'dark' ? 'bg-[#4d3df7]' : 'bg-[#38BF9D]'
+            }`}
+          />
+          <span
+            className={`text-base ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Oil
+          </span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#06B6D4]" />
-          <span className={`text-xs ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>Water</span>
+          <div
+            className={`w-4 h-4 rounded-full ${
+              theme === 'dark' ? 'bg-[#46B8E9]' : 'bg-[#F6CA58]'
+            }`}
+          />
+          <span
+            className={`text-base ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Water
+          </span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#EC4899]" />
-          <span className={`text-xs ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>Gas</span>
+          <div
+            className={`w-4 h-4 rounded-full ${
+              theme === 'dark' ? 'bg-[#F35DCB]' : 'bg-[#F56C44]'
+            }`}
+          />
+          <span
+            className={`text-base ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Gas
+          </span>
         </div>
       </div>
 
@@ -82,23 +122,23 @@ const TopRegionsChart: React.FC = () => {
           barCategoryGap="25%"
         >
           <CartesianGrid
-            stroke={theme === 'dark' ? '#4B5563' : '#E5E7EB'}
+            stroke={theme === 'dark' ? '#A2AED4' : '#D2DDD8'}
             strokeDasharray="3 3"
             horizontal={true}
             vertical={false}
           />
           <XAxis
             dataKey="region"
-            stroke={theme === 'dark' ? '#6B7280' : '#6B7280'}
-            fontSize={12}
-            tickMargin={10}
+            stroke={theme === 'dark' ? '#A2AED4' : '#555758'}
+            fontSize={15}
+            tickMargin={20}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            stroke={theme === 'dark' ? '#6B7280' : '#6B7280'}
-            fontSize={12}
-            tickMargin={10}
+            stroke={theme === 'dark' ? '#A2AED4' : '#555758'}
+            fontSize={13}
+            tickMargin={20}
             axisLine={false}
             tickLine={false}
             domain={[0, 75000]}
@@ -113,19 +153,19 @@ const TopRegionsChart: React.FC = () => {
           />
           <Bar
             dataKey="oil"
-            fill="#6366F1"
+            fill={colors.oil}
             radius={[20, 20, 20, 20]}
             barSize={20}
           />
           <Bar
             dataKey="water"
-            fill="#06B6D4"
+            fill={colors.water}
             radius={[20, 20, 20, 20]}
             barSize={20}
           />
           <Bar
             dataKey="gas"
-            fill="#EC4899"
+            fill={colors.gas}
             radius={[20, 20, 20, 20]}
             barSize={20}
           />

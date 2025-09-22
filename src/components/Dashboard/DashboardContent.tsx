@@ -71,34 +71,55 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   };
 
   return (
-    <div className={`h-full p-6 overflow-y-auto ${
-      theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
-    }`}>
+    <div
+      className={`h-full p-4 overflow-y-auto ${
+        theme === 'dark' ? 'bg-[#121429]' : 'bg-gray-50'
+      }`}
+    >
       {children || (
         <>
           {/* Metrics Cards */}
           <MetricsCards />
-          
+
           {/* Main Content Grid */}
-          <div className="grid grid-cols-12 gap-6 mb-6">
+          <div className="flex gap-4 mb-4">
             {/* Top Regions Chart */}
-            <div className="col-span-7">
-              <TopRegionsChart />
+            <div className="flex-1">
+              <div
+                className={`rounded-lg p-2 h-full ${
+                  theme === 'dark'
+                    ? 'bg-[#162345]'
+                    : 'bg-white border border-gray-200'
+                }`}
+              >
+                <TopRegionsChart />
+              </div>
             </div>
-            
+
             {/* GVF/WLR Charts */}
-            <div className="col-span-5">
-              <GVFWLRCharts />
+            <div className="flex-1">
+              <div
+                className={`rounded-lg p-2 h-full ${
+                  theme === 'dark'
+                    ? 'bg-[#162345]'
+                    : 'bg-white border border-gray-200'
+                }`}
+              >
+                <GVFWLRCharts />
+              </div>
             </div>
           </div>
 
           {/* Production Map */}
-          <div className="mb-6">
+          <div className="mb-4">
             <ProductionMap />
           </div>
-          
+
           {/* Flow Rate Charts */}
-          <FlowRateCharts chartData={chartData} hierarchyChartData={hierarchyChartData} />
+          <FlowRateCharts
+            chartData={chartData}
+            hierarchyChartData={hierarchyChartData}
+          />
         </>
       )}
     </div>

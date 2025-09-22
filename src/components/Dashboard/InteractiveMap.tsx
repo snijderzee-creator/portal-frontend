@@ -21,8 +21,13 @@ Icon.Default.mergeOptions({
 const createCustomIcon = (color: string, hasAlarms: boolean) => {
   const svgIcon = `
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="12" fill="${color}" stroke="white" stroke-width="2"/>
-      ${hasAlarms ? '<circle cx="24" cy="8" r="4" fill="#ef4444" stroke="white" stroke-width="1"/>' : ''}
+      <circle cx="18" cy="18" r="12" fill="${color}" filter="url(#glow)"/>
+       ${hasAlarms ? '<circle cx="23" cy="10" r="4" fill="#e0043b" />' : ''}
+      <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="${color}" />
+        </filter>
+      </defs>
     </svg>
   `;
   // btoa is available in browser; OK for client-side
@@ -35,22 +40,41 @@ const createCustomIcon = (color: string, hasAlarms: boolean) => {
 };
 
 // Safe FitBounds: accepts an array of [lat, lng] tuples
-const FitBounds: React.FC<{ bounds?: [number, number][] | null; padding?: number }> = ({ bounds, padding = 20 }) => {
+const FitBounds: React.FC<{
+  bounds?: [number, number][] | null;
+  padding?: number;
+}> = ({ bounds, padding = 20 }) => {
   const map = useMap();
 
   React.useEffect(() => {
-    const isValid = Array.isArray(bounds) &&
+    const isValid =
+      Array.isArray(bounds) &&
       bounds.length > 0 &&
-      bounds.every(b => Array.isArray(b) && b.length === 2 && Number.isFinite(b[0]) && Number.isFinite(b[1]));
+      bounds.every(
+        (b) =>
+          Array.isArray(b) &&
+          b.length === 2 &&
+          Number.isFinite(b[0]) &&
+          Number.isFinite(b[1])
+      );
 
     if (!isValid) {
-      if (bounds && bounds.length === 0) console.warn('FitBounds: bounds is an empty array; skipping fitBounds.');
-      else if (bounds) console.warn('FitBounds: bounds malformed, skipping fitBounds:', bounds);
+      if (bounds && bounds.length === 0)
+        console.warn(
+          'FitBounds: bounds is an empty array; skipping fitBounds.'
+        );
+      else if (bounds)
+        console.warn(
+          'FitBounds: bounds malformed, skipping fitBounds:',
+          bounds
+        );
       return;
     }
 
     try {
-      map.fitBounds(bounds as [number, number][], { padding: [padding, padding] });
+      map.fitBounds(bounds as [number, number][], {
+        padding: [padding, padding],
+      });
     } catch (err) {
       console.warn('FitBounds: map.fitBounds threw an error', err);
     }
@@ -66,42 +90,89 @@ const InteractiveMap: React.FC = () => {
 
   // Saudi Arabia locations with accurate coordinates
   const locations = [
-    { id: '1', lat: 24.7136, lng: 46.6753, name: 'Riyadh Region', alarms: 0, production: '15,200m³', company: 'Saudi arabco', devices: 12 },
-    { id: '2', lat: 26.4207, lng: 50.0888, name: 'Eastern Province', alarms: 2, production: '18,500m³', company: 'Saudi arabco', devices: 18 },
-    { id: '3', lat: 21.3891, lng: 39.8579, name: 'Makkah Region', alarms: 0, production: '12,800m³', company: 'SABIC', devices: 8 },
-    { id: '4', lat: 26.3274, lng: 43.9750, name: 'Al-Qassim', alarms: 1, production: '9,200m³', company: 'ADNOC', devices: 6 },
-    { id: '5', lat: 18.2465, lng: 42.5326, name: 'Asir Region', alarms: 0, production: '16,450m³', company: 'Saudi arabco', devices: 14 },
+    {
+      id: '1',
+      lat: 24.7136,
+      lng: 46.6753,
+      name: 'Riyadh Region',
+      alarms: 0,
+      production: '15,200m³',
+      company: 'Saudi arabco',
+      devices: 12,
+    },
+    {
+      id: '2',
+      lat: 26.4207,
+      lng: 50.0888,
+      name: 'Eastern Province',
+      alarms: 2,
+      production: '18,500m³',
+      company: 'Saudi arabco',
+      devices: 18,
+    },
+    {
+      id: '3',
+      lat: 21.3891,
+      lng: 39.8579,
+      name: 'Makkah Region',
+      alarms: 0,
+      production: '12,800m³',
+      company: 'SABIC',
+      devices: 8,
+    },
+    {
+      id: '4',
+      lat: 26.3274,
+      lng: 43.975,
+      name: 'Al-Qassim',
+      alarms: 1,
+      production: '9,200m³',
+      company: 'ADNOC',
+      devices: 6,
+    },
+    {
+      id: '5',
+      lat: 18.2465,
+      lng: 42.5326,
+      name: 'Asir Region',
+      alarms: 0,
+      production: '16,450m³',
+      company: 'Saudi arabco',
+      devices: 14,
+    },
   ];
 
   // Build an array of [lat, lng] pairs for fitBounds
-  const boundsArray = useMemo(() => locations.map(l => [l.lat, l.lng] as [number, number]), [locations]);
+  const boundsArray = useMemo(
+    () => locations.map((l) => [l.lat, l.lng] as [number, number]),
+    [locations]
+  );
 
   // Map tile URL based on theme
-  const tileUrl = theme === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-
-  const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  const tileUrl =
+    theme === 'dark'
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
   // CSS for Leaflet controls/popups injected safely (no styled-jsx)
   const injectedCss = `
     .leaflet-control-zoom { border: none !important; }
     .leaflet-control-zoom a {
-      background-color: ${theme === 'dark' ? '#162345' : 'white'} !important;
-      color: ${theme === 'dark' ? '#e2e8f0' : '#374151'} !important;
-      border: 1px solid ${theme === 'dark' ? '#374151' : '#d1d5db'} !important;
+      background-color: ${theme === 'dark' ? '#151e35' : 'white'} !important;
+      color: ${theme === 'dark' ? '#e2e8f0' : '#1e271f'} !important;
+      border: 1px solid ${theme === 'dark' ? '#242835' : '#F7F7F7'} !important;
     }
     .leaflet-control-zoom a:hover {
-      background-color: ${theme === 'dark' ? '#334155' : '#f9fafb'} !important;
+      background-color: ${theme === 'dark' ? '#162345' : '#f9fafb'} !important;
     }
     .leaflet-popup-content-wrapper {
-      background-color: ${theme === 'dark' ? '#1f2937' : 'white'} !important;
-      color: ${theme === 'dark' ? 'white' : '#111827'} !important;
+      background-color: ${theme === 'dark' ? '#1623456e' : 'white'} !important;
+      color: ${theme === 'dark' ? 'white' : '#162345'} !important;
       border-radius: 8px !important;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     }
     .leaflet-popup-tip {
-      background-color: ${theme === 'dark' ? '#1f2937' : 'white'} !important;
+      background-color: ${theme === 'dark' ? '#1623455e' : 'white'} !important;
     }
     .leaflet-container { font-family: 'Poppins', sans-serif !important; }
   `;
@@ -118,7 +189,7 @@ const InteractiveMap: React.FC = () => {
         </h3>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <div className="w-3 h-3 rounded-full bg-[#46B8E9]"></div>
             <span
               className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
             >
@@ -126,7 +197,7 @@ const InteractiveMap: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <div className="w-3 h-3 rounded-full bg-[#4D3DF7]"></div>
             <span
               className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
             >
@@ -149,7 +220,7 @@ const InteractiveMap: React.FC = () => {
           style={{ height: '100%', width: '100%' }}
           className="z-10"
         >
-          <TileLayer url={tileUrl} attribution={attribution} />
+          <TileLayer url={tileUrl} />
           <FitBounds bounds={boundsArray} padding={30} />
 
           {locations.map((location) => (
@@ -157,7 +228,7 @@ const InteractiveMap: React.FC = () => {
               key={location.id}
               position={[location.lat, location.lng]}
               icon={createCustomIcon(
-                location.alarms > 0 ? '#ef4444' : '#22c55e',
+                location.alarms > 0 ? '#4D3DF7' : '#46B8E9',
                 location.alarms > 0
               )}
               eventHandlers={{ click: () => setSelectedLocation(location.id) }}
@@ -242,7 +313,7 @@ const InteractiveMap: React.FC = () => {
         <div
           className={`p-3 rounded-lg ${
             theme === 'dark'
-              ? 'bg-[#1E293B]'
+              ? 'bg-[#363b1e]'
               : 'bg-white border border-gray-200'
           }`}
         >

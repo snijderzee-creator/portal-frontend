@@ -40,43 +40,41 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className={`min-h-screen w-full relative ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
-      {/* Sidebar Drawer - Always present */}
-      <SidebarDrawer 
-        onDeviceSelect={handleDeviceSelect}
-        onHierarchySelect={handleHierarchySelect}
-        onInitialHierarchyLoad={handleInitialHierarchyLoad}
-        selectedDeviceId={selectedDevice?.id}
-        selectedHierarchyId={selectedHierarchy?.id}
-        isOpen={isSidebarOpen}
-        onToggle={toggleSidebar}
-      />
+    <div
+      className={`min-h-screen w-full ${
+        theme === 'dark' ? 'bg-[#0F172A]' : 'bg-[#F7F7F7]'
+      }`}
+    >
+      {/* Pass state + setter to header */}
+      <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Main Content Container */}
-      <div className="w-full flex flex-col">
-        {/* Header */}
-        <DashboardHeader 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
-          onToggleSidebar={toggleSidebar}
+      <div className="flex">
+        {/* Sidebar Drawer - Always present */}
+        <SidebarDrawer
+          onDeviceSelect={handleDeviceSelect}
+          onHierarchySelect={handleHierarchySelect}
+          onInitialHierarchyLoad={handleInitialHierarchyLoad}
+          selectedDeviceId={selectedDevice?.id}
+          selectedHierarchyId={selectedHierarchy?.id}
         />
-
         {/* Content Area */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 p-4">
           {/* Switch content based on activeTab */}
           {activeTab === 'Dashboard' && (
-            <DashboardContent 
-              selectedDevice={selectedDevice} 
+            <DashboardContent
+              selectedDevice={selectedDevice}
               selectedHierarchy={selectedHierarchy}
             />
           )}
-          
-          {activeTab === 'Devices' && (
-            <DevicesPage />
-          )}
-          
+
+          {activeTab === 'Devices' && <DevicesPage />}
+
           {activeTab === 'Alarms' && (
-            <div className={`p-6 min-h-full ${theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'}`}>
+            <div
+              className={`p-6 min-h-full ${
+                theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
+              }`}
+            >
               <AlarmsTable />
             </div>
           )}

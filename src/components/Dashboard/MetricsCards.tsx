@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { AlarmClock } from 'lucide-react';
 
 const MetricsCards: React.FC = () => {
   const { user } = useAuth();
@@ -16,14 +17,16 @@ const MetricsCards: React.FC = () => {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false
+        hour12: false,
       });
-      const dateString = now.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }).replace(/\//g, '.');
-      
+      const dateString = now
+        .toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        .replace(/\//g, '/');
+
       setCurrentTime(timeString);
       setCurrentDate(dateString);
     };
@@ -35,93 +38,136 @@ const MetricsCards: React.FC = () => {
 
   const metrics = [
     {
-      icon: '🛢️',
+      icon: '/oildark.png',
       title: 'Oil flow rate',
       value: '264.93',
       unit: 'bpd',
       change: '+35%',
       period: 'vs last month',
-      color: '#6366F1'
+      color: theme === 'dark' ? '#4D3DF7' : '#F56C44',
     },
     {
-      icon: '💧',
+      icon: '/waterdark.png',
       title: 'Water flow rate',
       value: '264.93',
       unit: 'bpd',
       change: '+35%',
       period: 'vs last month',
-      color: '#06B6D4'
+      color: theme === 'dark' ? '#46B8E9' : '#F6CA58',
     },
     {
-      icon: '🔥',
+      icon: '/gasdark.png',
       title: 'Gas flow rate',
       value: '264.93',
       unit: 'bpd',
       change: '+35%',
       period: 'vs last month',
-      color: '#EC4899'
-    }
+      color: theme === 'dark' ? '#F35DCB' : '#38BF9D',
+    },
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-6 mb-6">
+    <div className="grid grid-cols-4 gap-4 mb-4">
       {metrics.map((metric, index) => (
-        <div key={index} className={`rounded-lg p-4 ${
-          theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
-        }`}>
-          <div className="flex items-center gap-3 mb-4">
-            <div 
-              className="w-6 h-6 rounded-lg flex items-center justify-center"
+        <div
+          key={index}
+          className={`rounded-lg p-4 ${
+            theme === 'dark'
+              ? 'bg-[#162345]'
+              : 'bg-white border border-gray-200'
+          }`}
+        >
+          <div className="flex items-center gap-4 mb-3">
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center"
               style={{ backgroundColor: metric.color }}
             >
-              <span className="text-white text-xs">{metric.icon}</span>
+              <img src={metric.icon} alt={metric.title} className="w-6 h-6" />
             </div>
-            <span className={`text-xs ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>{metric.title}</span>
+            <span
+              className={`font-medium text-base ${
+                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+              }`}
+            >
+              {metric.title}
+            </span>
           </div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className={`text-xl font-bold ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>{metric.value}</span>
-            <span className={`text-sm ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>{metric.unit}</span>
+          <div className="flex items-baseline gap-4 mb-2">
+            <span
+              className={`lg:text-5xl md:text-4xl font-bold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              {metric.value}
+            </span>
+            <span
+              className={`text-xl ${
+                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+              }`}
+            >
+              {metric.unit}
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-green-400 text-xs">{metric.change}</span>
-            <span className={`text-xs ${
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-            }`}>{metric.period}</span>
+            <span className="text-[#4D3DF7] text-xs">{metric.change}</span>
+            <span
+              className={`text-xs ${
+                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+              }`}
+            >
+              {metric.period}
+            </span>
           </div>
         </div>
       ))}
-      
+
       {/* Time/Date/User Info Card */}
-      <div className={`rounded-lg p-4 ${
-        theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
-      }`}>
+      <div
+        className={`rounded-lg p-4 ${
+          theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
+        }`}
+      >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-6 h-6 rounded-lg bg-[#6366F1] flex items-center justify-center">
-            <span className="text-white text-xs">⏰</span>
+          <div className="w-10 h-10 rounded-lg bg-[#d82e75] flex items-center justify-center">
+            <span className="text-white text-xs">
+              <AlarmClock />
+            </span>
           </div>
-          <span className={`text-xs ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}>System Info</span>
+          <span
+            className={`font-medium text-base ${
+              theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+            }`}
+          >
+            System Info
+          </span>
         </div>
         <div className="space-y-2">
-          <div className="flex items-baseline gap-2">
-            <span className={`text-xl font-bold font-mono ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>{currentTime}</span>
+          <div className="flex flex-row items-baseline gap-6">
+            <div
+              className={`font-semibold text-3xl ${
+                theme === 'dark' ? 'text-[#fff]' : 'text-[#171718]'
+              }`}
+            >
+              {currentDate}
+            </div>
+            <span
+              className={`text-3xl font-bold  ${
+                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+              }`}
+            >
+              {currentTime}
+            </span>
           </div>
-          <div className={`text-xs ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}>{currentDate}</div>
-          <div className={`text-xs ${
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-          }`}>
-            Last login: {user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('en-GB') : 'Today'}
+
+          <div
+            className={`text-xs ${
+              theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+            }`}
+          >
+            Last login:{' '}
+            {user?.lastLogin
+              ? new Date(user.lastLogin).toLocaleDateString('en-GB')
+              : 'Today'}
           </div>
         </div>
       </div>
