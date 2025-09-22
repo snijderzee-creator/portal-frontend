@@ -150,6 +150,134 @@ export interface HierarchyChartData {
   totalDevices: number;
 }
 
+// Device interfaces for new API structure
+export interface DeviceFlowData {
+  gfr: number;
+  gor: number;
+  ofr: number;
+  wfr: number;
+  gvf: number;
+  wlr: number;
+  pressure: number;
+  temperature: number;
+}
+
+export interface DeviceLocation {
+  longitude?: number;
+  latitude?: number;
+}
+
+export interface EnhancedDevice {
+  deviceId: number;
+  deviceSerial: string;
+  deviceName: string;
+  deviceLogo?: string;
+  wellName: string;
+  hierarchyLevel?: string;
+  companyName?: string;
+  metadata: any;
+  location: DeviceLocation;
+  lastCommTime?: string;
+  receivedAt?: string;
+  status: 'Online' | 'Offline';
+  flowData: DeviceFlowData;
+  createdAt?: string;
+  latestData?: any;
+}
+
+export interface DevicesResponse {
+  hierarchy?: {
+    id: number;
+    name: string;
+    company: string;
+  };
+  devices: EnhancedDevice[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  statistics: {
+    totalDevices: number;
+    onlineDevices: number;
+    offlineDevices: number;
+    deviceTypes: number;
+    locations?: number;
+  };
+  filters: {
+    availableDeviceTypes: string[];
+    currentFilters: {
+      search: string;
+      status: string;
+      deviceType: string;
+    };
+  };
+}
+
+// Alarm interfaces
+export interface AlarmType {
+  id: number;
+  name: string;
+  description?: string;
+  severity: 'Critical' | 'Major' | 'Minor' | 'Warning';
+}
+
+export interface AlarmStatus {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+export interface DeviceAlarm {
+  id: number;
+  deviceSerial: string;
+  deviceName?: string;
+  wellName?: string;
+  alarmType: AlarmType;
+  alarmStatus: AlarmStatus;
+  message?: string;
+  severity: 'Critical' | 'Major' | 'Minor' | 'Warning';
+  createdAt: string;
+  acknowledgedAt?: string;
+  resolvedAt?: string;
+  acknowledgedBy?: string;
+  metadata?: any;
+}
+
+export interface AlarmStatistics {
+  total: number;
+  active: number;
+  acknowledged: number;
+  resolved: number;
+  by_severity: {
+    critical: number;
+    major: number;
+    minor: number;
+    warning: number;
+  };
+}
+
+export interface AlarmsResponse {
+  alarms: DeviceAlarm[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  statistics: AlarmStatistics;
+  filters: {
+    hierarchy_id?: number;
+    device_serial?: string;
+    alarm_type_id?: number;
+    status_id?: number;
+    severity?: string;
+    sort_by: string;
+    sort_order: string;
+  };
+}
+
 class ApiService {
   private getErrorMessage(error: any): string {
     // Handle different types of errors with user-friendly messages
@@ -402,6 +530,350 @@ class ApiService {
 
   async getChartsDashboardData(token: string): Promise<ApiResponse<any>> {
     return this.makeRequest('/charts/dashboard', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  // Enhanced Devices API endpoints
+  async getDevicesByHierarchy(
+    hierarchyId: number, 
+    token: string, 
+    filters?: {
+      search?: string;
+      status?: string;
+      deviceType?: string;
+    }
+  ): Promise<ApiResponse<DevicesResponse>> {
+    const params = new URLSearchParams();
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.deviceType) params.append('deviceType', filters.deviceType);
+    
+    const queryString = params.toString();
+    const url = `/devices/hierarchy/${hierarchyId}${queryString ? `?${queryString}` : ''}`;
+    
+    return this.makeRequest(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getAllDevicesEnhanced(
+    token: string,
+    filters?: {
+      search?: string;
+      status?: string;
+      deviceType?: string;
+      page?: number;
+      limit?: number;
+      company_id?: number;
+    }
+  ): Promise<ApiResponse<DevicesResponse>> {
+    const params = new URLSearchParams();
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.deviceType) params.append('deviceType', filters.deviceType);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.company_id) params.append('company_id', filters.company_id.toString());
+    
+    const queryString = params.toString();
+    const url = `/devices${queryString ? `?${queryString}` : ''}`;
+    
+    return this.makeRequest(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getDeviceByIdEnhanced(deviceId: number, token: string): Promise<ApiResponse<{
+    device: EnhancedDevice;
+    recentHistory: Array<{
+      timestamp: string;
+      data: any;
+      location: DeviceLocation;
+    }>;
+  }>> {
+    return this.makeRequest(`/devices/${deviceId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async updateDeviceMetadata(deviceId: number, metadata: any, token: string): Promise<ApiResponse> {
+    return this.makeRequest(`/devices/${deviceId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ metadata }),
+    });
+  }
+
+  // Alarms API endpoints
+  async getAlarms(
+    token: string,
+    filters?: {
+      hierarchy_id?: number;
+      device_serial?: string;
+      alarm_type_id?: number;
+      status_id?: number;
+      severity?: string;
+      page?: number;
+      limit?: number;
+      sort_by?: string;
+      sort_order?: string;
+      company_id?: number;
+    }
+  ): Promise<ApiResponse<AlarmsResponse>> {
+    const params = new URLSearchParams();
+    if (filters?.hierarchy_id) params.append('hierarchy_id', filters.hierarchy_id.toString());
+    if (filters?.device_serial) params.append('device_serial', filters.device_serial);
+    if (filters?.alarm_type_id) params.append('alarm_type_id', filters.alarm_type_id.toString());
+    if (filters?.status_id) params.append('status_id', filters.status_id.toString());
+    if (filters?.severity) params.append('severity', filters.severity);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.sort_by) params.append('sort_by', filters.sort_by);
+    if (filters?.sort_order) params.append('sort_order', filters.sort_order);
+    if (filters?.company_id) params.append('company_id', filters.company_id.toString());
+    
+    const queryString = params.toString();
+    const url = `/alarms${queryString ? `?${queryString}` : ''}`;
+    
+    return this.makeRequest(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getAlarmById(alarmId: number, token: string): Promise<ApiResponse<{ alarm: DeviceAlarm }>> {
+    return this.makeRequest(`/alarms/${alarmId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async createAlarm(
+    alarmData: {
+      device_serial: string;
+      alarm_type_id: number;
+      message?: string;
+      metadata?: any;
+    },
+    token: string
+  ): Promise<ApiResponse<{ alarm: DeviceAlarm }>> {
+    return this.makeRequest('/alarms', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(alarmData),
+    });
+  }
+
+  async updateAlarmStatus(
+    alarmId: number,
+    statusId: number,
+    token: string
+  ): Promise<ApiResponse<{ alarm: DeviceAlarm }>> {
+    return this.makeRequest(`/alarms/${alarmId}/status`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status_id: statusId }),
+    });
+  }
+
+  async getAlarmTypes(token: string): Promise<ApiResponse<{ alarm_types: AlarmType[] }>> {
+    return this.makeRequest('/alarms/types/all', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getAlarmStatuses(token: string): Promise<ApiResponse<{ alarm_statuses: AlarmStatus[] }>> {
+    return this.makeRequest('/alarms/statuses/all', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getAlarmDashboard(
+    token: string,
+    filters?: {
+      hierarchy_id?: number;
+      company_id?: number;
+    }
+  ): Promise<ApiResponse<{
+    statistics: AlarmStatistics;
+    recent_alarms: DeviceAlarm[];
+    company_id: number;
+    hierarchy_id?: number;
+  }>> {
+    const params = new URLSearchParams();
+    if (filters?.hierarchy_id) params.append('hierarchy_id', filters.hierarchy_id.toString());
+    if (filters?.company_id) params.append('company_id', filters.company_id.toString());
+    
+    const queryString = params.toString();
+    const url = `/alarms/dashboard/stats${queryString ? `?${queryString}` : ''}`;
+    
+    return this.makeRequest(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  // Enhanced Charts API endpoints
+  async getDeviceChartDataEnhanced(
+    deviceId: number, 
+    timeRange: string = 'day', 
+    token: string
+  ): Promise<ApiResponse<{
+    device: EnhancedDevice;
+    chartData: Array<{
+      timestamp: string;
+      gfr: number;
+      gor: number;
+      gvf: number;
+      ofr: number;
+      wfr: number;
+      wlr: number;
+      pressure: number;
+      temperature: number;
+      dataPoints: number;
+    }>;
+    latestData?: {
+      timestamp: string;
+      data: any;
+      longitude?: number;
+      latitude?: number;
+    };
+    timeRange: string;
+    totalDataPoints: number;
+  }>> {
+    return this.makeRequest(`/charts/device/${deviceId}?timeRange=${timeRange}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getHierarchyChartDataEnhanced(
+    hierarchyId: number, 
+    timeRange: string = 'day', 
+    token: string
+  ): Promise<ApiResponse<{
+    hierarchy: HierarchyNode;
+    chartData: Array<{
+      timestamp: string;
+      totalGfr: number;
+      totalGor: number;
+      totalOfr: number;
+      totalWfr: number;
+      totalGvf: number;
+      totalWlr: number;
+      avgPressure: number;
+      avgTemperature: number;
+      deviceCount: number;
+    }>;
+    devices: Array<{
+      id: number;
+      serialNumber: string;
+      deviceType: string;
+      hierarchyName: string;
+      metadata: any;
+      latestData?: any;
+      latestDataTime?: string;
+    }>;
+    timeRange: string;
+    totalDataPoints: number;
+    totalDevices: number;
+  }>> {
+    return this.makeRequest(`/charts/hierarchy/${hierarchyId}?timeRange=${timeRange}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getDeviceRealtimeDataEnhanced(deviceId: number, token: string): Promise<ApiResponse<{
+    device: EnhancedDevice;
+    latestData?: {
+      timestamp: string;
+      receivedAt: string;
+      data: any;
+      longitude?: number;
+      latitude?: number;
+      serialNumber: string;
+      deviceType: string;
+    };
+  }>> {
+    return this.makeRequest(`/charts/device/${deviceId}/realtime`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getChartsDashboardDataEnhanced(
+    token: string,
+    companyId?: number
+  ): Promise<ApiResponse<{
+    company: {
+      id: number;
+      name: string;
+    };
+    statistics: {
+      totalDevices: number;
+      totalHierarchies: number;
+      hierarchyBreakdown: Array<{
+        level: string;
+        count: number;
+      }>;
+      deviceBreakdown: Array<{
+        type: string;
+        count: number;
+      }>;
+    };
+    recentActivity: Array<{
+      deviceSerial: string;
+      deviceType: string;
+      timestamp: string;
+      data: any;
+    }>;
+    userRole: string;
+  }>> {
+    const params = new URLSearchParams();
+    if (companyId) params.append('company_id', companyId.toString());
+    
+    const queryString = params.toString();
+    const url = `/charts/dashboard${queryString ? `?${queryString}` : ''}`;
+    
+    return this.makeRequest(url, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
