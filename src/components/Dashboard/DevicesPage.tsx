@@ -241,7 +241,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
           theme === 'dark' ? 'bg-[#2A2D47]' : 'bg-white border border-gray-200'
         }`}>
           {/* Table Header */}
-          <div className={`grid grid-cols-10 gap-4 px-6 py-4 border-b ${
+          <div className={`grid grid-cols-11 gap-4 px-6 py-4 border-b ${
             theme === 'dark' 
               ? 'bg-[#1E1F2E] border-[#3A3D57]' 
               : 'bg-gray-50 border-gray-200'
@@ -258,6 +258,9 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
             <div className={`text-sm font-medium ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             }`}>Last Comm. Time</div>
+            <div className={`text-sm font-medium ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>Water Cut (%)</div>
             <div className={`text-sm font-medium ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             }`}>GVF(%)</div>
@@ -280,7 +283,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
             theme === 'dark' ? 'divide-[#3A3D57]' : 'divide-gray-200'
           }`}>
             {devices.map((device) => (
-              <div key={device.deviceId} className={`grid grid-cols-10 gap-4 px-6 py-4 transition-colors ${
+              <div key={device.deviceId} className={`grid grid-cols-11 gap-4 px-6 py-4 transition-colors ${
                 theme === 'dark' ? 'hover:bg-[#3A3D57]' : 'hover:bg-gray-50'
               }`}>
                 <div className={`text-sm font-medium ${
@@ -295,6 +298,9 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                 }`}>{device.lastCommTime ? new Date(device.lastCommTime).toLocaleString() : 'N/A'}</div>
+                <div className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>{device.flowData.wlr.toFixed(1)}%</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                 }`}>{device.flowData.gvf.toFixed(1)}%</div>
@@ -398,7 +404,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
                   <div>
                     <span className={`text-xs ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>WLR</span>
+                    }`}>Water Cut</span>
                     <p className={`font-semibold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>{device.flowData.wlr.toFixed(1)}%</p>
