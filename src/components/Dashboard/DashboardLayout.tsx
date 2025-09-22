@@ -4,7 +4,7 @@ import SidebarDrawer from '../Shared/SidebarDrawer';
 import DashboardContent from './DashboardContent';
 import DevicesPage from './DevicesPage';
 import AlarmsTable from './AlarmsTable';
-import { Device } from '../../services/api';
+import { Device, HierarchyNode } from '../../services/api';
 import DashboardHeader from './DashboardHeader';
 
 interface DashboardLayoutProps {
@@ -15,22 +15,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
-  const [selectedHierarchy, setSelectedHierarchy] = useState<any>(null);
+  const [selectedHierarchy, setSelectedHierarchy] = useState<HierarchyNode | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleDeviceSelect = (device: Device) => {
     setSelectedDevice(device);
     setSelectedHierarchy(null);
-    setActiveTab('Dashboard');
+    // Don't automatically switch to Dashboard - stay on current tab
   };
 
-  const handleHierarchySelect = (hierarchy: any) => {
+  const handleHierarchySelect = (hierarchy: HierarchyNode) => {
     setSelectedHierarchy(hierarchy);
     setSelectedDevice(null);
-    setActiveTab('Dashboard');
+    // Don't automatically switch to Dashboard - stay on current tab
   };
 
-  const handleInitialHierarchyLoad = (hierarchy: any) => {
+  const handleInitialHierarchyLoad = (hierarchy: HierarchyNode) => {
     setSelectedHierarchy(hierarchy);
     setSelectedDevice(null);
   };
@@ -67,16 +67,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             />
           )}
 
-          {activeTab === 'Devices' && <DevicesPage />}
+          {activeTab === 'Devices' && (
+            <DevicesPage 
+              selectedHierarchy={selectedHierarchy}
+              selectedDevice={selectedDevice}
+            />
+          )}
 
           {activeTab === 'Alarms' && (
-            <div
-              className={`p-6 min-h-full ${
-                theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
-              }`}
-            >
-              <AlarmsTable />
-            </div>
+            <AlarmsTable 
+              selectedHierarchy={selectedHierarchy}
+              selectedDevice={selectedDevice}
+            />
           )}
         </div>
       </div>

@@ -2,28 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Search, Grid, List, Wifi, WifiOff } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
-import { apiService, Device } from '../../services/api';
+import { apiService, EnhancedDevice, DevicesResponse, HierarchyNode, Device } from '../../services/api';
 
-interface DeviceData extends Device {
-  wellName?: string;
-  lastCommTime?: string;
-  waterCut?: number;
-  gvf?: number;
-  wfr?: number;
-  ofr?: number;
-  gfr?: number;
-  status?: 'Online' | 'Offline';
+interface DevicesPageProps {
+  selectedHierarchy?: HierarchyNode | null;
+  selectedDevice?: Device | null;
 }
 
-const DevicesPage: React.FC = () => {
+const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDevice }) => {
   const { token } = useAuth();
   const { theme } = useTheme();
-  const [devices, setDevices] = useState<DeviceData[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<DeviceData[]>([]);
+  const [devicesData, setDevicesData] = useState<DevicesResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [deviceTypeFilter, setDeviceTypeFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
+  const itemsPerPage = 20;
 
   useEffect(() => {
     const loadDevices = async () => {
@@ -31,22 +28,28 @@ const DevicesPage: React.FC = () => {
       
       setIsLoading(true);
       try {
-        const response = await apiService.getAllDevices(token);
+        let response;
+        
+        if (selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name) {
+          // Load devices for specific hierarchy
+          response = await apiService.getDevicesByHierarchy(parseInt(selectedHierarchy.id), token, {
+            search: searchTerm || undefined,
+            status: statusFilter !== 'all' ? statusFilter : undefined,
+            deviceType: deviceTypeFilter !== 'all' ? deviceTypeFilter : undefined,
+          });
+        } else {
+          // Load all devices for company
+          response = await apiService.getAllDevicesEnhanced(token, {
+            search: searchTerm || undefined,
+            status: statusFilter !== 'all' ? statusFilter : undefined,
+            deviceType: deviceTypeFilter !== 'all' ? deviceTypeFilter : undefined,
+            page: currentPage,
+            limit: itemsPerPage,
+          });
+        }
+        
         if (response.success && response.data) {
-          // Mock additional data for demonstration
-          const enhancedDevices: DeviceData[] = response.data.devices.map((device, index) => ({
-            ...device,
-            wellName: `Pipe${String(index + 1).padStart(3, '0')}-01`,
-            lastCommTime: '2025-09-01 08:15Z',
-            waterCut: Math.floor(Math.random() * 30) + 10,
-            gvf: Math.floor(Math.random() * 30) + 10,
-            wfr: Math.floor(Math.random() * 5000) + 1000,
-            ofr: Math.floor(Math.random() * 5000) + 1000,
-            gfr: Math.floor(Math.random() * 20000) + 5000,
-            status: Math.random() > 0.3 ? 'Online' : 'Offline'
-          }));
-          setDevices(enhancedDevices);
-          setFilteredDevices(enhancedDevices);
+          setDevicesData(response.data);
         } else {
           setError(response.message);
         }
@@ -59,19 +62,22 @@ const DevicesPage: React.FC = () => {
     };
 
     loadDevices();
-  }, [token]);
+  }, [token, searchTerm, statusFilter, deviceTypeFilter, currentPage, selectedHierarchy]);
 
-  useEffect(() => {
-    const filtered = devices.filter(device =>
-      device.serial_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      device.wellName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      device.type.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredDevices(filtered);
-  }, [searchTerm, devices]);
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
 
-  const onlineCount = filteredDevices.filter(d => d.status === 'Online').length;
-  const offlineCount = filteredDevices.filter(d => d.status === 'Offline').length;
+  const handleStatusFilter = (status: string) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
+  const handleDeviceTypeFilter = (deviceType: string) => {
+    setDeviceTypeFilter(deviceType);
+    setCurrentPage(1);
+  };
 
   if (isLoading) {
     return (
@@ -90,15 +96,39 @@ const DevicesPage: React.FC = () => {
     );
   }
 
+  if (!devicesData) {
+    return (
+      <div className="p-4 rounded-lg bg-gray-900/20 text-gray-400">
+        No device data available
+      </div>
+    );
+  }
+
+  const { devices, statistics, pagination, filters } = devicesData;
+
   return (
     <div className={`p-6 h-full overflow-y-auto ${
       theme === 'dark' ? 'bg-[#1E1F2E]' : 'bg-gray-50'
     }`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className={`text-2xl font-semibold ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        }`}>Device List</h1>
+        <div>
+          <h1 className={`text-2xl font-semibold ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>
+            {selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name 
+              ? `Devices in ${selectedHierarchy.name}` 
+              : 'All Devices'
+            }
+          </h1>
+          {selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name && (
+            <p className={`text-sm mt-1 ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              {selectedHierarchy.level}: {selectedHierarchy.name}
+            </p>
+          )}
+        </div>
         
         <div className="flex items-center gap-4">
           {/* View Toggle */}
@@ -138,31 +168,71 @@ const DevicesPage: React.FC = () => {
               <span className={`text-sm ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
               }`}>Online</span>
+              <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                {statistics.onlineDevices}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-[#EC4899] rounded-full"></div>
               <span className={`text-sm ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
               }`}>Offline</span>
+              <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                {statistics.offlineDevices}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative mb-6 max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search Bar"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6366F1] ${
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 mb-6">
+        {/* Search Bar */}
+        <div className="relative flex-1 min-w-64">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search devices..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6366F1] ${
+              theme === 'dark'
+                ? 'bg-[#2A2D47] border-[#3A3D57] text-white placeholder-gray-400 focus:border-[#6366F1]'
+                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#6366F1]'
+            }`}
+          />
+        </div>
+
+        {/* Status Filter */}
+        <select
+          value={statusFilter}
+          onChange={(e) => handleStatusFilter(e.target.value)}
+          className={`px-4 py-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6366F1] ${
             theme === 'dark'
-              ? 'bg-[#2A2D47] border-[#3A3D57] text-white placeholder-gray-400 focus:border-[#6366F1]'
-              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#6366F1]'
+              ? 'bg-[#2A2D47] border-[#3A3D57] text-white focus:border-[#6366F1]'
+              : 'bg-white border-gray-300 text-gray-900 focus:border-[#6366F1]'
           }`}
-        />
+        >
+          <option value="all">All Status</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+        </select>
+
+        {/* Device Type Filter */}
+        <select
+          value={deviceTypeFilter}
+          onChange={(e) => handleDeviceTypeFilter(e.target.value)}
+          className={`px-4 py-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6366F1] ${
+            theme === 'dark'
+              ? 'bg-[#2A2D47] border-[#3A3D57] text-white focus:border-[#6366F1]'
+              : 'bg-white border-gray-300 text-gray-900 focus:border-[#6366F1]'
+          }`}
+        >
+          <option value="all">All Types</option>
+          {filters.availableDeviceTypes.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
       </div>
 
       {/* Content */}
@@ -190,9 +260,6 @@ const DevicesPage: React.FC = () => {
             }`}>Last Comm. Time</div>
             <div className={`text-sm font-medium ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>Water Cut(%)</div>
-            <div className={`text-sm font-medium ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             }`}>GVF(%)</div>
             <div className={`text-sm font-medium ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
@@ -212,37 +279,34 @@ const DevicesPage: React.FC = () => {
           <div className={`divide-y ${
             theme === 'dark' ? 'divide-[#3A3D57]' : 'divide-gray-200'
           }`}>
-            {filteredDevices.map((device, index) => (
-              <div key={device.id} className={`grid grid-cols-10 gap-4 px-6 py-4 transition-colors ${
+            {devices.map((device) => (
+              <div key={device.deviceId} className={`grid grid-cols-10 gap-4 px-6 py-4 transition-colors ${
                 theme === 'dark' ? 'hover:bg-[#3A3D57]' : 'hover:bg-gray-50'
               }`}>
                 <div className={`text-sm font-medium ${
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>{device.serial_number}</div>
+                }`}>{device.deviceName}</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                 }`}>{device.wellName}</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>{device.serial_number}</div>
+                }`}>{device.deviceSerial}</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>{device.lastCommTime}</div>
+                }`}>{device.lastCommTime ? new Date(device.lastCommTime).toLocaleString() : 'N/A'}</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>{device.waterCut}%</div>
+                }`}>{device.flowData.gvf.toFixed(1)}%</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>{device.gvf}%</div>
+                }`}>{device.flowData.wfr.toFixed(0)}</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>{device.wfr}</div>
+                }`}>{device.flowData.ofr.toFixed(0)}</div>
                 <div className={`text-sm ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>{device.ofr}</div>
-                <div className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>{device.gfr}</div>
+                }`}>{device.flowData.gfr.toFixed(0)}</div>
                 <div>
                   <span
                     className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
@@ -260,9 +324,9 @@ const DevicesPage: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredDevices.map((device) => (
+          {devices.map((device) => (
             <div
-              key={device.id}
+              key={device.deviceId}
               className={`rounded-lg p-6 border transition-colors hover:border-[#6366F1] ${
                 theme === 'dark' ? 'bg-[#2A2D47] border-[#3A3D57]' : 'bg-white border-gray-200'
               }`}
@@ -272,16 +336,16 @@ const DevicesPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-[#6366F1] rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">
-                      {device.serial_number.slice(-2)}
+                      {device.deviceSerial.slice(-2)}
                     </span>
                   </div>
                   <div>
                     <h3 className={`font-semibold text-sm ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>{device.serial_number}</h3>
+                    }`}>{device.deviceSerial}</h3>
                     <p className={`text-xs ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>{device.type}</p>
+                    }`}>{device.deviceName}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -317,7 +381,7 @@ const DevicesPage: React.FC = () => {
                   }`}>Last Comm:</span>
                   <span className={`text-xs ${
                     theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}>{device.lastCommTime}</span>
+                  }`}>{device.lastCommTime ? new Date(device.lastCommTime).toLocaleString() : 'N/A'}</span>
                 </div>
 
                 <div className={`grid grid-cols-2 gap-3 pt-2 border-t ${
@@ -326,18 +390,18 @@ const DevicesPage: React.FC = () => {
                   <div>
                     <span className={`text-xs ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>Water Cut</span>
+                    }`}>GVF</span>
                     <p className={`font-semibold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>{device.waterCut}%</p>
+                    }`}>{device.flowData.gvf.toFixed(1)}%</p>
                   </div>
                   <div>
                     <span className={`text-xs ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>GVF</span>
+                    }`}>WLR</span>
                     <p className={`font-semibold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>{device.gvf}%</p>
+                    }`}>{device.flowData.wlr.toFixed(1)}%</p>
                   </div>
                 </div>
 
@@ -348,7 +412,7 @@ const DevicesPage: React.FC = () => {
                     }`}>WFR</span>
                     <p className={`font-semibold text-xs ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>{device.wfr}</p>
+                    }`}>{device.flowData.wfr.toFixed(0)}</p>
                   </div>
                   <div>
                     <span className={`text-xs ${
@@ -356,7 +420,7 @@ const DevicesPage: React.FC = () => {
                     }`}>OFR</span>
                     <p className={`font-semibold text-xs ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>{device.ofr}</p>
+                    }`}>{device.flowData.ofr.toFixed(0)}</p>
                   </div>
                   <div>
                     <span className={`text-xs ${
@@ -364,7 +428,7 @@ const DevicesPage: React.FC = () => {
                     }`}>GFR</span>
                     <p className={`font-semibold text-xs ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>{device.gfr}</p>
+                    }`}>{device.flowData.gfr.toFixed(0)}</p>
                   </div>
                 </div>
 
@@ -376,7 +440,7 @@ const DevicesPage: React.FC = () => {
                   }`}>Location:</span>
                   <span className={`text-xs ${
                     theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}>{device.location || 'Not assigned'}</span>
+                  }`}>{device.wellName || 'Not assigned'}</span>
                 </div>
               </div>
             </div>
@@ -384,7 +448,55 @@ const DevicesPage: React.FC = () => {
         </div>
       )}
 
-      {filteredDevices.length === 0 && (
+      {/* Pagination */}
+      {pagination && pagination.pages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <div className={`text-sm ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} devices
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className={`px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${
+                currentPage === 1
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+              } ${
+                theme === 'dark'
+                  ? 'bg-[#2A2D47] border-[#3A3D57] text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
+            >
+              Previous
+            </button>
+            <span className={`px-3 py-2 text-sm ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}>
+              Page {pagination.page} of {pagination.pages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(Math.min(pagination.pages, currentPage + 1))}
+              disabled={currentPage === pagination.pages}
+              className={`px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${
+                currentPage === pagination.pages
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+              } ${
+                theme === 'dark'
+                  ? 'bg-[#2A2D47] border-[#3A3D57] text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {devices.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <div className={`text-lg mb-2 ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'

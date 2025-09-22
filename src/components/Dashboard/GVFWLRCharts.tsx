@@ -1,25 +1,45 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
+import { HierarchyChartData, DeviceChartData } from '../../services/api';
 import { Info } from 'lucide-react';
 
-const GVFWLRCharts: React.FC = () => {
+interface GVFWLRChartsProps {
+  chartData?: DeviceChartData | null;
+  hierarchyChartData?: HierarchyChartData | null;
+}
+
+const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartData }) => {
   const { theme } = useTheme();
 
+  // Calculate GVF and WLR values from chart data
+  let gvfValue = 65;
+  let wlrValue = 85;
+
+  if (hierarchyChartData?.chartData && hierarchyChartData.chartData.length > 0) {
+    const latestData = hierarchyChartData.chartData[hierarchyChartData.chartData.length - 1];
+    gvfValue = latestData.totalGvf || 65;
+    wlrValue = latestData.totalWlr || 85;
+  } else if (chartData?.chartData && chartData.chartData.length > 0) {
+    const latestData = chartData.chartData[chartData.chartData.length - 1];
+    gvfValue = latestData.gvf || 65;
+    wlrValue = latestData.wlr || 85;
+  }
+
   const gvfData = [
-    { name: 'GVF', value: 65, color: theme === 'dark' ? '#4D3DF7' : '#38BF9D' },
+    { name: 'GVF', value: gvfValue, color: theme === 'dark' ? '#4D3DF7' : '#38BF9D' },
     {
       name: 'Remaining',
-      value: 35,
+      value: 100 - gvfValue,
       color: theme === 'dark' ? '#FE44CC' : '#F56C44',
     },
   ];
 
   const wlrData = [
-    { name: 'WLR', value: 85, color: theme === 'dark' ? '#4D3DF7' : '#38BF9D' },
+    { name: 'WLR', value: wlrValue, color: theme === 'dark' ? '#4D3DF7' : '#38BF9D' },
     {
       name: 'Remaining',
-      value: 15,
+      value: 100 - wlrValue,
       color: theme === 'dark' ? '#22D3EE' : '#F6CA58',
     },
   ];
@@ -73,7 +93,7 @@ const GVFWLRCharts: React.FC = () => {
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
-              65%
+              {Math.round(gvfValue)}%
             </span>
             <span
               className={`lg:text-xL font-medium ${
@@ -114,7 +134,7 @@ const GVFWLRCharts: React.FC = () => {
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
-              85%
+              {Math.round(wlrValue)}%
             </span>
             <span
               className={`text-xl font-medium ${

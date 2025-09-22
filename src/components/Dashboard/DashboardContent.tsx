@@ -30,22 +30,51 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   useEffect(() => {
     // Load chart data when a device or hierarchy is selected
     if (selectedDevice && !selectedHierarchy) {
-      loadDeviceChartData(String(selectedDevice.id));
+      loadDeviceChartData(selectedDevice.deviceId || selectedDevice.id);
       setHierarchyChartData(null); // Clear hierarchy data
     } else if (selectedHierarchy && !selectedDevice) {
-      loadHierarchyChartData(String(selectedHierarchy.id));
+      loadHierarchyChartData(selectedHierarchy.id);
       setChartData(null); // Clear device data
     }
   }, [selectedDevice, selectedHierarchy, timeRange, token]);
 
-  const loadDeviceChartData = async (deviceId: string) => {
+  const loadDeviceChartData = async (deviceId: number | string) => {
     if (!token) return;
     
     setIsLoading(true);
     try {
-      const response = await apiService.getDeviceChartData(deviceId, timeRange, token);
+      // Use the correct property name based on the Device interface
+      const deviceIdNumber = typeof deviceId === 'string' ? parseInt(deviceId) : deviceId;
+      const response = await apiService.getDeviceChartDataEnhanced(deviceIdNumber, timeRange, token);
       if (response.success && response.data) {
-        setChartData(response.data);
+        // Transform the enhanced API response to match the existing interface
+        const transformedData: DeviceChartData = {
+          device: {
+            id: response.data.device.deviceId?.toString() || deviceId.toString(),
+            serial_number: response.data.device.deviceSerial,
+            type: response.data.device.deviceName,
+            logo: response.data.device.deviceLogo,
+            metadata: response.data.device.metadata,
+            created_at: response.data.device.createdAt || new Date().toISOString(),
+            location: response.data.device.wellName,
+            company: response.data.device.companyName || 'Unknown'
+          },
+          chartData: response.data.chartData.map(point => ({
+            timestamp: point.timestamp,
+            gfr: point.gfr,
+            gor: point.gor,
+            gvf: point.gvf,
+            ofr: point.ofr,
+            wfr: point.wfr,
+            wlr: point.wlr,
+            pressure: point.pressure,
+            temperature: point.temperature
+          })),
+          latestData: response.data.latestData,
+          timeRange: response.data.timeRange,
+          totalDataPoints: response.data.totalDataPoints
+        };
+        setChartData(transformedData);
       }
     } catch (error) {
       console.error('Failed to load device chart data:', error);
@@ -54,12 +83,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     }
   };
 
-  const loadHierarchyChartData = async (hierarchyId: string) => {
+  const loadHierarchyChartData = async (hierarchyId: number | string) => {
     if (!token) return;
     
     setIsLoading(true);
     try {
-      const response = await apiService.getHierarchyChartData(hierarchyId, timeRange, token);
+      const response = await apiService.getHierarchyChartDataEnhanced(Number(hierarchyId), timeRange, token);
       if (response.success && response.data) {
         setHierarchyChartData(response.data);
       }
@@ -79,7 +108,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       {children || (
         <>
           {/* Metrics Cards */}
-          <MetricsCards />
+          <MetricsCards 
+            selectedHierarchy={selectedHierarchy}
+            selectedDevice={selectedDevice}
+            chartData={chartData}
+            hierarchyChartData={hierarchyChartData}
+          />
 
           {/* Main Content Grid */}
           <div className="flex gap-4 mb-4">
@@ -105,7 +139,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                     : 'bg-white border border-gray-200'
                 }`}
               >
-                <GVFWLRCharts />
+                <GVFWLRCharts 
+                  chartData={chartData}
+                  hierarchyChartData={hierarchyChartData}
+                />
               </div>
             </div>
           </div>

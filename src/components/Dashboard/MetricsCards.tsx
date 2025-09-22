@@ -2,13 +2,33 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { apiService, HierarchyChartData, DeviceChartData } from '../../services/api';
 import { AlarmClock } from 'lucide-react';
 
-const MetricsCards: React.FC = () => {
-  const { user } = useAuth();
+interface MetricsCardsProps {
+  selectedHierarchy?: any;
+  selectedDevice?: any;
+  chartData?: DeviceChartData | null;
+  hierarchyChartData?: HierarchyChartData | null;
+}
+
+const MetricsCards: React.FC<MetricsCardsProps> = ({ 
+  selectedHierarchy, 
+  selectedDevice, 
+  chartData, 
+  hierarchyChartData 
+}) => {
+  const { user, token } = useAuth();
   const { theme } = useTheme();
   const [currentTime, setCurrentTime] = useState('');
   const [currentDate, setCurrentDate] = useState('');
+  const [flowRateData, setFlowRateData] = useState({
+    totalOFR: 0,
+    totalWFR: 0,
+    totalGFR: 0,
+    avgGVF: 0,
+    avgWLR: 0
+  });
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -36,11 +56,42 @@ const MetricsCards: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    // Calculate flow rate totals from chart data
+    if (hierarchyChartData?.chartData && hierarchyChartData.chartData.length > 0) {
+      const latestData = hierarchyChartData.chartData[hierarchyChartData.chartData.length - 1];
+      setFlowRateData({
+        totalOFR: latestData.totalOfr || 0,
+        totalWFR: latestData.totalWfr || 0,
+        totalGFR: latestData.totalGfr || 0,
+        avgGVF: latestData.totalGvf || 0,
+        avgWLR: latestData.totalWlr || 0
+      });
+    } else if (chartData?.chartData && chartData.chartData.length > 0) {
+      const latestData = chartData.chartData[chartData.chartData.length - 1];
+      setFlowRateData({
+        totalOFR: latestData.ofr || 0,
+        totalWFR: latestData.wfr || 0,
+        totalGFR: latestData.gfr || 0,
+        avgGVF: latestData.gvf || 0,
+        avgWLR: latestData.wlr || 0
+      });
+    } else {
+      // Default values when no data is available
+      setFlowRateData({
+        totalOFR: 264.93,
+        totalWFR: 264.93,
+        totalGFR: 264.93,
+        avgGVF: 65,
+        avgWLR: 85
+      });
+    }
+  }, [chartData, hierarchyChartData]);
   const metrics = [
     {
       icon: '/oildark.png',
       title: 'Oil flow rate',
-      value: '264.93',
+      value: flowRateData.totalOFR.toFixed(2),
       unit: 'bpd',
       change: '+35%',
       period: 'vs last month',
@@ -49,7 +100,7 @@ const MetricsCards: React.FC = () => {
     {
       icon: '/waterdark.png',
       title: 'Water flow rate',
-      value: '264.93',
+      value: flowRateData.totalWFR.toFixed(2),
       unit: 'bpd',
       change: '+35%',
       period: 'vs last month',
@@ -58,7 +109,7 @@ const MetricsCards: React.FC = () => {
     {
       icon: '/gasdark.png',
       title: 'Gas flow rate',
-      value: '264.93',
+      value: flowRateData.totalGFR.toFixed(2),
       unit: 'bpd',
       change: '+35%',
       period: 'vs last month',
