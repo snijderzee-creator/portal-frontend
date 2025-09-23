@@ -557,36 +557,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className={`flex justify-between items-center pt-3 border-t ${
-                  theme === 'dark' ? 'border-[#1a2847]' : 'border-gray-200'
-                }`}>
-                  <span className={`text-xs ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>Company: {device.companyName}</span>
-                  <div className="flex gap-2">
-                    <button
-                      className={`p-2 rounded-lg transition-colors ${
-                        theme === 'dark' 
-                          ? 'hover:bg-[#1a2847] text-gray-400 hover:text-white' 
-                          : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
-                      }`}
-                      title="View Details"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      className={`p-2 rounded-lg transition-colors ${
-                        theme === 'dark' 
-                          ? 'hover:bg-[#1a2847] text-gray-400 hover:text-white' 
-                          : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
-                      }`}
-                      title="Settings"
-                    >
-                      <Settings className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                
               </div>
             </div>
           ))}

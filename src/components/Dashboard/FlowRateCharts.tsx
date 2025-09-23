@@ -79,7 +79,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}
             >
-              Current Rate
+              Line Condition
             </span>
           </div>
         </div>

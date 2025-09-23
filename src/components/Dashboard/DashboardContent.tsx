@@ -170,7 +170,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 
           {/* Production Map */}
           <div className="mb-4">
-            <ProductionMap />
+            <ProductionMap 
+              selectedHierarchy={selectedHierarchy}
+              selectedDevice={selectedDevice}
+            />
           </div>
 
           {/* Flow Rate Charts */}

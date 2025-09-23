@@ -131,7 +131,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
           <div className="flex items-center gap-4 mb-3">
             <div
               className="w-10 h-10 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: metric.color }}
+              style={{ backgroundColor: metric.icon }}
             >
               <img src={metric.icon} alt={metric.title} className="w-6 h-6" />
             </div>
