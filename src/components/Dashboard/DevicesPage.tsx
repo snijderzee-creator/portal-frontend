@@ -21,6 +21,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
   const [showFilters, setShowFilters] = useState(false);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
   const itemsPerPage = 20;
 
   useEffect(() => {
@@ -64,6 +65,61 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
     };
 
     loadDevices();
+  }, [token, searchTerm, statusFilter, deviceTypeFilter, currentPage, selectedHierarchy]);
+
+  // Auto-refresh every 5 seconds
+  useEffect(() => {
+    const startAutoRefresh = () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+      
+      const interval = setInterval(() => {
+        // Reload devices data
+        const loadDevices = async () => {
+          if (!token) return;
+          
+          try {
+            let response;
+            
+            if (selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name) {
+              response = await apiService.getDevicesByHierarchy(parseInt(selectedHierarchy.id), token, {
+                search: searchTerm || undefined,
+                status: statusFilter !== 'all' ? statusFilter : undefined,
+                deviceType: deviceTypeFilter !== 'all' ? deviceTypeFilter : undefined,
+              });
+            } else {
+              response = await apiService.getAllDevicesEnhanced(token, {
+                search: searchTerm || undefined,
+                status: statusFilter !== 'all' ? statusFilter : undefined,
+                deviceType: deviceTypeFilter !== 'all' ? deviceTypeFilter : undefined,
+                page: currentPage,
+                limit: itemsPerPage,
+              });
+            }
+            
+            if (response.success && response.data) {
+              setDevicesData(response.data);
+              setError(null);
+            }
+          } catch (error) {
+            console.error('Auto-refresh failed:', error);
+          }
+        };
+        
+        loadDevices();
+      }, 5000);
+      
+      setRefreshInterval(interval);
+    };
+
+    startAutoRefresh();
+
+    return () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
   }, [token, searchTerm, statusFilter, deviceTypeFilter, currentPage, selectedHierarchy]);
 
   const handleSearch = (value: string) => {
@@ -136,7 +192,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
   const { devices, statistics, pagination, filters } = devicesData;
 
   return (
-    <div className={`p-6 h-full overflow-y-auto ${
+    <div className={`h-full overflow-y-auto ${
       theme === 'dark' ? 'bg-[#121429]' : 'bg-gray-50'
     }`}>
       {/* Header */}

@@ -17,34 +17,36 @@ interface FractionsChartProps {
   hierarchyChartData?: HierarchyChartData | null;
 }
 
+const round1 = (n: number) => Math.round(n * 10) / 10;
+
 const FractionsChart: React.FC<FractionsChartProps> = ({
   chartData,
   hierarchyChartData,
 }) => {
   const { theme } = useTheme();
 
-  // Transform API data to chart format
+  // Transform API data to chart format and round to 1 decimal place
   const data = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
-        gvf: point.gvf || 0,
-        wlr: point.wlr || 0,
+        gvf: point.gvf != null ? round1(point.gvf) : 0,
+        wlr: point.wlr != null ? round1(point.wlr) : 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
-        gvf: point.totalGvf || 0,
-        wlr: point.totalWlr || 0,
+        gvf: point.totalGvf != null ? round1(point.totalGvf) : 0,
+        wlr: point.totalWlr != null ? round1(point.totalWlr) : 0,
       }));
     }
     
     // Default data if no API data - matching the image pattern
     return [
-      { time: '14:25:48', gvf: 12000, wlr: 12500 },
-      { time: '14:25:50', gvf: 9000, wlr: 9500 },
-      { time: '14:25:52', gvf: 7500, wlr: 8000 },
-      { time: '14:25:54', gvf: 6000, wlr: 6500 },
+      { time: '14:25:48', gvf: round1(12000), wlr: round1(12500) },
+      { time: '14:25:50', gvf: round1(9000), wlr: round1(9500) },
+      { time: '14:25:52', gvf: round1(7500), wlr: round1(8000) },
+      { time: '14:25:54', gvf: round1(6000), wlr: round1(6500) },
     ];
   }, [chartData, hierarchyChartData]);
 
@@ -123,7 +125,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                   GVF (%)
                 </span>
                 <span className="text-emerald-300 text-xs">
-                  {latestGvf.toFixed(2)}
+                  {latestGvf.toFixed(1)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -136,22 +138,10 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                   WLR (%)
                 </span>
                 <span className="text-emerald-300 text-xs">
-                  {latestWlr.toFixed(2)}
+                  {latestWlr.toFixed(1)}
                 </span>
               </div>
-              {isHierarchyData && hierarchyChartData && (
-                <div className="flex items-center gap-2">
-                  <span className="w-4 h-[2px] bg-green-500 rounded" />
-                  <span
-                    className={
-                      theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'
-                    }
-                  >
-                    Devices: {hierarchyChartData.totalDevices}
-                  </span>
-                </div>
-              )}
-            </div>
+                         </div>
           </div>
 
           <ResponsiveContainer
@@ -197,6 +187,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                 stroke="#FE44CC"
                 strokeWidth={2}
                 dot={false}
+                isAnimationActive={false}
               />
               <Line
                 type="monotone"
@@ -204,6 +195,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                 stroke="#4D3DF7"
                 strokeWidth={2}
                 dot={false}
+                isAnimationActive={false}
               />
             </LineChart>
           </ResponsiveContainer>

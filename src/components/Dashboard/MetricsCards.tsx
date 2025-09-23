@@ -95,7 +95,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       unit: 'bpd',
       // change: '+35%',
       // period: 'vs last month',
-      // color: theme === 'dark' ? '#4D3DF7' : '#F56C44',
+      color: theme === 'dark' ? '#4D3DF7' : '#F56C44',
     },
     {
       icon: '/waterdark.png',
@@ -104,7 +104,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       unit: 'bpd',
       // change: '+35%',
       // period: 'vs last month',
-      // color: theme === 'dark' ? '#46B8E9' : '#F6CA58',
+      color: theme === 'dark' ? '#46B8E9' : '#F6CA58',
     },
     {
       icon: '/gasdark.png',
@@ -113,7 +113,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       unit: 'bpd',
       // change: '+35%',
       // period: 'vs last month',
-      // color: theme === 'dark' ? '#F35DCB' : '#38BF9D',
+      color: theme === 'dark' ? '#F35DCB' : '#38BF9D',
     },
   ];
 
@@ -131,7 +131,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
           <div className="flex items-center gap-4 mb-3">
             <div
               className="w-10 h-10 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: metric.icon }}
+              style={{ backgroundColor: metric.color }}
             >
               <img src={metric.icon} alt={metric.title} className="w-6 h-6" />
             </div>

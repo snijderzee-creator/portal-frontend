@@ -19,6 +19,7 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
   const [filters, setFilters] = useState({
     severity: 'all',
     status_id: 'all',
@@ -119,6 +120,63 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
     loadAlarms();
   }, [token, filters, selectedHierarchy, selectedDevice]);
 
+  // Auto-refresh every 5 seconds
+  useEffect(() => {
+    const startAutoRefresh = () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+      
+      const interval = setInterval(() => {
+        // Reload alarms data
+        const loadAlarms = async () => {
+          if (!token) return;
+
+          try {
+            const alarmFilters: any = {
+              severity: filters.severity !== 'all' ? filters.severity : undefined,
+              status_id: filters.status_id !== 'all' ? parseInt(filters.status_id) : undefined,
+              sort_by: filters.sort_by,
+              sort_order: filters.sort_order,
+              limit: 20,
+              page: 1,
+            };
+
+            if (selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name) {
+              alarmFilters.hierarchy_id = isNaN(Number(selectedHierarchy.id))
+                ? selectedHierarchy.id
+                : Number(selectedHierarchy.id);
+            }
+
+            const deviceSerial = getSelectedDeviceSerial(selectedDevice);
+            if (deviceSerial) alarmFilters.device_serial = deviceSerial;
+
+            const response = await apiService.getAlarms(token, alarmFilters);
+
+            if (response?.success && response.data) {
+              setAlarmsData(response.data);
+              setError(null);
+            }
+          } catch (err) {
+            console.error('Auto-refresh failed:', err);
+          }
+        };
+        
+        loadAlarms();
+      }, 5000);
+      
+      setRefreshInterval(interval);
+    };
+
+    startAutoRefresh();
+
+    return () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
+  }, [token, filters, selectedHierarchy, selectedDevice]);
+
   const handleRefresh = () => {
     setFilters(prev => ({ ...prev })); // Trigger reload
   };
@@ -176,9 +234,7 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
   const safeAlarms = Array.isArray(filteredAlarms) ? filteredAlarms.filter(Boolean) : [];
 
   return (
-    <div className={`p-6 min-h-full ${theme === 'dark' ? 'bg-[#121429]' : 'bg-gray-50'}`}>
-      <div className={`rounded-xl h-full shadow-lg ${theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'}`}>
-        <div className="p-6">
+    <div className={`min-h-full ${theme === 'dark' ? 'bg-[#121429]' : 'bg-gray-50'}`}>
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
             <div>
@@ -473,8 +529,6 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
               </div>
             )}
           </div>
-        </div>
-      </div>
     </div>
   );
 };
