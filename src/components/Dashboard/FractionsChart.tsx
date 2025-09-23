@@ -174,7 +174,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
               />
               <YAxis
                 stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
-                domain={[0, 12000]}
+                domain={[0, 100]}
                 tickMargin={15}
                 tickFormatter={(value) => {
                   if (value === 0) return '00';
