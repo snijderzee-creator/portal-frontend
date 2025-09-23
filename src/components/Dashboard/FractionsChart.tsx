@@ -134,24 +134,12 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                   }
                 >
                   WLR (%)
-                </span>
+                <strong>WLR (%)</strong>
                 <span className="text-emerald-300 text-xs">
-                  {latestWlr.toFixed(2)}
-                </span>
+              <span className="text-emerald-300 text-xs font-bold">
+                {latestWlr.toFixed(1)}
               </div>
               {isHierarchyData && hierarchyChartData && (
-                <div className="flex items-center gap-2">
-                  <span className="w-4 h-[2px] bg-green-500 rounded" />
-                  <span
-                    className={
-                      theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'
-                    }
-                  >
-                    Devices: {hierarchyChartData.totalDevices}
-                  </span>
-                </div>
-              )}
-            </div>
           </div>
 
           <ResponsiveContainer

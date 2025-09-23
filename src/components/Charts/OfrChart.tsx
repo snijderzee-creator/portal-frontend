@@ -94,16 +94,9 @@ export default function OFRChart({ chartData, hierarchyChartData }: OFRChartProp
         <div className="flex items-center gap-2">
           <span className="w-4 h-[2px] bg-pink-500 rounded" />
           <span className={theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'}>
-            {isHierarchyData ? 'Total Production' : 'Line Condition'}
+            {isHierarchyData ? 'Total Production' : 'Current Rate'}
           </span>
           <span className="text-emerald-300 text-xs">{latestValue.toFixed(2)}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-[2px] bg-indigo-500 rounded" />
-          <span className={theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'}>
-            Standard Condition
-          </span>
-          <span className="text-emerald-300 text-xs">{(latestValue * 0.98).toFixed(2)}</span>
         </div>
         {isHierarchyData && hierarchyChartData && (
           <div className="flex items-center gap-2">
@@ -151,13 +144,6 @@ export default function OFRChart({ chartData, hierarchyChartData }: OFRChartProp
             type="monotone"
             dataKey="line"
             stroke="#FE44CC"
-            strokeWidth={2}
-            dot={false}
-          />
-          <Line
-            type="monotone"
-            dataKey="standard"
-            stroke="#4D3DF7"
             strokeWidth={2}
             dot={false}
           />

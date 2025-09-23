@@ -71,13 +71,6 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
       </div>
 
       <div className="mb-3">
-        <p
-          className={`text-base mb-2 ${
-            theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'
-          }`}
-        >
-          Comparison
-        </p>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-1 bg-[#38BF9D] dark:bg-[#EC4899] rounded"></div>
@@ -86,17 +79,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}
             >
-              Line Condition
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-[#F56C44] dark:bg-[#6366F1] rounded"></div>
-            <span
-              className={`text-xs font-thin  ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              }`}
-            >
-              Standard Condition
+              Current Rate
             </span>
           </div>
         </div>
@@ -132,13 +115,6 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
             type="monotone"
             dataKey={dataKey}
             stroke={theme === 'dark' ? '#EC4899' : '#38BF9D'}
-            strokeWidth={2}
-            dot={false}
-          />
-          <Line
-            type="monotone"
-            dataKey="standard"
-            stroke={theme === 'dark' ? '#6366F1' : '#F56C44'}
             strokeWidth={2}
             dot={false}
           />

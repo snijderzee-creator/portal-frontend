@@ -28,6 +28,18 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   const [timeRange, setTimeRange] = useState('day');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Auto-refresh data every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (selectedDevice && !selectedHierarchy) {
+        loadDeviceChartData(selectedDevice.deviceId || selectedDevice.id);
+      } else if (selectedHierarchy && !selectedDevice) {
+        loadHierarchyChartData(selectedHierarchy.id);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [selectedDevice, selectedHierarchy, timeRange, token]);
   useEffect(() => {
     // Load chart data when a device or hierarchy is selected
     if (selectedDevice && !selectedHierarchy) {
@@ -170,7 +182,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 
           {/* Production Map */}
           <div className="mb-4">
-            <ProductionMap />
+            <ProductionMap 
+              selectedHierarchy={selectedHierarchy}
+              selectedDevice={selectedDevice}
+            />
           </div>
 
           {/* Flow Rate Charts */}

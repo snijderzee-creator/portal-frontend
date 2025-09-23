@@ -31,6 +31,31 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
   });
 
   useEffect(() => {
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(() => {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
+      const dateString = now
+        .toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        .replace(/\//g, '/');
+
+      setCurrentTime(timeString);
+      setCurrentDate(dateString);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
       const timeString = now.toLocaleTimeString('en-GB', {
@@ -52,8 +77,6 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
     };
 
     updateDateTime();
-    const interval = setInterval(updateDateTime, 1000);
-    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

@@ -60,13 +60,6 @@ const TopRegionsChart: React.FC = () => {
       </div>
 
       {/* Subtitle */}
-      <p
-        className={`text-base mb-4 ${
-          theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-        }`}
-      >
-        Comparison
-      </p>
 
       {/* Legend */}
       <div className="flex gap-10 mb-6">
