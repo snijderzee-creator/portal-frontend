@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useTheme } from '../../hooks/useTheme';
-import { useAuth } from '../../hooks/useAuth';
-import { apiService, HierarchyNode, Device, EnhancedDevice } from '../../services/api';
 import { Activity, Wifi, Power, Cpu, Tablet, Monitor } from 'lucide-react';
 
 // Fix for default markers in React Leaflet
@@ -21,11 +19,10 @@ Icon.Default.mergeOptions({
 });
 
 // Custom marker icons
-const createCustomIcon = (color: string, hasAlarms: boolean) => {
+const createCustomIcon = (color: string) => {
   const svgIcon = `
     <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
       <circle cx="10" cy="10" r="8" fill="${color}" stroke="white" stroke-width="2"/>
-      ${hasAlarms ? '<circle cx="15" cy="5" r="3" fill="#e0043b" />' : ''}
     </svg>
   `;
   return new Icon({
@@ -36,160 +33,22 @@ const createCustomIcon = (color: string, hasAlarms: boolean) => {
   });
 };
 
-// Component to handle map bounds updates
-const MapBoundsUpdater: React.FC<{ bounds: [number, number][] | null }> = ({ bounds }) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (bounds && bounds.length > 0) {
-      try {
-        if (bounds.length === 1) {
-          // Single point - center and zoom
-          map.setView(bounds[0], 10);
-        } else {
-          // Multiple points - fit bounds
-          map.fitBounds(bounds as [number, number][], {
-            padding: [20, 20],
-            maxZoom: 12
-          });
-        }
-      } catch (error) {
-        console.warn('Error updating map bounds:', error);
-      }
-    }
-  }, [map, bounds]);
-
-  return null;
-};
-
-interface ProductionMapProps {
-  selectedHierarchy?: HierarchyNode | null;
-  selectedDevice?: Device | null;
-}
-
-const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, selectedDevice }) => {
+const ProductionMap: React.FC = () => {
   const { theme } = useTheme();
-  const { token } = useAuth();
-  const [devices, setDevices] = useState<EnhancedDevice[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [statistics, setStatistics] = useState({
-    totalDevices: 0,
-    onlineDevices: 0,
-    offlineDevices: 0,
-    activeAlarms: 0
-  });
 
-  // Load devices based on selected hierarchy or all devices
-  useEffect(() => {
-    const loadDevices = async () => {
-      if (!token) return;
-      
-      setIsLoading(true);
-      try {
-        let response;
-        
-        if (selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name) {
-          // Load devices for specific hierarchy
-          response = await apiService.getDevicesByHierarchy(parseInt(selectedHierarchy.id), token);
-        } else {
-          // Load all devices for company
-          response = await apiService.getAllDevicesEnhanced(token);
-        }
-        
-        if (response.success && response.data) {
-          setDevices(response.data.devices);
-          setStatistics({
-            totalDevices: response.data.statistics.totalDevices,
-            onlineDevices: response.data.statistics.onlineDevices,
-            offlineDevices: response.data.statistics.offlineDevices,
-            activeAlarms: 0 // Will be updated when we integrate alarms
-          });
-        }
-      } catch (error) {
-        console.error('Failed to load devices for map:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadDevices();
-  }, [token, selectedHierarchy]);
-
-  // Auto-refresh every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (token) {
-        // Reload devices data
-        const loadDevices = async () => {
-          try {
-            let response;
-            
-            if (selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name) {
-              response = await apiService.getDevicesByHierarchy(parseInt(selectedHierarchy.id), token);
-            } else {
-              response = await apiService.getAllDevicesEnhanced(token);
-            }
-            
-            if (response.success && response.data) {
-              setDevices(response.data.devices);
-              setStatistics({
-                totalDevices: response.data.statistics.totalDevices,
-                onlineDevices: response.data.statistics.onlineDevices,
-                offlineDevices: response.data.statistics.offlineDevices,
-                activeAlarms: 0
-              });
-            }
-          } catch (error) {
-            console.error('Failed to refresh devices data:', error);
-          }
-        };
-        
-        loadDevices();
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [token, selectedHierarchy]);
-
-  // Calculate map bounds based on devices with valid coordinates
-  const mapBounds = useMemo(() => {
-    const devicesWithCoords = devices.filter(device => 
-      device.location?.latitude && 
-      device.location?.longitude &&
-      !isNaN(device.location.latitude) &&
-      !isNaN(device.location.longitude)
-    );
-
-    if (devicesWithCoords.length === 0) {
-      // Default to Saudi Arabia center if no devices with coordinates
-      return [[24.7136, 46.6753]];
-    }
-
-    return devicesWithCoords.map(device => [
-      device.location.latitude!,
-      device.location.longitude!
-    ]);
-  }, [devices]);
-
-  // Default center (Saudi Arabia)
-  const defaultCenter: [number, number] = [24.7136, 46.6753];
-
-  if (isLoading) {
-    return (
-      <div className={`rounded-lg p-6 ${
-        theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-      }`}>
-        <div className="flex items-center justify-center h-80">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <span className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Loading map data...
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const locations = [
+    { id: '1', lat: 24.7136, lng: 46.6753, name: 'Riyadh', color: '#FE44CC' },
+    {
+      id: '2',
+      lat: 26.4207,
+      lng: 50.0888,
+      name: 'Eastern Province',
+      color: '#F56C44',
+    },
+    { id: '3', lat: 21.3891, lng: 39.8579, name: 'Makkah', color: '#38BF9D' },
+    { id: '4', lat: 26.3274, lng: 43.975, name: 'Al-Qassim', color: '#FE44CC' },
+    { id: '5', lat: 18.2465, lng: 42.5326, name: 'Asir', color: '#FE44CC' },
+  ];
 
   return (
     <div
@@ -205,12 +64,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
             theme === 'dark' ? 'text-[#fff]' : 'text-[#0f0f0f]'
           }`}
         >
-          Production Map
-          {selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name && (
-            <span className="text-sm font-normal ml-2">
-              - {selectedHierarchy.name}
-            </span>
-          )}
+          Production Map - Saudi Arabia
         </h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -220,7 +74,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}
             >
-              Online
+              Normal
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -230,7 +84,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}
             >
-              Offline
+              Signal
             </span>
           </div>
         </div>
@@ -244,11 +98,11 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
           }`}
         >
           <MapContainer
-            center={mapBounds.length > 0 ? mapBounds[0] as [number, number] : defaultCenter}
+            center={[24.7136, 46.6753]}
             zoom={6}
             style={{ height: '100%', width: '100%' }}
             className="z-10"
-            scrollWheelZoom={true}
+            scrollWheelZoom={false}
           >
             <TileLayer
               url={
@@ -257,73 +111,49 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                   : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
               }
             />
-            
-            <MapBoundsUpdater bounds={mapBounds as [number, number][]} />
 
-            {devices
-              .filter(device => 
-                device.location?.latitude && 
-                device.location?.longitude &&
-                !isNaN(device.location.latitude) &&
-                !isNaN(device.location.longitude)
-              )
-              .map((device) => (
-                <Marker
-                  key={device.deviceId}
-                  position={[device.location.latitude!, device.location.longitude!]}
-                  icon={createCustomIcon(
-                    device.status === 'Online' 
-                      ? (theme === 'dark' ? '#6366F1' : '#38BF9D')
-                      : (theme === 'dark' ? '#EC4899' : '#F56C44'),
-                    false // TODO: Add alarm status when available
-                  )}
-                >
-                  <Popup className="dark-popup">
-                    <div
-                      className={`p-2 ${
-                        theme === 'dark'
-                          ? 'text-white bg-[#1623456e]'
-                          : 'text-gray-900 bg-white'
-                      }`}
-                    >
-                      <div className="font-semibold text-lg mb-2">{device.deviceSerial}</div>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                            Device:
-                          </span>
-                          <span className="font-medium">{device.deviceName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                            Well:
-                          </span>
-                          <span className="font-medium">{device.wellName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                            Status:
-                          </span>
-                          <span
-                            className={`font-medium ${
-                              device.status === 'Online' ? 'text-green-500' : 'text-red-500'
-                            }`}
-                          >
-                            {device.status}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                            Company:
-                          </span>
-                          <span className="font-medium">{device.companyName}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
+            {locations.map((location) => (
+              <Marker
+                key={location.id}
+                position={[location.lat, location.lng]}
+                icon={createCustomIcon(location.color)}
+              >
+                <Popup className="dark-popup">
+                  <div
+                    className={`p-2 ${
+                      theme === 'dark'
+                        ? 'text-white bg-[#1623456e]'
+                        : 'text-gray-900 bg-white'
+                    }`}
+                  >
+                    <div className="font-semibold">{location.name}</div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
           </MapContainer>
+
+          {/* Map Controls */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2">
+            <button
+              className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${
+                theme === 'dark'
+                  ? 'bg-[#1623456e] text-white hover:bg-[#3A3D57]'
+                  : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-300'
+              }`}
+            >
+              +
+            </button>
+            <button
+              className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${
+                theme === 'dark'
+                  ? 'bg-[#2A2D47] text-white hover:bg-[#3A3D57]'
+                  : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-300'
+              }`}
+            >
+              ⛶
+            </button>
+          </div>
         </div>
 
         {/* Statistics */}
@@ -334,7 +164,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
-              {statistics.totalDevices}
+              25
             </div>
             <div
               className={`text-base italic mt-3 ${
@@ -353,7 +183,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}
               >
-                {statistics.activeAlarms}
+                15
               </span>
               <span
                 className={`text-sm ${
@@ -371,7 +201,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}
               >
-                {statistics.onlineDevices}
+                15
               </span>
               <span
                 className={`text-sm ${
@@ -381,7 +211,6 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                 Online
               </span>
             </div>
-            
             <div className="flex items-center gap-5 border-l-2 py-2 border-[#919DC2] pl-3 rounded-l-md">
               <Power className="text-[#555867] dark:text-white" />
               <span
@@ -389,7 +218,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}
               >
-                {statistics.offlineDevices}
+                15
               </span>
               <span
                 className={`text-sm ${
