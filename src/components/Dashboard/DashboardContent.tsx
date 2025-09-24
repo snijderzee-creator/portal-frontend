@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { apiService, DeviceChartData, HierarchyChartData, Device } from '../../services/api';
@@ -27,6 +27,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   const [hierarchyChartData, setHierarchyChartData] = useState<HierarchyChartData | null>(null);
   const [timeRange, setTimeRange] = useState('day');
   const [isLoading, setIsLoading] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Load chart data when a device or hierarchy is selected
@@ -38,6 +40,34 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       setChartData(null); // Clear device data
     }
   }, [selectedDevice, selectedHierarchy, timeRange, token]);
+
+  // Auto-refresh every 5 seconds
+  useEffect(() => {
+    const startAutoRefresh = () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+      
+      refreshIntervalRef.current = setInterval(() => {
+        setLastRefresh(new Date());
+        
+        // Refresh chart data without changing selections
+        if (selectedDevice && !selectedHierarchy) {
+          loadDeviceChartData(selectedDevice.deviceId || selectedDevice.id);
+        } else if (selectedHierarchy && !selectedDevice) {
+          loadHierarchyChartData(selectedHierarchy.id);
+        }
+      }, 5000);
+    };
+
+    startAutoRefresh();
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, [selectedDevice, selectedHierarchy, token]);
 
   const loadDeviceChartData = async (deviceId: number | string) => {
     if (!token) return;
@@ -123,6 +153,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             selectedDevice={selectedDevice}
             chartData={chartData}
             hierarchyChartData={hierarchyChartData}
+            lastRefresh={lastRefresh}
           />
 
           {/* Main Content Grid */}

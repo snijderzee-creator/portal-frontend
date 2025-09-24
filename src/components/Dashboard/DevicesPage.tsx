@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { Search, Grid, List, Wifi, WifiOff, Filter, RefreshCw, Download, MapPin, Settings, Eye } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
@@ -21,7 +22,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
   const [showFilters, setShowFilters] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const itemsPerPage = 20;
 
   useEffect(() => {
@@ -70,11 +71,11 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
   // Auto-refresh every 5 seconds
   useEffect(() => {
     const startAutoRefresh = () => {
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
       }
       
-      const interval = setInterval(() => {
+      refreshIntervalRef.current = setInterval(() => {
         // Reload devices data
         const loadDevices = async () => {
           if (!token) return;
@@ -109,15 +110,13 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
         
         loadDevices();
       }, 5000);
-      
-      setRefreshInterval(interval);
     };
 
     startAutoRefresh();
 
     return () => {
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
       }
     };
   }, [token, searchTerm, statusFilter, deviceTypeFilter, currentPage, selectedHierarchy]);

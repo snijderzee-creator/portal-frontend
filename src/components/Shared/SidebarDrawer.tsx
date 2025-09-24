@@ -34,6 +34,7 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
   const [devicesByHierarchy, setDevicesByHierarchy] = useState<
     Record<string, Device[]>
   >({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -44,29 +45,32 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
         if (response.success && response.data) {
           setDashboardData(response.data);
 
-          // Auto-expand first company and its first region/area
-          const companyName = Object.keys(response.data.hierarchy)[0];
-          if (companyName) {
-            const hierarchy = response.data.hierarchy[companyName].hierarchy;
-            const expanded = [companyName];
+          // Only auto-expand on initial load
+          if (!isInitialized) {
+            const companyName = Object.keys(response.data.hierarchy)[0];
+            if (companyName) {
+              const hierarchy = response.data.hierarchy[companyName].hierarchy;
+              const expanded = [companyName];
 
-            if (hierarchy.length > 0) {
-              expanded.push(hierarchy[0].id);
+              if (hierarchy.length > 0) {
+                expanded.push(hierarchy[0].id);
 
-              // Auto-select the first hierarchy node for initial chart loading
-              if (onInitialHierarchyLoad) {
-                onInitialHierarchyLoad(hierarchy[0]);
-              }
+                // Auto-select the first hierarchy node for initial chart loading
+                if (onInitialHierarchyLoad) {
+                  onInitialHierarchyLoad(hierarchy[0]);
+                }
 
-              if (hierarchy[0].children.length > 0) {
-                expanded.push(hierarchy[0].children[0].id);
-                if (hierarchy[0].children[0].children.length > 0) {
-                  expanded.push(hierarchy[0].children[0].children[0].id);
+                if (hierarchy[0].children.length > 0) {
+                  expanded.push(hierarchy[0].children[0].id);
+                  if (hierarchy[0].children[0].children.length > 0) {
+                    expanded.push(hierarchy[0].children[0].children[0].id);
+                  }
                 }
               }
-            }
 
-            setExpandedItems(expanded);
+              setExpandedItems(expanded);
+            }
+            setIsInitialized(true);
           }
         }
       } catch (error) {
@@ -101,7 +105,7 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
 
     loadDashboardData();
     loadDevices();
-  }, [token]);
+  }, [token, isInitialized]);
 
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) =>

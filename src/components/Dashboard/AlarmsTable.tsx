@@ -1,5 +1,6 @@
 // src/components/Dashboard/AlarmsTable.tsx
 import React, { useEffect, useState } from 'react';
+import { useRef } from 'react';
 import { AlertTriangle, CheckCircle, Clock, XCircle, Filter, Search, RefreshCw, Download, Eye } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
@@ -19,7 +20,7 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [filters, setFilters] = useState({
     severity: 'all',
     status_id: 'all',
@@ -123,11 +124,11 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
   // Auto-refresh every 5 seconds
   useEffect(() => {
     const startAutoRefresh = () => {
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
       }
       
-      const interval = setInterval(() => {
+      refreshIntervalRef.current = setInterval(() => {
         // Reload alarms data
         const loadAlarms = async () => {
           if (!token) return;
@@ -164,15 +165,13 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
         
         loadAlarms();
       }, 5000);
-      
-      setRefreshInterval(interval);
     };
 
     startAutoRefresh();
 
     return () => {
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
       }
     };
   }, [token, filters, selectedHierarchy, selectedDevice]);

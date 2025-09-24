@@ -41,13 +41,8 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
       }));
     }
     
-    // Default data if no API data - matching the image pattern
-    return [
-      { time: '14:25:48', gvf: round1(12000), wlr: round1(12500) },
-      { time: '14:25:50', gvf: round1(9000), wlr: round1(9500) },
-      { time: '14:25:52', gvf: round1(7500), wlr: round1(8000) },
-      { time: '14:25:54', gvf: round1(6000), wlr: round1(6500) },
-    ];
+    // Return empty array if no data
+    return [];
   }, [chartData, hierarchyChartData]);
 
   const latestGvf = data.length > 0 ? data[data.length - 1].gvf : 0;

@@ -143,13 +143,8 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
         standard: point.totalOfr || 0,
       }));
     }
-    // Default data if no API data
-    return [
-      { time: '14:25:48', line: 10000, standard: 10000 },
-      { time: '14:25:50', line: 8000, standard: 8000 },
-      { time: '14:25:52', line: 6000, standard: 6000 },
-      { time: '14:25:54', line: 4000, standard: 4000 },
-    ];
+    // Return empty array if no data
+    return [];
   }, [chartData, hierarchyChartData]);
 
   const wfrData = useMemo(() => {
@@ -166,14 +161,9 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
         standard: point.totalWfr || 0,
       }));
     }
-    // Default data if no API data
-    return [
-      { time: '14:25:48', line: 8000, standard: 8000 },
-      { time: '14:25:50', line: 6400, standard: 6400 },
-      { time: '14:25:52', line: 4800, standard: 4800 },
-      { time: '14:25:54', line: 3200, standard: 3200 },
-    ];
-  }, [ofrData]);
+    // Return empty array if no data
+    return [];
+  }, [chartData, hierarchyChartData]);
 
   const gfrData = useMemo(() => {
     if (chartData?.chartData) {
@@ -189,14 +179,9 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
         standard: point.totalGfr || 0,
       }));
     }
-    // Default data if no API data
-    return [
-      { time: '14:25:48', line: 12000, standard: 12000 },
-      { time: '14:25:50', line: 9600, standard: 9600 },
-      { time: '14:25:52', line: 7200, standard: 7200 },
-      { time: '14:25:54', line: 4800, standard: 4800 },
-    ];
-  }, [ofrData]);
+    // Return empty array if no data
+    return [];
+  }, [chartData, hierarchyChartData]);
 
   return (
     <div className="grid grid-cols-3 gap-4">

@@ -10,13 +10,15 @@ interface MetricsCardsProps {
   selectedDevice?: any;
   chartData?: DeviceChartData | null;
   hierarchyChartData?: HierarchyChartData | null;
+  lastRefresh?: Date;
 }
 
 const MetricsCards: React.FC<MetricsCardsProps> = ({ 
   selectedHierarchy, 
   selectedDevice, 
   chartData, 
-  hierarchyChartData 
+  hierarchyChartData,
+  lastRefresh
 }) => {
   const { user, token } = useAuth();
   const { theme } = useTheme();
@@ -215,10 +217,15 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
               theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
             }`}
           >
-            Last login:{' '}
-            {user?.lastLogin
-              ? new Date(user.lastLogin).toLocaleDateString('en-GB')
-              : 'Today'}
+            Last refresh:{' '}
+            {lastRefresh
+              ? lastRefresh.toLocaleTimeString('en-GB', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: false,
+                })
+              : currentTime}
           </div>
         </div>
       </div>

@@ -135,7 +135,7 @@ export default function WFRChart({ chartData, hierarchyChartData }: WFRChartProp
           />
           <YAxis
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
-            domain={['dataMin - 500', 'dataMax + 500']}
+            domain={data.length > 0 ? ['dataMin - 500', 'dataMax + 500'] : [0, 1000]}
             tickMargin={15}
           />
           <Tooltip
