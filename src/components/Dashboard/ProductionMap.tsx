@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../hooks/useAuth';
 import { apiService, EnhancedDevice, HierarchyNode } from '../../services/api';
-import { Activity, Wifi, Power, Cpu, Tablet, Monitor, AlarmClock, AlarmCheck } from 'lucide-react';
+import { Activity, Wifi, Power, Cpu, Tablet, Monitor, AlarmClock, AlarmCheck, RefreshCw } from 'lucide-react';
 
 // Fix for default markers in React Leaflet
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -72,6 +72,8 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [serverStats, setServerStats] = useState<any | null>(null); // Holds statistics returned from backend
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // refs for map and markers so we can programmatically center/open popup for selected device
   const mapRef = useRef<any | null>(null);
@@ -128,6 +130,66 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
     };
 
     loadDevices();
+  }, [token, selectedHierarchy]);
+
+  // Auto-refresh effect with visual indicator
+  useEffect(() => {
+    const startAutoRefresh = () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+      
+      refreshIntervalRef.current = setInterval(() => {
+        setIsRefreshing(true);
+        
+        // Reload devices data
+        const loadDevices = async () => {
+          if (!token) return;
+          
+          try {
+            let response;
+            
+            if (selectedHierarchy && selectedHierarchy.id !== selectedHierarchy.name) {
+              response = await apiService.getDevicesByHierarchy(parseInt(selectedHierarchy.id), token);
+            } else {
+              response = await apiService.getAllDevicesEnhanced(token);
+            }
+            
+            if (response.success && response.data) {
+              const devicesWithLocation = response.data.devices.filter(device => 
+                device.location && 
+                device.location.longitude !== null && 
+                device.location.latitude !== null
+              );
+              setDevices(devicesWithLocation);
+
+              if (response.data.statistics) {
+                setServerStats(response.data.statistics);
+              } else {
+                setServerStats(null);
+              }
+            }
+          } catch (error) {
+            console.error('Auto-refresh failed:', error);
+          }
+        };
+        
+        loadDevices();
+        
+        // Hide refresh indicator after animation
+        setTimeout(() => {
+          setIsRefreshing(false);
+        }, 800);
+      }, 5000);
+    };
+
+    startAutoRefresh();
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
   }, [token, selectedHierarchy]);
 
   // When selectedDevice changes, center map and open its popup (if available)
@@ -267,9 +329,9 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
   }
 
   return (
-    <div className={`rounded-lg ${
+    <div className={`rounded-lg transition-all duration-300 ${
       theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-    }`}>
+    } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}>
       <div className={`flex items-center justify-between p-6 border-b ${
         theme === 'dark' ? 'border-[#b4c9e37d]' : 'border-gray-200'
       }`}>
@@ -282,6 +344,11 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
           }
         </h2>
         <div className="flex items-center gap-4">
+          {isRefreshing && (
+            <RefreshCw className={`w-5 h-5 animate-spin ${
+              theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+            }`} />
+          )}
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-[#17F083]"></div>
             <span className={`text-base ${

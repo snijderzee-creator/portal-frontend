@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import {
   LineChart,
   Line,
@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal, RefreshCw } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -21,6 +21,7 @@ interface SingleFlowRateChartProps {
   unit: string;
   data: any[];
   dataKey: string;
+  isRefreshing?: boolean;
 }
 
 const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
@@ -28,14 +29,15 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
   unit,
   data,
   dataKey,
+  isRefreshing = false,
 }) => {
   const { theme } = useTheme();
 
   return (
     <div
-      className={`rounded-lg p-4 ${
+      className={`rounded-lg p-4 transition-all duration-300 ${
         theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-      }`}
+      } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -59,6 +61,14 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
               : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'
           }`}
         >
+          {isRefreshing && (
+            <RefreshCw
+              size={14}
+              className={`animate-spin ${
+                theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+              }`}
+            />
+          )}
           <ExternalLink
             size={16}
             className="dark:text-white cursor-pointer dark:hover:text-gray-200"
@@ -128,6 +138,35 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
   chartData,
   hierarchyChartData,
 }) => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-refresh effect with visual indicator
+  useEffect(() => {
+    const startAutoRefresh = () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+      
+      refreshIntervalRef.current = setInterval(() => {
+        setIsRefreshing(true);
+        
+        // Simulate refresh animation
+        setTimeout(() => {
+          setIsRefreshing(false);
+        }, 800);
+      }, 5000);
+    };
+
+    startAutoRefresh();
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, []);
+
   // Transform API data to chart format
   const ofrData = useMemo(() => {
     if (chartData?.chartData) {
@@ -185,9 +224,9 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      <FlowRateChart title="OFR" unit="bbd" data={ofrData} dataKey="line" />
-      <FlowRateChart title="WFR" unit="bbd" data={wfrData} dataKey="line" />
-      <FlowRateChart title="GFR" unit="bbd" data={gfrData} dataKey="line" />
+      <FlowRateChart title="OFR" unit="bbd" data={ofrData} dataKey="line" isRefreshing={isRefreshing} />
+      <FlowRateChart title="WFR" unit="bbd" data={wfrData} dataKey="line" isRefreshing={isRefreshing} />
+      <FlowRateChart title="GFR" unit="bbd" data={gfrData} dataKey="line" isRefreshing={isRefreshing} />
     </div>
   );
 };

@@ -1,39 +1,43 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
-import { apiService, HierarchyChartData, DeviceChartData } from '../../services/api';
-import { AlarmClock } from 'lucide-react';
+import { HierarchyChartData, DeviceChartData } from '../../services/api';
+import { AlarmClock, RefreshCw } from 'lucide-react';
 
 interface MetricsCardsProps {
   selectedHierarchy?: any;
   selectedDevice?: any;
   chartData?: DeviceChartData | null;
   hierarchyChartData?: HierarchyChartData | null;
-  lastRefresh?: Date;
+  lastRefresh?: Date | null;
 }
 
-const MetricsCards: React.FC<MetricsCardsProps> = ({ 
-  selectedHierarchy, 
-  selectedDevice, 
-  chartData, 
+const MetricsCards: React.FC<MetricsCardsProps> = ({
+  selectedHierarchy,
+  selectedDevice,
+  chartData,
   hierarchyChartData,
-  lastRefresh
+  lastRefresh = null,
 }) => {
   const { user, token } = useAuth();
   const { theme } = useTheme();
+
   const [currentTime, setCurrentTime] = useState('');
-  const [currentDate, setCurrentDate] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const [flowRateData, setFlowRateData] = useState({
     totalOFR: 0,
     totalWFR: 0,
     totalGFR: 0,
     avgGVF: 0,
-    avgWLR: 0
+    avgWLR: 0,
   });
 
+  // Live clock for fallback when lastRefresh not provided
   useEffect(() => {
-    const updateDateTime = () => {
+    const updateTime = () => {
       const now = new Date();
       const timeString = now.toLocaleTimeString('en-GB', {
         hour: '2-digit',
@@ -41,62 +45,71 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
         second: '2-digit',
         hour12: false,
       });
-      const dateString = now
-        .toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-        .replace(/\//g, '/');
-
       setCurrentTime(timeString);
-      setCurrentDate(dateString);
     };
 
-    updateDateTime();
-    const interval = setInterval(updateDateTime, 1000);
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
+  // Auto-refresh indicator (visual only)
   useEffect(() => {
-    // Calculate flow rate totals from chart data
+    const startAutoRefresh = () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+
+      refreshIntervalRef.current = setInterval(() => {
+        setIsRefreshing(true);
+        setTimeout(() => setIsRefreshing(false), 800);
+      }, 5000);
+    };
+
+    startAutoRefresh();
+    return () => {
+      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
+    };
+  }, []);
+
+  // Compute flow aggregates from chart payloads
+  useEffect(() => {
     if (hierarchyChartData?.chartData && hierarchyChartData.chartData.length > 0) {
-      const latestData = hierarchyChartData.chartData[hierarchyChartData.chartData.length - 1];
+      const latest = hierarchyChartData.chartData[hierarchyChartData.chartData.length - 1];
       setFlowRateData({
-        totalOFR: latestData.totalOfr || 0,
-        totalWFR: latestData.totalWfr || 0,
-        totalGFR: latestData.totalGfr || 0,
-        avgGVF: latestData.totalGvf || 0,
-        avgWLR: latestData.totalWlr || 0
+        totalOFR: latest.totalOfr || 0,
+        totalWFR: latest.totalWfr || 0,
+        totalGFR: latest.totalGfr || 0,
+        avgGVF: latest.totalGvf || 0,
+        avgWLR: latest.totalWlr || 0,
       });
     } else if (chartData?.chartData && chartData.chartData.length > 0) {
-      const latestData = chartData.chartData[chartData.chartData.length - 1];
+      const latest = chartData.chartData[chartData.chartData.length - 1];
       setFlowRateData({
-        totalOFR: latestData.ofr || 0,
-        totalWFR: latestData.wfr || 0,
-        totalGFR: latestData.gfr || 0,
-        avgGVF: latestData.gvf || 0,
-        avgWLR: latestData.wlr || 0
+        totalOFR: latest.ofr || 0,
+        totalWFR: latest.wfr || 0,
+        totalGFR: latest.gfr || 0,
+        avgGVF: latest.gvf || 0,
+        avgWLR: latest.wlr || 0,
       });
     } else {
-      // Default values when no data is available
+      // sensible defaults for empty state (you can remove/change these)
       setFlowRateData({
         totalOFR: 264.93,
         totalWFR: 264.93,
         totalGFR: 264.93,
         avgGVF: 65,
-        avgWLR: 85
+        avgWLR: 85,
       });
     }
   }, [chartData, hierarchyChartData]);
+
   const metrics = [
     {
       icon: '/oildark.png',
       title: 'Oil flow rate',
       value: flowRateData.totalOFR.toFixed(2),
       unit: 'bpd',
-      // change: '+35%',
-      // period: 'vs last month',
       color: theme === 'dark' ? '#4D3DF7' : '#F56C44',
     },
     {
@@ -104,8 +117,6 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       title: 'Water flow rate',
       value: flowRateData.totalWFR.toFixed(2),
       unit: 'bpd',
-      // change: '+35%',
-      // period: 'vs last month',
       color: theme === 'dark' ? '#46B8E9' : '#F6CA58',
     },
     {
@@ -113,119 +124,138 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       title: 'Gas flow rate',
       value: flowRateData.totalGFR.toFixed(2),
       unit: 'bpd',
-      // change: '+35%',
-      // period: 'vs last month',
       color: theme === 'dark' ? '#F35DCB' : '#38BF9D',
     },
   ];
 
+  // Format last refresh time to HH:MM:SS (24h). Fallback to live clock
+  const formattedLastRefresh = lastRefresh
+    ? new Date(lastRefresh).toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      })
+    : currentTime;
+
+  const lastRefreshLabel = lastRefresh ? 'From server' : 'Live';
+
   return (
     <div className="grid grid-cols-4 gap-4 mb-4">
-      {metrics.map((metric, index) => (
+      {metrics.map((metric, idx) => (
         <div
-          key={index}
-          className={`rounded-lg p-4 ${
-            theme === 'dark'
-              ? 'bg-[#162345]'
-              : 'bg-white border border-gray-200'
-          }`}
+          key={idx}
+          className={`rounded-lg p-4 transition-all duration-300 ${
+            theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
+          } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
         >
           <div className="flex items-center gap-4 mb-3">
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center"
+              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
               style={{ backgroundColor: metric.color }}
             >
               <img src={metric.icon} alt={metric.title} className="w-6 h-6" />
             </div>
-            <span
-              className={`font-medium text-base ${
-                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-              }`}
-            >
-              {metric.title}
-            </span>
+
+            <div className="flex-1 min-w-0">
+              <div
+                className={`text-sm font-medium truncate ${
+                  theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+                }`}
+              >
+                {metric.title}
+              </div>
+            </div>
+
+            {/* small spinner if refreshing */}
+            {isRefreshing && (
+              <RefreshCw
+                className={`w-4 h-4 animate-spin ${
+                  theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+                }`}
+              />
+            )}
           </div>
-          <div className="flex items-baseline gap-4 mb-2">
-            <span
-              className={`lg:text-5xl md:text-4xl font-bold ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              {metric.value}
-            </span>
-            <span
-              className={`text-xl ${
-                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-              }`}
-            >
-              {metric.unit}
-            </span>
+
+          <div className="flex items-baseline justify-between gap-4">
+            <div>
+              <div
+                className={`lg:text-5xl md:text-4xl text-3xl font-bold leading-none ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                {metric.value}
+              </div>
+              <div
+                className={`text-sm mt-1 ${
+                  theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+                }`}
+              >
+                {metric.unit}
+              </div>
+            </div>
           </div>
-          {/* <div className="flex items-center gap-2">
-            <span className="text-[#4D3DF7] text-xs">{metric.change}</span>
-            <span
-              className={`text-xs ${
-                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-              }`}
-            >
-              {metric.period}
-            </span>
-          </div> */}
         </div>
       ))}
 
-      {/* Time/Date/User Info Card */}
+      {/* Last Refresh card — styled to match other metrics */}
       <div
-        className={`rounded-lg p-4 ${
+        className={`rounded-lg p-4 transition-all duration-300 flex flex-col justify-between ${
           theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-        }`}
+        } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-lg bg-[#d82e75] flex items-center justify-center">
-            <span className="text-white text-xs">
-              <AlarmClock />
-            </span>
-          </div>
-          <span
-            className={`font-medium text-base ${
-              theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-            }`}
+        <div className="flex items-center gap-4 mb-3">
+          <div
+            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+            style={{ backgroundColor: '#d82e75' }}
           >
-            System Info
-          </span>
-        </div>
-        <div className="space-y-2">
-          <div className="flex flex-row items-baseline gap-6">
+            <AlarmClock className="w-5 h-5 text-white" />
+          </div>
+
+          <div className="flex-1 min-w-0">
             <div
-              className={`font-semibold text-3xl ${
-                theme === 'dark' ? 'text-[#fff]' : 'text-[#171718]'
-              }`}
-            >
-              {currentDate}
-            </div>
-            <span
-              className={`text-3xl font-bold  ${
+              className={`text-sm font-medium truncate ${
                 theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
               }`}
             >
-              {currentTime}
-            </span>
+              Last refresh
+            </div>
+            <div
+              className={`text-xs mt-0.5 ${
+                theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-500'
+              }`}
+            >
+              {lastRefreshLabel}
+            </div>
           </div>
 
+          {/* spinner aligned with other cards */}
+          {isRefreshing && (
+            <RefreshCw
+              className={`w-4 h-4 animate-spin ${
+                theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+              }`}
+            />
+          )}
+        </div>
+
+        <div className="mt-2">
           <div
-            className={`text-xs ${
+            className={`text-3xl md:text-4xl font-semibold leading-none ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            {formattedLastRefresh}
+          </div>
+          <div
+            className={`text-xs mt-1 ${
               theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
             }`}
           >
-            Last refresh:{' '}
+            {/* if you want date too, replace with formatted full datetime */}
             {lastRefresh
-              ? lastRefresh.toLocaleTimeString('en-GB', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: false,
-                })
-              : currentTime}
+              ? new Date(lastRefresh).toLocaleDateString('en-GB')
+              : ''}
           </div>
         </div>
       </div>

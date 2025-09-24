@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import {
   LineChart,
   Line,
@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal, RefreshCw } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -24,6 +24,63 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
   hierarchyChartData,
 }) => {
   const { theme } = useTheme();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  /**
+   * -------------------------
+   * TWEAKABLE STYLES (edit here)
+   *
+   * - To change label color: edit `labelColorLight` / `labelColorDark`
+   * - To change label size: edit `labelSizeClass`
+   * - To change label boldness: edit `labelFontWeight` (e.g. 'font-semibold' / 'font-extrabold')
+   * - To change value color: edit `valueColorClass`
+   * - To change value size: edit `valueSizeClass`
+   * - To change value boldness: edit `valueFontWeight`
+   *
+   * Use Tailwind utility classes here. Example: change 'text-emerald-300' to 'text-red-500'
+   * -------------------------
+   */
+  const labelSizeClass = 'text-sm md:text-base'; // label size (GVF / WLR)
+  const labelFontWeight = 'font-bold'; // label weight (boldness)
+  const labelColorLight = 'text-gray-600'; // label color when light theme
+  const labelColorDark = 'text-[#A2AED4]'; // label color when dark theme
+
+  const valueSizeClass = 'text-base md:text-lg'; // value size (numeric)
+  const valueFontWeight = 'font-bold'; // value weight
+  const valueColorClass = 'text-emerald-300'; // numeric value color
+
+  // End tweakable block
+  /**
+   * Note: if you use non-Tailwind colors (like hex), keep them in the labelColorDark / labelColorLight
+   * as Tailwind classes or custom class names that exist in your CSS.
+   */
+
+  // Auto-refresh effect with visual indicator
+  useEffect(() => {
+    const startAutoRefresh = () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+
+      refreshIntervalRef.current = setInterval(() => {
+        setIsRefreshing(true);
+
+        // Simulate refresh animation
+        setTimeout(() => {
+          setIsRefreshing(false);
+        }, 800);
+      }, 5000);
+    };
+
+    startAutoRefresh();
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, []);
 
   // Transform API data to chart format and round to 1 decimal place
   const data = useMemo(() => {
@@ -40,7 +97,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
         wlr: point.totalWlr != null ? round1(point.totalWlr) : 0,
       }));
     }
-    
+
     // Return empty array if no data
     return [];
   }, [chartData, hierarchyChartData]);
@@ -51,9 +108,9 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
 
   return (
     <div
-      className={`p-4 rounded-2xl shadow-md ${
+      className={`p-4 rounded-2xl shadow-md transition-all duration-300 ${
         theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-      }`}
+      } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
     >
       <div className="flex items-center justify-between py-3">
         <div className="flex items-center gap-2">
@@ -76,14 +133,16 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
               : 'text-gray-600 border-gray-300'
           }`}
         >
-          <ExternalLink
-            size={20}
-            className="cursor-pointer hover:text-white"
-          />
-          <MoreHorizontal
-            size={20}
-            className="cursor-pointer hover:text-white"
-          />
+          {isRefreshing && (
+            <RefreshCw
+              size={16}
+              className={`animate-spin ${
+                theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+              }`}
+            />
+          )}
+          <ExternalLink size={20} className="cursor-pointer hover:text-white" />
+          <MoreHorizontal size={20} className="cursor-pointer hover:text-white" />
         </div>
       </div>
 
@@ -113,30 +172,35 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
               <div className="flex items-center gap-2">
                 <span className="w-4 h-[2px] bg-pink-500 rounded" />
                 <span
-                  className={
-                    theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'
-                  }
+                  /* Label GVF — color/size/weight are tweakable above */
+                  className={`${theme === 'dark' ? labelColorDark : labelColorLight} ${labelSizeClass} ${labelFontWeight}`}
                 >
                   GVF (%)
                 </span>
-                <span className="text-emerald-300 text-xs">
+                <span
+                  /* Value GVF — color/size/weight are tweakable above */
+                  className={`${valueColorClass} ${valueSizeClass} ${valueFontWeight}`}
+                >
                   {latestGvf.toFixed(1)}
                 </span>
               </div>
+
               <div className="flex items-center gap-2">
                 <span className="w-4 h-[2px] bg-indigo-500 rounded" />
                 <span
-                  className={
-                    theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'
-                  }
+                  /* Label WLR — color/size/weight are tweakable above */
+                  className={`${theme === 'dark' ? labelColorDark : labelColorLight} ${labelSizeClass} ${labelFontWeight}`}
                 >
                   WLR (%)
                 </span>
-                <span className="text-emerald-300 text-xs">
+                <span
+                  /* Value WLR — color/size/weight are tweakable above */
+                  className={`${valueColorClass} ${valueSizeClass} ${valueFontWeight}`}
+                >
                   {latestWlr.toFixed(1)}
                 </span>
               </div>
-                         </div>
+            </div>
           </div>
 
           <ResponsiveContainer
@@ -144,19 +208,12 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
             height={350}
             style={{ outline: 'none', border: 'none' }}
           >
-            <LineChart
-              data={data}
-              margin={{ top: 30, right: 20, left: 10, bottom: 30 }}
-            >
+            <LineChart data={data} margin={{ top: 30, right: 20, left: 10, bottom: 30 }}>
               <CartesianGrid
                 stroke={theme === 'dark' ? '#2C3A65' : '#E5E7EB'}
                 strokeDasharray="3 3"
               />
-              <XAxis
-                dataKey="time"
-                stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
-                tickMargin={15}
-              />
+              <XAxis dataKey="time" stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'} tickMargin={15} />
               <YAxis
                 stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
                 domain={[0, 100]}
@@ -176,22 +233,8 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                 }}
                 cursor={false}
               />
-              <Line
-                type="monotone"
-                dataKey="gvf"
-                stroke="#FE44CC"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="wlr"
-                stroke="#4D3DF7"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
+              <Line type="monotone" dataKey="gvf" stroke="#FE44CC" strokeWidth={2} dot={false} isAnimationActive={false} />
+              <Line type="monotone" dataKey="wlr" stroke="#4D3DF7" strokeWidth={2} dot={false} isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
         </>
