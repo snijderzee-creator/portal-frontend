@@ -28,20 +28,25 @@ export default function OFRChart({ chartData, hierarchyChartData }: OFRChartProp
       // Device data
       return chartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
-        line: point.ofr || 0,
-        standard: point.ofr || 0,
+        line: parseFloat(point.ofr?.toString() || '0') || 0,
+        standard: parseFloat(point.ofr?.toString() || '0') || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       // Hierarchy aggregated data
       return hierarchyChartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
-        line: point.totalOfr || 0,
-        standard: point.totalOfr || 0,
+        line: parseFloat(point.totalOfr?.toString() || '0') || 0,
+        standard: parseFloat(point.totalOfr?.toString() || '0') || 0,
       }));
     }
     
-    // Return empty array if no data
-    return [];
+    // Default data if no API data - for testing
+    return [
+      { time: '14:25:48', line: 10000, standard: 10000 },
+      { time: '14:25:50', line: 8000, standard: 8000 },
+      { time: '14:25:52', line: 6000, standard: 6000 },
+      { time: '14:25:54', line: 4000, standard: 4000 },
+    ];
   }, [chartData, hierarchyChartData]);
 
   const latestValue = data.length > 0 ? data[data.length - 1].line : 0;

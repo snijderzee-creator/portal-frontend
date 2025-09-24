@@ -772,6 +772,7 @@ class ApiService {
     timeRange: string;
     totalDataPoints: number;
   }>> {
+    console.log(`Making API request to /charts/device/${deviceId}?timeRange=${timeRange}`);
     return this.makeRequest(`/charts/device/${deviceId}?timeRange=${timeRange}`, {
       method: 'GET',
       headers: {
@@ -811,6 +812,7 @@ class ApiService {
     totalDataPoints: number;
     totalDevices: number;
   }>> {
+    console.log(`Making API request to /charts/hierarchy/${hierarchyId}?timeRange=${timeRange}`);
     return this.makeRequest(`/charts/hierarchy/${hierarchyId}?timeRange=${timeRange}`, {
       method: 'GET',
       headers: {

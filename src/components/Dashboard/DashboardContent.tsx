@@ -31,9 +31,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   useEffect(() => {
     // Load chart data when a device or hierarchy is selected
     if (selectedDevice && !selectedHierarchy) {
-      loadDeviceChartData(selectedDevice.deviceId || selectedDevice.id);
+      const deviceId = selectedDevice.deviceId || selectedDevice.id;
+      console.log('Loading device chart data for device ID:', deviceId);
+      loadDeviceChartData(deviceId);
       setHierarchyChartData(null); // Clear hierarchy data
     } else if (selectedHierarchy && !selectedDevice) {
+      console.log('Loading hierarchy chart data for hierarchy ID:', selectedHierarchy.id);
       loadHierarchyChartData(selectedHierarchy.id);
       setChartData(null); // Clear device data
     }
@@ -46,7 +49,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     try {
       // Use the correct property name based on the Device interface
       const deviceIdNumber = typeof deviceId === 'string' ? parseInt(deviceId) : deviceId;
+      console.log('Making API call for device chart data:', deviceIdNumber);
       const response = await apiService.getDeviceChartDataEnhanced(deviceIdNumber, timeRange, token);
+      console.log('Device chart data response:', response);
       if (response.success && response.data) {
         // Transform the enhanced API response to match the existing interface
         const transformedData: DeviceChartData = {
@@ -76,6 +81,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           totalDataPoints: response.data.totalDataPoints
         };
         setChartData(transformedData);
+        console.log('Transformed device chart data:', transformedData);
+      } else {
+        console.error('Failed to load device chart data:', response.message);
       }
     } catch (error) {
       console.error('Failed to load device chart data:', error);
@@ -89,9 +97,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     
     setIsLoading(true);
     try {
+      console.log('Making API call for hierarchy chart data:', hierarchyId);
       const response = await apiService.getHierarchyChartDataEnhanced(Number(hierarchyId), timeRange, token);
+      console.log('Hierarchy chart data response:', response);
       if (response.success && response.data) {
         setHierarchyChartData(response.data);
+        console.log('Set hierarchy chart data:', response.data);
+      } else {
+        console.error('Failed to load hierarchy chart data:', response.message);
       }
     } catch (error) {
       console.error('Failed to load hierarchy chart data:', error);

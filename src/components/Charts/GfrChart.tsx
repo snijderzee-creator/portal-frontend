@@ -28,20 +28,25 @@ export default function GFRChart({ chartData, hierarchyChartData }: GFRChartProp
       // Device data
       return chartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
-        line: point.gfr || 0,
-        standard: point.gfr || 0,
+        line: parseFloat(point.gfr?.toString() || '0') || 0,
+        standard: parseFloat(point.gfr?.toString() || '0') || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       // Hierarchy aggregated data
       return hierarchyChartData.chartData.map(point => ({
         time: new Date(point.timestamp).toLocaleTimeString(),
-        line: point.totalGfr || 0,
-        standard: point.totalGfr || 0,
+        line: parseFloat(point.totalGfr?.toString() || '0') || 0,
+        standard: parseFloat(point.totalGfr?.toString() || '0') || 0,
       }));
     }
     
-    // Return empty array if no data
-    return [];
+    // Default data if no API data - for testing
+    return [
+      { time: '14:25:48', line: 12000, standard: 12000 },
+      { time: '14:25:50', line: 9600, standard: 9600 },
+      { time: '14:25:52', line: 7200, standard: 7200 },
+      { time: '14:25:54', line: 4800, standard: 4800 },
+    ];
   }, [chartData, hierarchyChartData]);
 
   const latestValue = data.length > 0 ? data[data.length - 1].line : 0;
