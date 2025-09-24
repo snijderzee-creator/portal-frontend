@@ -7,4 +7,8 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  envPrefix: 'VITE_',
+  server: {
+    port: 3000,
+  },
 });
