@@ -56,7 +56,7 @@ export default function GFRChart({ chartData, hierarchyChartData }: GFRChartProp
           <h2 className={`text-sm font-semibold ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
-            {isHierarchyData ? 'Total GFR (bbd)' : 'GFR (bbd)'}
+            {isHierarchyData ? 'Total GFR (bpd)' : 'GFR (bpd)'}
           </h2>
           <Info size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} />
         </div>

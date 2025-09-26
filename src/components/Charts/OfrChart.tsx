@@ -56,7 +56,7 @@ export default function OFRChart({ chartData, hierarchyChartData }: OFRChartProp
           <h2 className={`text-sm font-semibold ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
-            {isHierarchyData ? 'Total OFR (bbd)' : 'OFR (bbd)'}
+            {isHierarchyData ? 'Total OFR (bpd)' : 'OFR (bpd)'}
           </h2>
           <Info size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} />
         </div>

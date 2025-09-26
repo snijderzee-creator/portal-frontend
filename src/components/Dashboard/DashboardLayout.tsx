@@ -41,24 +41,30 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div
-      className={`min-h-screen w-full ${
+      className={`min-h-screen flex flex-col w-full ${
         theme === 'dark' ? 'bg-[#0F172A]' : 'bg-[#F7F7F7]'
       }`}
     >
-      {/* Pass state + setter to header */}
-      <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* Header - make it sticky so content scrolls under it instead of pushing layout */}
+      <div className="sticky top-0 z-30">
+        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
 
-      <div className="flex">
-        {/* Sidebar Drawer - Always present */}
-        <SidebarDrawer
-          onDeviceSelect={handleDeviceSelect}
-          onHierarchySelect={handleHierarchySelect}
-          onInitialHierarchyLoad={handleInitialHierarchyLoad}
-          selectedDeviceId={selectedDevice?.id}
-          selectedHierarchyId={selectedHierarchy?.id}
-        />
-        {/* Content Area */}
-        <div className="flex-1 p-4">
+      {/* Main area: sidebar + content. Use flex-1 and overflow-hidden so children manage their own scrolling */}
+      <main className="flex flex-1 overflow-hidden">
+        {/* Sidebar - fixed width, doesn't shrink, fill parent's height */}
+        <aside className="w-80 flex-shrink-0 h-full">
+          <SidebarDrawer
+            onDeviceSelect={handleDeviceSelect}
+            onHierarchySelect={handleHierarchySelect}
+            onInitialHierarchyLoad={handleInitialHierarchyLoad}
+            selectedDeviceId={selectedDevice?.id}
+            selectedHierarchyId={selectedHierarchy?.id}
+          />
+        </aside>
+
+        {/* Content Area - takes remaining space and scrolls internally */}
+        <section className="flex-1 h-full overflow-auto p-4">
           {/* Switch content based on activeTab */}
           {activeTab === 'Dashboard' && (
             <DashboardContent
@@ -68,20 +74,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           )}
 
           {activeTab === 'Devices' && (
-            <DevicesPage 
+            <DevicesPage
               selectedHierarchy={selectedHierarchy}
               selectedDevice={selectedDevice}
             />
           )}
 
           {activeTab === 'Alarms' && (
-            <AlarmsTable 
+            <AlarmsTable
               selectedHierarchy={selectedHierarchy}
               selectedDevice={selectedDevice}
             />
           )}
-        </div>
-      </div>
+
+          {/* If you want to render children passed into layout */}
+          {children}
+        </section>
+      </main>
     </div>
   );
 };

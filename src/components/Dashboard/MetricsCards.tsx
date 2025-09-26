@@ -11,6 +11,17 @@ interface MetricsCardsProps {
   chartData?: DeviceChartData | null;
   hierarchyChartData?: HierarchyChartData | null;
   lastRefresh?: Date | null;
+
+  /**
+   * Called when the component requests a refresh.
+   * Parent should fetch new chartData / hierarchyChartData / lastRefresh and pass them back as props.
+   */
+  onRefreshRequested?: () => void;
+
+  /**
+   * Auto-refresh interval in milliseconds (default: 5000)
+   */
+  refreshIntervalMs?: number;
 }
 
 const MetricsCards: React.FC<MetricsCardsProps> = ({
@@ -19,6 +30,8 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
   chartData,
   hierarchyChartData,
   lastRefresh = null,
+  onRefreshRequested,
+  refreshIntervalMs = 5000,
 }) => {
   const { user, token } = useAuth();
   const { theme } = useTheme();
@@ -53,7 +66,8 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-refresh indicator (visual only)
+  // Auto-refresh loop: only visual animation is shown on Last Refresh card.
+  // The component will call onRefreshRequested() so the parent can update data.
   useEffect(() => {
     const startAutoRefresh = () => {
       if (refreshIntervalRef.current) {
@@ -61,18 +75,27 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       }
 
       refreshIntervalRef.current = setInterval(() => {
+        // visual indicator only for "Last Refresh" card
         setIsRefreshing(true);
+        // ask parent to refresh data
+        try {
+          onRefreshRequested?.();
+        } catch (e) {
+          // parent handler might not exist — ignore
+        }
+        // stop visual indicator after short time
         setTimeout(() => setIsRefreshing(false), 800);
-      }, 5000);
+      }, refreshIntervalMs);
     };
 
     startAutoRefresh();
     return () => {
       if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
     };
-  }, []);
+    // Recreate interval if refreshIntervalMs or handler changes
+  }, [refreshIntervalMs, onRefreshRequested]);
 
-  // Compute flow aggregates from chart payloads
+  // Compute flow aggregates from chart payloads (updated when props change)
   useEffect(() => {
     if (hierarchyChartData?.chartData && hierarchyChartData.chartData.length > 0) {
       const latest = hierarchyChartData.chartData[hierarchyChartData.chartData.length - 1];
@@ -147,7 +170,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
           key={idx}
           className={`rounded-lg p-4 transition-all duration-300 ${
             theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-          } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
+          }`}
         >
           <div className="flex items-center gap-4 mb-3">
             <div
@@ -167,10 +190,10 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
               </div>
             </div>
 
-            {/* small spinner if refreshing */}
+            {/* intentionally no spinner for these metric cards */}
           </div>
 
-          {/* --- Restored visual: big number + adjacent "bpd" exactly like your previous design --- */}
+          {/* big number + adjacent "bpd" */}
           <div className="flex items-baseline gap-4 mb-2">
             <span
               className={`lg:text-5xl md:text-4xl font-bold ${
@@ -188,7 +211,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
         </div>
       ))}
 
-      {/* Last Refresh card — styled to match other metrics */}
+      {/* Last Refresh card — only this shows refresh animation */}
       <div
         className={`rounded-lg p-4 transition-all duration-300 flex flex-col justify-between ${
           theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
@@ -211,22 +234,18 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
               Last Refresh
             </div>
             <div
-              className={`text-xs mt-0.5 ${
-                theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-500'
-              }`}
+              className={`text-xs mt-0.5 ${theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-500'}`}
             >
               {lastRefreshLabel}
             </div>
           </div>
 
-          {/* spinner aligned with other cards */}
-          {isRefreshing && (
-            <RefreshCw
-              className={`w-4 h-4 animate-spin ${
-                theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
-              }`}
-            />
-          )}
+          {/* spinner aligned with other cards — only visible for Last Refresh */}
+          <div className="ml-2 flex items-center">
+            {isRefreshing && (
+              <RefreshCw className={`w-4 h-4 animate-spin ${theme === 'dark' ? 'text-blue-400' : 'text-blue-500'}`} />
+            )}
+          </div>
         </div>
 
         <div className="mt-2">
@@ -238,9 +257,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
             {formattedLastRefresh}
           </div>
           <div
-            className={`text-xs mt-1 ${
-              theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-            }`}
+            className={`text-xs mt-1 ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`}
           >
             {lastRefresh ? new Date(lastRefresh).toLocaleDateString('en-GB') : ''}
           </div>

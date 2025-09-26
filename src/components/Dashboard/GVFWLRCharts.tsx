@@ -53,7 +53,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}
         >
-          Average GVF/WLR
+          GVF/WLR
         </h2>
         <Info
           className={`text-xs ${
