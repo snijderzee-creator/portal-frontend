@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal, RefreshCw } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -21,7 +21,7 @@ interface SingleFlowRateChartProps {
   unit: string;
   data: any[];
   dataKey: string;
-  isRefreshing?: boolean;
+  maxValue?: number;
 }
 
 const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
@@ -29,15 +29,24 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
   unit,
   data,
   dataKey,
-  isRefreshing = false,
+  maxValue,
 }) => {
   const { theme } = useTheme();
 
+  // Calculate dynamic Y-axis domain
+  const yAxisDomain = useMemo(() => {
+    if (maxValue !== undefined) {
+      const upperBound = Math.ceil(maxValue * 1.2); // 20% above max value
+      return [0, upperBound];
+    }
+    return [0, 12000]; // fallback
+  }, [maxValue]);
+
   return (
     <div
-      className={`rounded-lg p-4 transition-all duration-300 ${
+      className={`rounded-lg p-4 ${
         theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-      } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
+      }`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -61,14 +70,6 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
               : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'
           }`}
         >
-          {isRefreshing && (
-            <RefreshCw
-              size={14}
-              className={`animate-spin ${
-                theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
-              }`}
-            />
-          )}
           <ExternalLink
             size={16}
             className="dark:text-white cursor-pointer dark:hover:text-gray-200"
@@ -109,15 +110,25 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
             fontSize={10}
             tickMargin={20}
+            tickFormatter={(value) => {
+              // Convert to 24-hour format without seconds
+              const time = new Date(`1970-01-01T${value}`);
+              if (isNaN(time.getTime())) return value;
+              return time.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              });
+            }}
           />
           <YAxis
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
             fontSize={13}
             tickMargin={20}
-            domain={[0, 12000]}
-            ticks={[0, 2000, 4000, 6000, 8000, 10000, 12000]}
+            domain={yAxisDomain}
             tickFormatter={(value) => {
               if (value === 0) return '00';
+              if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
               return value.toString();
             }}
           />
@@ -138,46 +149,25 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
   chartData,
   hierarchyChartData,
 }) => {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Auto-refresh effect with visual indicator
-  useEffect(() => {
-    const startAutoRefresh = () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-      
-      refreshIntervalRef.current = setInterval(() => {
-        setIsRefreshing(true);
-        
-        // Simulate refresh animation
-        setTimeout(() => {
-          setIsRefreshing(false);
-        }, 800);
-      }, 5000);
-    };
-
-    startAutoRefresh();
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-    };
-  }, []);
-
   // Transform API data to chart format
   const ofrData = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.ofr || 0,
         standard: point.ofr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.totalOfr || 0,
         standard: point.totalOfr || 0,
       }));
@@ -189,13 +179,21 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
   const wfrData = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.wfr || 0,
         standard: point.wfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.totalWfr || 0,
         standard: point.totalWfr || 0,
       }));
@@ -207,13 +205,21 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
   const gfrData = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.gfr || 0,
         standard: point.gfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.totalGfr || 0,
         standard: point.totalGfr || 0,
       }));
@@ -222,11 +228,22 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
     return [];
   }, [chartData, hierarchyChartData]);
 
+  // Calculate max values for OFR and WFR to ensure same scale
+  const ofrWfrMaxValue = useMemo(() => {
+    const ofrMax = Math.max(...ofrData.map(d => d.line), 0);
+    const wfrMax = Math.max(...wfrData.map(d => d.line), 0);
+    return Math.max(ofrMax, wfrMax);
+  }, [ofrData, wfrData]);
+
+  const gfrMaxValue = useMemo(() => {
+    return Math.max(...gfrData.map(d => d.line), 0);
+  }, [gfrData]);
+
   return (
     <div className="grid grid-cols-3 gap-4">
-      <FlowRateChart title="OFR" unit="bbd" data={ofrData} dataKey="line" isRefreshing={isRefreshing} />
-      <FlowRateChart title="WFR" unit="bbd" data={wfrData} dataKey="line" isRefreshing={isRefreshing} />
-      <FlowRateChart title="GFR" unit="bbd" data={gfrData} dataKey="line" isRefreshing={isRefreshing} />
+      <FlowRateChart title="OFR" unit="bbd" data={ofrData} dataKey="line" maxValue={ofrWfrMaxValue} />
+      <FlowRateChart title="WFR" unit="bbd" data={wfrData} dataKey="line" maxValue={ofrWfrMaxValue} />
+      <FlowRateChart title="GFR" unit="bbd" data={gfrData} dataKey="line" maxValue={gfrMaxValue} />
     </div>
   );
 };

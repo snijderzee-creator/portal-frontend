@@ -132,6 +132,16 @@ export default function WFRChart({ chartData, hierarchyChartData }: WFRChartProp
             dataKey="time" 
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'} 
             tickMargin={15} 
+            tickFormatter={(value) => {
+              // Convert to 24-hour format without seconds
+              const time = new Date(`1970-01-01T${value}`);
+              if (isNaN(time.getTime())) return value;
+              return time.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              });
+            }}
           />
           <YAxis
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}

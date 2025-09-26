@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal, RefreshCw } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -24,8 +24,6 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
   hierarchyChartData,
 }) => {
   const { theme } = useTheme();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
    * -------------------------
@@ -56,43 +54,25 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
    * as Tailwind classes or custom class names that exist in your CSS.
    */
 
-  // Auto-refresh effect with visual indicator
-  useEffect(() => {
-    const startAutoRefresh = () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-
-      refreshIntervalRef.current = setInterval(() => {
-        setIsRefreshing(true);
-
-        // Simulate refresh animation
-        setTimeout(() => {
-          setIsRefreshing(false);
-        }, 800);
-      }, 5000);
-    };
-
-    startAutoRefresh();
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-    };
-  }, []);
-
   // Transform API data to chart format and round to 1 decimal place
   const data = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         gvf: point.gvf != null ? round1(point.gvf) : 0,
         wlr: point.wlr != null ? round1(point.wlr) : 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         gvf: point.totalGvf != null ? round1(point.totalGvf) : 0,
         wlr: point.totalWlr != null ? round1(point.totalWlr) : 0,
       }));
@@ -108,9 +88,9 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
 
   return (
     <div
-      className={`p-4 rounded-2xl shadow-md transition-all duration-300 ${
+      className={`p-4 rounded-2xl shadow-md ${
         theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-      } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
+      }`}
     >
       <div className="flex items-center justify-between py-3">
         <div className="flex items-center gap-2">
@@ -133,14 +113,6 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
               : 'text-gray-600 border-gray-300'
           }`}
         >
-          {isRefreshing && (
-            <RefreshCw
-              size={16}
-              className={`animate-spin ${
-                theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
-              }`}
-            />
-          )}
           <ExternalLink size={20} className="cursor-pointer hover:text-white" />
           <MoreHorizontal size={20} className="cursor-pointer hover:text-white" />
         </div>
@@ -213,7 +185,15 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                 stroke={theme === 'dark' ? '#2C3A65' : '#E5E7EB'}
                 strokeDasharray="3 3"
               />
-              <XAxis dataKey="time" stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'} tickMargin={15} />
+              <XAxis 
+                dataKey="time" 
+                stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'} 
+                tickMargin={15}
+                tickFormatter={(value) => {
+                  // Already formatted in data transformation, just return as is
+                  return value;
+                }}
+              />
               <YAxis
                 stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
                 domain={[0, 100]}

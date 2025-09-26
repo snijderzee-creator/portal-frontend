@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
 import { HierarchyChartData, DeviceChartData } from '../../services/api';
-import { Info, RefreshCw } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 interface GVFWLRChartsProps {
   chartData?: DeviceChartData | null;
@@ -11,34 +11,6 @@ interface GVFWLRChartsProps {
 
 const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartData }) => {
   const { theme } = useTheme();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Auto-refresh effect with visual indicator
-  useEffect(() => {
-    const startAutoRefresh = () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-      
-      refreshIntervalRef.current = setInterval(() => {
-        setIsRefreshing(true);
-        
-        // Simulate refresh animation
-        setTimeout(() => {
-          setIsRefreshing(false);
-        }, 800);
-      }, 5000);
-    };
-
-    startAutoRefresh();
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-    };
-  }, []);
 
   // Calculate GVF and WLR values from chart data
   let gvfValue = 65;
@@ -73,9 +45,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
   ];
 
   return (
-    <div className={`p-4 transition-all duration-300 ${
-      isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg rounded-lg' : ''
-    }`}>
+    <div className="p-4">
       {/* Title */}
       <div className="flex items-center gap-3 mb-6">
         <h2
@@ -90,11 +60,6 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
             theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
           }`}
         />
-        {isRefreshing && (
-          <RefreshCw className={`w-4 h-4 animate-spin ml-auto ${
-            theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
-          }`} />
-        )}
       </div>
 
       {/* Charts Row */}

@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal, RefreshCw } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 
 const data = [
@@ -18,34 +18,6 @@ const data = [
 
 const TopRegionsChart: React.FC = () => {
   const { theme } = useTheme();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Auto-refresh effect with visual indicator
-  useEffect(() => {
-    const startAutoRefresh = () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-      
-      refreshIntervalRef.current = setInterval(() => {
-        setIsRefreshing(true);
-        
-        // Simulate refresh animation
-        setTimeout(() => {
-          setIsRefreshing(false);
-        }, 800);
-      }, 5000);
-    };
-
-    startAutoRefresh();
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-    };
-  }, []);
 
   // Define bar colors based on theme
   const colors = {
@@ -55,9 +27,7 @@ const TopRegionsChart: React.FC = () => {
   };
 
   return (
-    <div className={`p-4 transition-all duration-300 ${
-      isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg rounded-lg' : ''
-    }`}>
+    <div className="p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -81,11 +51,6 @@ const TopRegionsChart: React.FC = () => {
               : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'
           }`}
         >
-          {isRefreshing && (
-            <RefreshCw className={`w-4 h-4 animate-spin ${
-              theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
-            }`} />
-          )}
           <ExternalLink />
           <MoreHorizontal
             size={14}

@@ -168,13 +168,6 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
             </div>
 
             {/* small spinner if refreshing */}
-            {isRefreshing && (
-              <RefreshCw
-                className={`w-4 h-4 animate-spin ${
-                  theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
-                }`}
-              />
-            )}
           </div>
 
           {/* --- Restored visual: big number + adjacent "bpd" exactly like your previous design --- */}
