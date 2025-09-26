@@ -177,23 +177,20 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
             )}
           </div>
 
-          <div className="flex items-baseline justify-between gap-4">
-            <div>
-              <div
-                className={`lg:text-5xl md:text-4xl text-3xl font-bold leading-none ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}
-              >
-                {metric.value}
-              </div>
-              <div
-                className={`text-sm mt-1 ${
-                  theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-                }`}
-              >
-                {metric.unit}
-              </div>
-            </div>
+          {/* --- Restored visual: big number + adjacent "bpd" exactly like your previous design --- */}
+          <div className="flex items-baseline gap-4 mb-2">
+            <span
+              className={`lg:text-5xl md:text-4xl font-bold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              {metric.value}
+            </span>
+            <span
+              className={`text-xl ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`}
+            >
+              {metric.unit}
+            </span>
           </div>
         </div>
       ))}
@@ -218,7 +215,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
                 theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
               }`}
             >
-              Last refresh
+              Last Refresh
             </div>
             <div
               className={`text-xs mt-0.5 ${
@@ -252,10 +249,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
               theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
             }`}
           >
-            {/* if you want date too, replace with formatted full datetime */}
-            {lastRefresh
-              ? new Date(lastRefresh).toLocaleDateString('en-GB')
-              : ''}
+            {lastRefresh ? new Date(lastRefresh).toLocaleDateString('en-GB') : ''}
           </div>
         </div>
       </div>
