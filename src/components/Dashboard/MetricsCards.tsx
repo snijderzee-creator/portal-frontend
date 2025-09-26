@@ -218,15 +218,6 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
               Last Refresh
             </div>
             <div
-              className={`text-xs mt-0.5 ${
-                theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-500'
-              }`}
-            >
-              {lastRefreshLabel}
-            </div>
-          </div>
-
-          {/* spinner aligned with other cards */}
           {isRefreshing && (
             <RefreshCw
               className={`w-4 h-4 animate-spin ${

@@ -27,14 +27,22 @@ export default function WFRChart({ chartData, hierarchyChartData }: WFRChartProp
     if (chartData?.chartData) {
       // Device data
       return chartData.chartData.map(point => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.wfr || 0,
         standard: point.wfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       // Hierarchy aggregated data
       return hierarchyChartData.chartData.map(point => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
+        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
         line: point.totalWfr || 0,
         standard: point.totalWfr || 0,
       }));
@@ -135,8 +143,13 @@ export default function WFRChart({ chartData, hierarchyChartData }: WFRChartProp
           />
           <YAxis
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
-            domain={data.length > 0 ? ['dataMin - 500', 'dataMax + 500'] : [0, 1000]}
+           domain={data.length > 0 ? [0, 'dataMax * 1.2'] : [0, 1000]}
             tickMargin={15}
+           tickFormatter={(value) => {
+             if (value === 0) return '00';
+             if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+             return value.toString();
+           }}
           />
           <Tooltip
             contentStyle={{
