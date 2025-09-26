@@ -81,6 +81,11 @@ const TopRegionsChart: React.FC = () => {
               : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'
           }`}
         >
+          {isRefreshing && (
+            <RefreshCw className={`w-4 h-4 animate-spin ${
+              theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+            }`} />
+          )}
           <ExternalLink />
           <MoreHorizontal
             size={14}

@@ -5,8 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../hooks/useAuth';
 import { apiService, EnhancedDevice, HierarchyNode } from '../../services/api';
-import { Activity, Wifi, Power, Cpu, Tablet, Monitor, AlarmClock, AlarmClockCheck as AlarmCheck, RefreshCw } from 'lucide-react';
-import { Bell } from 'lucide-react';
+import { Activity, Wifi, Power, Cpu, Tablet, Monitor, AlarmClock, AlarmCheck, RefreshCw } from 'lucide-react';
 
 // Fix for default markers in React Leaflet
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -21,21 +20,20 @@ Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Custom marker icons: Google Maps style pin
+// Custom marker icons: now a simple filled circle (no text)
 const createCustomIcon = (color: string) => {
-  const width = 24;
-  const height = 36;
+  const size = 18; // diameter in px
+  const radius = size / 2;
   const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 24 36">
-      <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24c0-6.6-5.4-12-12-12z" fill="${color}"/>
-      <circle cx="12" cy="12" r="6" fill="white"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${radius}" cy="${radius}" r="${radius}" fill="${color}" />
     </svg>
   `;
   return new Icon({
     iconUrl: `data:image/svg+xml;base64,${btoa(svg)}`,
-    iconSize: [width, height],
-    iconAnchor: [width / 2, height], // bottom center of pin
-    popupAnchor: [0, -height], // show popup above the pin
+    iconSize: [size, size],
+    iconAnchor: [radius, radius], // center anchor so it sits exactly on coords
+    popupAnchor: [0, -radius - 6], // show popup above the circle
     className: '', // no extra classes
   });
 };
@@ -76,7 +74,6 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
   const [serverStats, setServerStats] = useState<any | null>(null); // Holds statistics returned from backend
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [shouldAutoRefresh, setShouldAutoRefresh] = useState(true);
 
   // refs for map and markers so we can programmatically center/open popup for selected device
   const mapRef = useRef<any | null>(null);
@@ -90,7 +87,6 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
       setIsLoading(true);
       setError(null);
       setServerStats(null);
-      setShouldAutoRefresh(false); // Disable auto-refresh when hierarchy changes
       
       try {
         let response;
@@ -130,8 +126,6 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
         setServerStats(null);
       } finally {
         setIsLoading(false);
-        // Re-enable auto-refresh after initial load
-        setTimeout(() => setShouldAutoRefresh(true), 1000);
       }
     };
 
@@ -140,16 +134,12 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
 
   // Auto-refresh effect with visual indicator
   useEffect(() => {
-    if (!shouldAutoRefresh) return;
-    
     const startAutoRefresh = () => {
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
       }
       
       refreshIntervalRef.current = setInterval(() => {
-        if (!shouldAutoRefresh) return;
-        
         setIsRefreshing(true);
         
         // Reload devices data
@@ -200,7 +190,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
         clearInterval(refreshIntervalRef.current);
       }
     };
-  }, [token, selectedHierarchy, shouldAutoRefresh]);
+  }, [token, selectedHierarchy]);
 
   // When selectedDevice changes, center map and open its popup (if available)
   useEffect(() => {
@@ -354,6 +344,11 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
           }
         </h2>
         <div className="flex items-center gap-4">
+          {isRefreshing && (
+            <RefreshCw className={`w-5 h-5 animate-spin ${
+              theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+            }`} />
+          )}
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-[#17F083]"></div>
             <span className={`text-base ${
@@ -523,9 +518,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
           </div>
 
           <div className="flex items-center gap-5 border-l-2 py-2 border-[#46B8E9] pl-3 rounded-l-md">
-            <div className="w-5 h-5 flex items-center justify-center">
-              <Bell className="w-4 h-4 text-[#555867] dark:text-white" />
-            </div>
+            <Wifi className="text-[#555867] dark:text-white" />
             <span className={`font-bold text-lg ${
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             }`}>
@@ -540,11 +533,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
 
           <div className="space-y-4 pt-2">
             <div className="flex items-center gap-5 border-l-2 py-2 border-[#17F083] pl-3 rounded-l-md">
-              <div className="w-5 h-5 flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#555867] dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.07 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-                </svg>
-              </div>
+              <Monitor className="text-[#555867] dark:text-white" />
               <span className={`font-bold text-lg ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
@@ -558,11 +547,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({ selectedHierarchy, select
             </div>
 
             <div className="flex items-center gap-5 border-l-2 py-2 border-[#EC4899] pl-3 rounded-l-md">
-              <div className="w-5 h-5 flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#555867] dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                </svg>
-              </div>
+              <Power className="text-[#555867] dark:text-white" />
               <span className={`font-bold text-lg ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>

@@ -59,7 +59,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
     {
       name: 'Remaining',
       value: 100 - gvfValue,
-      color: theme === 'dark' ? '#8B7CF7' : '#7DD3BF',
+      color: theme === 'dark' ? '#FE44CC' : '#F56C44',
     },
   ];
 
@@ -68,7 +68,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
     {
       name: 'Remaining',
       value: 100 - wlrValue,
-      color: theme === 'dark' ? '#8B7CF7' : '#7DD3BF',
+      color: theme === 'dark' ? '#22D3EE' : '#F6CA58',
     },
   ];
 
@@ -83,13 +83,18 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}
         >
-          GVF/WLR
+          Average GVF/WLR
         </h2>
         <Info
           className={`text-xs ${
             theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
           }`}
         />
+        {isRefreshing && (
+          <RefreshCw className={`w-4 h-4 animate-spin ml-auto ${
+            theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+          }`} />
+        )}
       </div>
 
       {/* Charts Row */}

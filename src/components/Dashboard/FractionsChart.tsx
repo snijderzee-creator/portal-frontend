@@ -86,21 +86,13 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
   const data = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         gvf: point.gvf != null ? round1(point.gvf) : 0,
         wlr: point.wlr != null ? round1(point.wlr) : 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         gvf: point.totalGvf != null ? round1(point.totalGvf) : 0,
         wlr: point.totalWlr != null ? round1(point.totalWlr) : 0,
       }));
@@ -141,6 +133,14 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
               : 'text-gray-600 border-gray-300'
           }`}
         >
+          {isRefreshing && (
+            <RefreshCw
+              size={16}
+              className={`animate-spin ${
+                theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+              }`}
+            />
+          )}
           <ExternalLink size={20} className="cursor-pointer hover:text-white" />
           <MoreHorizontal size={20} className="cursor-pointer hover:text-white" />
         </div>

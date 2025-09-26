@@ -22,7 +22,6 @@ interface SingleFlowRateChartProps {
   data: any[];
   dataKey: string;
   isRefreshing?: boolean;
-  yAxisDomain?: [number, number];
 }
 
 const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
@@ -31,7 +30,6 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
   data,
   dataKey,
   isRefreshing = false,
-  yAxisDomain,
 }) => {
   const { theme } = useTheme();
 
@@ -116,10 +114,10 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
             fontSize={13}
             tickMargin={20}
-            domain={yAxisDomain || [0, 'dataMax + 20%']}
+            domain={[0, 12000]}
+            ticks={[0, 2000, 4000, 6000, 8000, 10000, 12000]}
             tickFormatter={(value) => {
               if (value === 0) return '00';
-              if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
               return value.toString();
             }}
           />
@@ -142,36 +140,6 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
 }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Calculate dynamic Y-axis domains
-  const { ofrWfrDomain, gfrDomain } = useMemo(() => {
-    let maxOfr = 0;
-    let maxWfr = 0;
-    let maxGfr = 0;
-
-    if (chartData?.chartData) {
-      chartData.chartData.forEach(point => {
-        maxOfr = Math.max(maxOfr, point.ofr || 0);
-        maxWfr = Math.max(maxWfr, point.wfr || 0);
-        maxGfr = Math.max(maxGfr, point.gfr || 0);
-      });
-    } else if (hierarchyChartData?.chartData) {
-      hierarchyChartData.chartData.forEach(point => {
-        maxOfr = Math.max(maxOfr, point.totalOfr || 0);
-        maxWfr = Math.max(maxWfr, point.totalWfr || 0);
-        maxGfr = Math.max(maxGfr, point.totalGfr || 0);
-      });
-    }
-
-    // Use same scale for OFR and WFR (20% buffer)
-    const ofrWfrMax = Math.max(maxOfr, maxWfr);
-    const ofrWfrDomain: [number, number] = [0, Math.ceil(ofrWfrMax * 1.2)];
-    
-    // Separate scale for GFR (20% buffer)
-    const gfrDomain: [number, number] = [0, Math.ceil(maxGfr * 1.2)];
-
-    return { ofrWfrDomain, gfrDomain };
-  }, [chartData, hierarchyChartData]);
 
   // Auto-refresh effect with visual indicator
   useEffect(() => {
@@ -203,21 +171,13 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
   const ofrData = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.ofr || 0,
         standard: point.ofr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.totalOfr || 0,
         standard: point.totalOfr || 0,
       }));
@@ -229,21 +189,13 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
   const wfrData = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.wfr || 0,
         standard: point.wfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.totalWfr || 0,
         standard: point.totalWfr || 0,
       }));
@@ -255,21 +207,13 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
   const gfrData = useMemo(() => {
     if (chartData?.chartData) {
       return chartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.gfr || 0,
         standard: point.gfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
       return hierarchyChartData.chartData.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }),
+        time: new Date(point.timestamp).toLocaleTimeString(),
         line: point.totalGfr || 0,
         standard: point.totalGfr || 0,
       }));
@@ -280,9 +224,9 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      <FlowRateChart title="OFR" unit="bpd" data={ofrData} dataKey="line" isRefreshing={isRefreshing} yAxisDomain={ofrWfrDomain} />
-      <FlowRateChart title="WFR" unit="bpd" data={wfrData} dataKey="line" isRefreshing={isRefreshing} yAxisDomain={ofrWfrDomain} />
-      <FlowRateChart title="GFR" unit="bpd" data={gfrData} dataKey="line" isRefreshing={isRefreshing} yAxisDomain={gfrDomain} />
+      <FlowRateChart title="OFR" unit="bbd" data={ofrData} dataKey="line" isRefreshing={isRefreshing} />
+      <FlowRateChart title="WFR" unit="bbd" data={wfrData} dataKey="line" isRefreshing={isRefreshing} />
+      <FlowRateChart title="GFR" unit="bbd" data={gfrData} dataKey="line" isRefreshing={isRefreshing} />
     </div>
   );
 };

@@ -157,18 +157,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           />
 
           {/* Main Content Grid */}
-          <div className="space-y-4">
-            {/* Flow Rates Group */}
-            <div className="space-y-4">
-              {/* Flow Rate Charts */}
-              <FlowRateCharts
-                chartData={chartData}
-                hierarchyChartData={hierarchyChartData}
-              />
-            </div>
-
-            {/* GVF/WLR Group */}
-            <div className="flex gap-4">
+          <div className="flex gap-4 mb-4">
             {/* Conditional Chart Display */}
             {shouldShowTopRegions && (
               <div className="flex-1">
@@ -208,7 +197,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 />
               </div>
             </div>
-            </div>
           </div>
 
           {/* Production Map */}
@@ -218,6 +206,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
               selectedDevice={selectedDevice}
             />
           </div>
+
+          {/* Flow Rate Charts */}
+          <FlowRateCharts
+            chartData={chartData}
+            hierarchyChartData={hierarchyChartData}
+          />
         </>
       )}
     </div>
