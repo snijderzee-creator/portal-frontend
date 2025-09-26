@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../hooks/useAuth';
 import { apiService, EnhancedDevice, HierarchyNode } from '../../services/api';
-import { Activity, Wifi, Power, Cpu, Tablet, Monitor, AlarmClock, AlarmCheck, RefreshCw } from 'lucide-react';
+import { Activity, Wifi, Power, Cpu, Tablet, Monitor, AlarmClock, AlarmClockCheck as AlarmCheck, RefreshCw } from 'lucide-react';
 import { Bell } from 'lucide-react';
 
 // Fix for default markers in React Leaflet
