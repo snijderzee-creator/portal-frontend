@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { apiService, DeviceChartData, HierarchyChartData, Device } from '../../services/api';
 import MetricsCards from './MetricsCards';
+import TopRegionsChart from './TopRegionsChart';
 import GVFWLRCharts from './GVFWLRCharts';
 import ProductionMap from './ProductionMap';
 import FlowRateCharts from './FlowRateCharts';
@@ -55,9 +56,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           loadDeviceChartData(selectedDevice.deviceId || selectedDevice.id);
         } else if (selectedHierarchy && !selectedDevice) {
           loadHierarchyChartData(selectedHierarchy.id);
-        } else {
-          // No selection: optionally refresh global/hydrated data if you have an endpoint
-          // For now we just keep FractionsChart able to render using whatever data is available
         }
       }, 5000);
     };
@@ -76,9 +74,11 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     
     setIsLoading(true);
     try {
+      // Use the correct property name based on the Device interface
       const deviceIdNumber = typeof deviceId === 'string' ? parseInt(deviceId) : deviceId;
       const response = await apiService.getDeviceChartDataEnhanced(deviceIdNumber, timeRange, token);
       if (response.success && response.data) {
+        // Transform the enhanced API response to match the existing interface
         const transformedData: DeviceChartData = {
           device: {
             id: response.data.device.deviceId?.toString() || deviceId.toString(),
@@ -130,11 +130,18 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
     }
   };
 
-  // --- CHANGE: Always show FractionsChart (render it regardless of selection) ---
-  // Previously this was conditional; now FractionsChart is rendered permanently.
-
+  // Determine if we should show TopRegionsChart or FractionsChart
+  const shouldShowFractions = selectedHierarchy?.level === 'Well' || selectedDevice;
+  const shouldShowTopRegions = !shouldShowFractions && (
+    !selectedHierarchy || 
+    selectedHierarchy.level === 'Region' || 
+    selectedHierarchy.level === 'Area' || 
+    selectedHierarchy.level === 'Field' ||
+    selectedHierarchy.id === selectedHierarchy.name // Company level
+  );
   return (
-    <div className={`h-full overflow-y-auto ${
+    <div
+      className={`h-full p-4 overflow-y-auto ${
         theme === 'dark' ? 'bg-[#121429]' : 'bg-gray-50'
       }`}
     >
@@ -149,27 +156,45 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             lastRefresh={lastRefresh}
           />
 
+ {/* Flow Rate Charts */}
+          <FlowRateCharts
+            chartData={chartData}
+            hierarchyChartData={hierarchyChartData}
+          />
+
           {/* Main Content Grid */}
           <div className="flex gap-4 mb-4">
-            {/* FractionsChart is now always visible */}
-            <div className="flex-1">
-              <div
-                className={`rounded-lg p-2 h-full ${
-                  theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-                }`}
-              >
+            {/* Conditional Chart Display */}
+            {/* {shouldShowTopRegions && (
+              <div className="flex-1">
+                <div
+                  className={`rounded-lg p-2 h-full ${
+                    theme === 'dark'
+                      ? 'bg-[#162345]'
+                      : 'bg-white border border-gray-200'
+                  }`}
+                >
+                  <TopRegionsChart />
+                </div>
+              </div>
+            )} */}
+
+            {/* {shouldShowFractions && ( */}
+              <div className="flex-1">
                 <FractionsChart 
                   chartData={chartData}
                   hierarchyChartData={hierarchyChartData}
                 />
               </div>
-            </div>
+            {/* )} */}
 
             {/* GVF/WLR Charts */}
             <div className="flex-1">
               <div
                 className={`rounded-lg p-2 h-full ${
-                  theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
+                  theme === 'dark'
+                    ? 'bg-[#162345]'
+                    : 'bg-white border border-gray-200'
                 }`}
               >
                 <GVFWLRCharts 
@@ -188,11 +213,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             />
           </div>
 
-          {/* Flow Rate Charts */}
-          <FlowRateCharts
-            chartData={chartData}
-            hierarchyChartData={hierarchyChartData}
-          />
+         
         </>
       )}
     </div>

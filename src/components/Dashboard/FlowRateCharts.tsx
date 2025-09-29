@@ -241,9 +241,9 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      <FlowRateChart title="OFR" unit="bbd" data={ofrData} dataKey="line" maxValue={ofrWfrMaxValue} />
-      <FlowRateChart title="WFR" unit="bbd" data={wfrData} dataKey="line" maxValue={ofrWfrMaxValue} />
-      <FlowRateChart title="GFR" unit="bbd" data={gfrData} dataKey="line" maxValue={gfrMaxValue} />
+      <FlowRateChart title="OFR" unit="bpd" data={ofrData} dataKey="line" maxValue={ofrWfrMaxValue} />
+      <FlowRateChart title="WFR" unit="bpd" data={wfrData} dataKey="line" maxValue={ofrWfrMaxValue} />
+      <FlowRateChart title="GFR" unit="bpd" data={gfrData} dataKey="line" maxValue={gfrMaxValue} />
     </div>
   );
 };

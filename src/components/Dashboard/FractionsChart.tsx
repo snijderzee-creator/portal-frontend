@@ -133,13 +133,6 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
       ) : (
         <>
           <div className="mb-3">
-            <p
-              className={`text-base mb-2 ${
-                theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-600'
-              }`}
-            >
-              Comparison
-            </p>
             <div className="flex gap-6 py-3 text-sm">
               <div className="flex items-center gap-2">
                 <span className="w-4 h-[2px] bg-pink-500 rounded" />

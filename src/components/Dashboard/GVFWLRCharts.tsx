@@ -31,7 +31,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
     {
       name: 'Remaining',
       value: 100 - gvfValue,
-      color: theme === 'dark' ? '#FE44CC' : '#F56C44',
+      color: theme === 'dark' ? '#A2AED4' : '#96cfc2ff',
     },
   ];
 
@@ -40,7 +40,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
     {
       name: 'Remaining',
       value: 100 - wlrValue,
-      color: theme === 'dark' ? '#22D3EE' : '#F6CA58',
+      color: theme === 'dark' ? '#A2AED4' : '#96cfc2ff',
     },
   ];
 
