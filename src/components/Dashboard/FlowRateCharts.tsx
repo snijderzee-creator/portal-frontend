@@ -1,5 +1,5 @@
 // FlowRateCharts.tsx
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -11,6 +11,7 @@ import {
 import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
+import ChartModal from '../Charts/ChartModal';
 
 interface FlowRateChartsProps {
   chartData?: DeviceChartData | null;
@@ -25,6 +26,7 @@ interface SingleFlowRateChartProps {
   dataKey: string;
   maxValue?: number;
   timeRange: '1day' | '7days' | '1month';
+  onExpandClick?: () => void;
 }
 
 const formatTickByRange = (value: number, timeRange: string) => {
@@ -47,6 +49,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
   dataKey,
   maxValue,
   timeRange,
+  onExpandClick,
 }) => {
   const { theme } = useTheme();
 
@@ -62,35 +65,11 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
   // sensible tick count (max 8 ticks)
   const tickCount = Math.min(8, Math.max(3, Math.ceil((data?.length || 1) / 20)));
 
-  return (
-    <div
-      className={`rounded-lg p-4 ${theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'}`}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h3 className={`text-base font-medium ${theme === 'dark' ? 'text-[#fff]' : 'text-[#0f0f0f]'}`}>
-            {title} ({unit})
-          </h3>
-          <Info className={`text-sm ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`} />
-        </div>
-        <div className={`flex items-center gap-2 border px-2 py-1 rounded-md ${theme === 'dark' ? 'border-[#D0CCD8] text-gray-400 hover:text-white' : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'}`}>
-          <ExternalLink size={16} className="dark:text-white cursor-pointer dark:hover:text-gray-200" />
-          <MoreHorizontal size={16} className="text-gray-400 dark:text-white cursor-pointer hover:text-gray-800 dark:hover:text-gray-200" />
-        </div>
-      </div>
+  const renderChart = (height: number, isFullScreen = false) => {
+    const adjustedTickCount = isFullScreen ? Math.min(15, Math.max(5, Math.ceil((data?.length || 1) / 10))) : tickCount;
 
-      <div className="mb-3">
-        <div className="flex gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-[#38BF9D] dark:bg-[#EC4899] rounded"></div>
-            <span className={`text-sm font-thin ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Line Condition
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <ResponsiveContainer width="100%" height={200}>
+    return (
+      <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
           <CartesianGrid stroke={theme === 'dark' ? '#d5dae740' : '#E5E7EB'} strokeDasharray="3 3" />
           <XAxis
@@ -102,7 +81,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
             stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
             fontSize={10}
             tickMargin={12}
-            tickCount={tickCount}
+            tickCount={adjustedTickCount}
             interval="preserveStartEnd"
           />
           <YAxis
@@ -119,11 +98,49 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
           <Line type="monotone" dataKey={dataKey} stroke={theme === 'dark' ? '#EC4899' : '#38BF9D'} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
+    );
+  };
+
+  return (
+    <div
+      className={`rounded-lg p-4 ${theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'}`}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <h3 className={`text-base font-medium ${theme === 'dark' ? 'text-[#fff]' : 'text-[#0f0f0f]'}`}>
+            {title} ({unit})
+          </h3>
+          <Info className={`text-sm ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`} />
+        </div>
+        <div className={`flex items-center gap-2 border px-2 py-1 rounded-md ${theme === 'dark' ? 'border-[#D0CCD8] text-gray-400 hover:text-white' : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'}`}>
+          <ExternalLink
+            size={16}
+            className="dark:text-white cursor-pointer dark:hover:text-gray-200 transition-colors"
+            onClick={onExpandClick}
+          />
+          <MoreHorizontal size={16} className="text-gray-400 dark:text-white cursor-pointer hover:text-gray-800 dark:hover:text-gray-200" />
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-1 bg-[#38BF9D] dark:bg-[#EC4899] rounded"></div>
+            <span className={`text-sm font-thin ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Line Condition
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {renderChart(200, false)}
     </div>
   );
 };
 
 const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyChartData, timeRange }) => {
+  const [modalOpen, setModalOpen] = useState<'ofr' | 'wfr' | 'gfr' | null>(null);
+  const { theme } = useTheme();
   // Transform API data to chart format with numeric timestamps
   const ofrData = useMemo(() => {
     if (chartData?.chartData) {
@@ -187,12 +204,109 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyCha
     return Math.max(...gfrData.map(d => d.line), 0);
   }, [gfrData]);
 
+  const renderModalChart = (data: any[], dataKey: string, maxValue: number | undefined, title: string) => {
+    const yAxisDomain = maxValue !== undefined ? [0, Math.ceil(maxValue * 1.2)] : [0, 12000];
+    const adjustedTickCount = Math.min(15, Math.max(5, Math.ceil((data?.length || 1) / 10)));
+
+    return (
+      <>
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-1 bg-[#38BF9D] dark:bg-[#EC4899] rounded"></div>
+            <span className={`text-sm font-thin ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Line Condition
+            </span>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={window.innerHeight * 0.65}>
+          <LineChart data={data} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
+            <CartesianGrid stroke={theme === 'dark' ? '#d5dae740' : '#E5E7EB'} strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              type="number"
+              scale="time"
+              domain={['dataMin', 'dataMax']}
+              tickFormatter={(v) => formatTickByRange(v as number, timeRange)}
+              stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
+              fontSize={12}
+              tickMargin={12}
+              tickCount={adjustedTickCount}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
+              fontSize={13}
+              tickMargin={20}
+              domain={yAxisDomain}
+              tickFormatter={(value) => {
+                if (value === 0) return '00';
+                if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+                return value.toString();
+              }}
+            />
+            <Line type="monotone" dataKey={dataKey} stroke={theme === 'dark' ? '#EC4899' : '#38BF9D'} strokeWidth={2} dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </>
+    );
+  };
+
   return (
-    <div className="grid grid-cols-3 gap-4">
-      <FlowRateChart title="OFR" unit="l/min" data={ofrData} dataKey="line" maxValue={ofrWfrMaxValue} timeRange={timeRange} />
-      <FlowRateChart title="WFR" unit="l/min" data={wfrData} dataKey="line" maxValue={ofrWfrMaxValue} timeRange={timeRange} />
-      <FlowRateChart title="GFR" unit="l/min" data={gfrData} dataKey="line" maxValue={gfrMaxValue} timeRange={timeRange} />
-    </div>
+    <>
+      <div className="grid grid-cols-3 gap-4">
+        <FlowRateChart
+          title="OFR"
+          unit="l/min"
+          data={ofrData}
+          dataKey="line"
+          maxValue={ofrWfrMaxValue}
+          timeRange={timeRange}
+          onExpandClick={() => setModalOpen('ofr')}
+        />
+        <FlowRateChart
+          title="WFR"
+          unit="l/min"
+          data={wfrData}
+          dataKey="line"
+          maxValue={ofrWfrMaxValue}
+          timeRange={timeRange}
+          onExpandClick={() => setModalOpen('wfr')}
+        />
+        <FlowRateChart
+          title="GFR"
+          unit="l/min"
+          data={gfrData}
+          dataKey="line"
+          maxValue={gfrMaxValue}
+          timeRange={timeRange}
+          onExpandClick={() => setModalOpen('gfr')}
+        />
+      </div>
+
+      <ChartModal
+        isOpen={modalOpen === 'ofr'}
+        onClose={() => setModalOpen(null)}
+        title="OFR (l/min)"
+      >
+        {renderModalChart(ofrData, 'line', ofrWfrMaxValue, 'OFR')}
+      </ChartModal>
+
+      <ChartModal
+        isOpen={modalOpen === 'wfr'}
+        onClose={() => setModalOpen(null)}
+        title="WFR (l/min)"
+      >
+        {renderModalChart(wfrData, 'line', ofrWfrMaxValue, 'WFR')}
+      </ChartModal>
+
+      <ChartModal
+        isOpen={modalOpen === 'gfr'}
+        onClose={() => setModalOpen(null)}
+        title="GFR (l/min)"
+      >
+        {renderModalChart(gfrData, 'line', gfrMaxValue, 'GFR')}
+      </ChartModal>
+    </>
   );
 };
 
