@@ -9,6 +9,11 @@ import {
   Device,
 } from '../../services/api';
 
+const regionSvg = '/region.svg';
+const areaSvg   = '/area.svg';
+const fieldSvg  = '/field.svg';
+const wellSvg   = '/well.svg';
+const deviceSvg = '/device.svg';
 interface SidebarDrawerProps {
   onDeviceSelect?: (device: Device) => void;
   onHierarchySelect?: (hierarchy: HierarchyNode) => void;
@@ -155,66 +160,25 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
     toggleExpanded(id);
   };
 
-  const getIconComponent = (level: string) => {
-    const iconClass = `w-[19px] h-[19px] bg-no-repeat bg-center bg-contain ${
-      theme === 'dark' ? 'filter brightness-0 invert' : 'filter brightness-0'
-    }`;
+  // icon image class used for <img> elements
+  const iconImgClass = `w-[19px] h-[19px] object-contain ${
+    theme === 'dark' ? 'filter brightness-0 invert' : 'filter brightness-0'
+  }`;
 
+  const getIconComponent = (level: string) => {
     switch (level) {
       case 'Region':
-        return (
-          <div
-            className={iconClass}
-            style={{
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTg1NC40IDgwMC45Yy4yLS4zLjUtLjYuNy0uOUM5MjAuNiA3MjIuMSA5NjAgNjIxLjcgOTYwIDUxMnMtMzkuNC0yMTAuMS0xMDQuOC0yODhjLS4yLS4zLS41LS41LS43LS44Yy0xLjEtMS4zLTIuMS0yLjUtMy4yLTMuN2MtLjQtLjUtLjgtLjktMS4yLTEuNGwtNC4xLTQuN2wtLjEtLjFjLTEuNS0xLjctMy4xLTMuNC00LjYtNS4xbC0uMS0uMWMtMy4yLTMuNC02LjQtNi44LTkuNy0xMC4xbC0uMS0uMWwtNC44LTQuOGwtLjMtLjNjLTEuNS0xLjUtMy0yLjktNC41LTQuM2MtLjUtLjUtMS0xLTEuNi0xLjVjLTEtMS0yLTEuOS0zLTIuOGMtLjMtLjMtLjctLjYtMS0xQzczNi40IDEwOS4yIDYyOS41IDY0IDUxMiA2NHMtMjI0LjQgNDUuMi0zMDQuMyAxMTkuMmMtLjMuMy0uNy42LTEgMWMtMSAuOS0yIDEuOS0zIDIuOWMtLjUuNS0xIDEtMS42IDEuNWMtMS41IDEuNC0zIDIuOS00LjUgNC4zbC0uMy4zbC00LjggNC44bC0uMS4xYy0zLjMgMy4zLTYuNSA2LjctOS43IDEwLjFsLS4xLjFjLTEuNiAxLjctMy4xIDMuNC00LjYgNS4xbC0uMS4xYy0xLjQgMS41LTIuOCAzLjEtNC4xIDQuN2MtLjQuNS0uOC45LTEuMiAxLjRjLTEuMSAxLjItMi4xIDIuNS0zLjIgMy43Yy0uMi4zLS41LjUtLjcuOEMxMDMuNCAzMDEuOSA2NCA0MDIuMyA2NCA1MTJzMzkuNCAyMTAuMSAxMDQuOCAyODhjLjIuMy41LjYuNy45bDMuMSAzLjdjLjQuNS44LjkgMS4yIDEuNGw0LjEgNC7Y9IDAgLjEuMS4xLjJjMS41IDEuNyAzIDMuNCA0LjYgNWwuMS4xYzMuMiAzLjQgNi40IDYuOCA5LjYgMTAuMWwuMS4xYzEuNiAxLjYgMy4xIDMuMiA0LjcgNC43bC4zLjNjMy4zIDMuMyA2LjcgNi41IDEwLjEgOS42Yzc4MC4xIDc0IDE4NyAxMTkuMiAzMDQuNSAxMTkuMnMyMjQuNC00NS4yIDMwNC4zLTExOS4yYTMwMCAzMDAgMCAwIDAgMTAtOS42bC4zLS4zYzEuNi0xLjYgMy4yLTMuMSA0Ny43LTQuN2wuMS0uMWMzLjMtMy4zIDYuNS02LjcgOS42LTEwLjFsLjEtLjFjMS41LTEuNyAzLjEtMy4zIDQuNi01YzAtLjEuMS0uMS4xLS4yYzEuNC0xLjUgMi44LTMuMSA0LjEtNC43Yy40LS41LjgtLjkgMS4yLTEuNGE5OSA5OSAwIDAgMCAzLjMtMy43bTQuMS0xNDIuNmMtMTMuOCAzMi42LTMyIDYyLjgtNTQuMiA5MC4yYTQ0NCA0NDQgMCAwIDAtODEuNS01NS45YzExLjYtNDYuOSAxOC44LTk4LjQgMjAuNy0xNTIuNkg4ODdjLTMgNDAuOS0xMi42IDgwLjYtMjguNSAxMTguM005ODcgNDg0SDc0My41Yy0xLjktNTQuMi05LjEtMTA1LjctMjAuNy0xNTIuNmMyOS4zLTE1LjYgNTYuNi0zNC40IDgxLjUtNTUuOUEzNzMuODYgMzczLjg2IDAgMCAxIDg4NyA0ODRNNjU4LjMgMTY1LjVjMzkuNyAxNi44IDc1LjggNDAgMTA3LjYgNjkuMmEzOTQuNyAzOTQuNyAwIDAgMS01OS40IDQxLjhjLTE1LjctNDUtMzUuOC04NC4xLTU5LjItMTE1LjRjMy43IDEuNCA3LjQgMi45IDExIDQuNG0tOTAuNiA3MDAuNmMtOS4yIDcuMi0xOC40IDguNy0yNy43IDE2LjRWNjk3YTM4OS4xIDM4OS4xIDAgMCAxIDExNS43IDI2LjJjLTguMyAyNC42LTE3LjkgNDcuMy0yOSA2Ny44Yy0xNy40IDMyLjQtMzcuOCA1OC4zLTU5IDc1LjFtNTktNjMzLjFjMTEgMjAuNiAyMC43IDQzLjMgMjkgNjcuOEEzODkuMSAzODkuMSAwIDAgMSA1NDAgMzI3VjE0MS42YzkuMiAzLjcgMTguNSA5LjEgMjcuNyAxNi40YzIxLjIgMTYuNyA0MS42IDQyLjYgNTkgNzVNNTQwIDY0MC45VjU0aDcxNDcuNWMtMS42IDQ0LjItNy4xIDg3LjEtMTYuMyAxMjcuOGwtLjMgMS4yQTQ0NSA0NDUgMCAwIDAgNTQwIDY0MC45bTAtMTU2LjlWMzgzLjFjNDUuOC0yLjggODkuOC0xMi41IDEzMC45LTI4LjFsLjMgMS4yYzkuMiA0MC43IDE0LjcgODMuNSAxNi4zIDEyNy44em0tNTYgNTZ2MTAwLjljLTQ1LjgtMi44LTg5LjgtMTIuNS0xMzAuOS0yOC4xbC0uMy0xLjJjLTkuMi00MC43LTE0LjctODMuNS0xNi4zLTEyNy44em0tMTQ3LjUtNTZjMS42LTQ0LjIgNy4xLTg3LjEgMTYuMy0xMjcuOGwuMy0xLjJjNDEuMSAxNS42IDg1IDI1LjMgMTMwLjkgMjguMVY0ODR6TTQ4NCA2OTd2MTg1LjRjLTkuMi0zLjctMTguNS05LjEtMjcuNy0xNi40Yy0yMS4yLTE2LjctNDEuNy00Mi43LTU5LjEtNzUuMWMtMTEtMjAuNi0yMC43LTQzLjMtMjktNjcuOGMzNy4yLTE0LjYgNzUuOS0yMy4zIDExNS44LTI2LjFtMC0zNzBhMzg5LjEgMzg5LjEgMCAwIDEtMTE1LjctMjYuMmM4LjMtMjQuNiAxNy45LTQ3LjMgMjktNjcuOGMxNy40LTMyLjQgMzcuOC01OC40IDU5LjEtNzUuMWM5LjItNy4yIDE4LjQtMTIuNyAyNy43LTE2LjRWMzI3ek0zNjUuNyAxNjUuNWMzLjctMS41IDcuMy0zIDExLTQuNGMtMjMuNCAzMS4zLTQzLjUgNzAuNC01OS4yIDExNS40Yy0yMS0xMi00MC45LTI2LTU5LjQtNDEuOGMzMS44LTI5LjIgNjcuOS01Mi40IDEwNy42LTY5LjJNMTY1LjUgMzY1LjdjMTMuOC0zMi42IDMyLTYyLjggNTQuMi05MC4yYzI0LjkgMjEuNSA1Mi4yIDQwLjMgODEuNSA1NS45Yy0xMS42IDQ2LjktMTguOCA5OC40LTIwLjcgMTUyLjZIMTM3YzMtNDAuOSAxMi42LTgwLjYgMjguNS0xMTguM00xMzcgNTQwaDE0My41YzEuOSA1NC4yIDkuMSAxMDUuNyAyMC43IDE1Mi42YTQ0NCA0NDQgMCAwIDAtODEuNSA1NS45QTM3My44NiAzNzMuODYgMCAwIDEgMTM3IDU0MG0yMjguNyAzMTguNWMtMzkuNy0xNi44LTc1LjgtNDAtMTA3LjYtNjkuMmMxOC41LTE1LjggMzguNC0yOS43IDU5LjQtNDEuOGMxNS43IDQ1IDM1LjggODQuMSA1OS4yIDExNS40Yy0zLjctMS40LTcuNC0yLjktMTEtNC40bTI5Mi42IDBjLTMuNyAxLjUtNy4zIDMtMTEgNC40YzIzLjQtMzEuMyA0My41LTcwLjQgNTkuMi0xMTUuNGMyMSAxMiA0MC45IDI2IDU5LjQgNDEuOGEzNzMuOCAzNzMuOCAwIDAgMS0xMDcuNiA2OS4yIi8+PC9zdmc+')`,
-            }}
-          />
-        );
+        return <img src={regionSvg} alt="region" className={iconImgClass} />;
       case 'Area':
-        return (
-          <div
-            className={iconClass}
-            style={{
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIzMiIgZD0iTTI1NiA0OGMtNzkuNSAwLTE0NCA2MS4zOS0xNDQgMTM3YzAgODcgOTYgMjI0Ljg3IDEzMS4yNSAyNzIuNDlhMTUuNzcgMTUuNzcgMCAwIDAgMjUuNSAwQzMwNCA0MDkuODkgNDAwIDI3Mi4wNyA0MDAgMTg1YzAtNzUuNjEtNjQuNS0xMzctMTQ0LTEzNyIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjE5MiIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMzIiLz48L3N2Zz4=')`,
-            }}
-          />
-        );
+        return <img src={areaSvg} alt="area" className={iconImgClass} />;
       case 'Field':
-        return (
-          <div
-            className={iconClass}
-            style={{
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMzI1LjkgMjMuOTgxTDMxMS45NCA0NS4yNWMzOC4xODIgMjQuODQ1IDY3LjY3NSA1OS4wMjQgOTYuODc4IDEyMy4xNzhsMTYuODI4LTI0LjgwN2MtNS4xNTUtMTcuNDAzLTEwLjgwMS0zNS44Ni0xNi01MS4zNTFjLTUuNTk3LTE2LjY4Mi0xMS41MzgtMzAuODY2LTEzLjEwNS0zMy4xOTRjLTEuMzItMS45Ni0xMC43NDgtOS40NTItMjQuNTMtMTYuMzRjLTEyLjI4NS02LjE0LTI4LjI3Mi0xMi42NTUtNDYuMTEtMTguNzU0em04LjMzIDYxLjUzbC01NC40NiA0Mi45OTRjMTAuNzYxIDYuMTc1IDE4LjUgMTcuMDgyIDIwLjMxNCAyOS44MjhsNTcuNS00NS4zOTZjLTcuNTIyLTEwLjQ4OS0xNS4yMzgtMTkuNDg1LTIzLjM1NC0yNy40MjZtLTc0LjczIDU1LjU3OGMtMTIuODEgMC0yMyAxMC4xOS0yMyAyM2MwIDEyLjgwOSAxMC4xOSAyMyAyMyAyM3MyMy0xMC4xOTEgMjMtMjNjMC0xMi44MS0xMC4xOS0yMy0yMy0yM20tMzkuMzQyIDM0LjQ3Nkw4Ny40OSAyODAuMzA0YzExLjgzOCA0LjY3IDIwLjQwNiAxNi4wMTMgMjAuOTc1IDI5LjMwNkwyNDQuNSAyMDIuMjE0Yy0xMS42NzYtNC42MzUtMjAuNzY2LTE0LjQ5Mi0yNC4zNDItMjYuNjQ5bTE3NC4zNDIgNC40NDh2MjEwLjAwNmgxOFYxOTUuMDYzbC03LjA4MiAxMC40NGwtNi40NTMtMTUuMjE5YTY4MyA2ODMgMCAwIDAtNC40NjUtMTAuMjcxbS05Mi42MzcuNTQzTDI4Ni4wNDcgMTkyLjhsMy43OTMgMTguMDE1bC0xNC41MjYtOS43MDdsLTE1LjAxIDExLjYyMWwyOC43OTYgMTkuMjQzbC03MS4zMDUgMzIuODMybDQuODItMjIuODk3bC0yMS45NzYgMTcuMDE0bC0yNC4zNTQgMTE1LjY3OGwtLjQ0LjE5NWwuMjcyLjYxbC0xOS45MiA5NC42MTVIMTQwLjV2MThoMjIyVjQ2OC41OHptLTQuMjI2IDY3LjNsMTIuMDIgNTcuMDg4bC03OS4wNTctMjYuMjE4em0tODUuNDc3IDQzLjcxN2w4Ni40MzIgMjguNjY2bC0xMDIuMDEyIDQ1LjMzOHpNNzUuNSAyOTYuMDJjLTguMzkgMC0xNSA2LjYwOS0xNSAxNXM2LjYxIDE1IDE1IDE1czE1LTYuNjEgMTUtMTVzLTYuNjEtMTUtMTUtMTVtMjM5Ljk0NSAzNi40MjdsMTQuOTUzIDcxLjAyOGwtMTExLjk1My0yNy45MTZ6bS0yMTguODI0IDMuODUyYy00LjU5NSAzLjg1MS0xMC4yNCA2LjQ4MS0xNi40MiA3LjM3N2wyMS4yNjYgNDYuMzQ0aDE5LjgwNHptLTQyLjIzMi4wMDhsLTI0LjY2IDUzLjcxM2gxOS44MDhsMjEuMjc2LTQ2LjM0MmMtNi4xODEtLjg5My0xMS44MjgtMy41MjEtMTYuNDI0LTcuMzcxbTEzNy41NzQgNTEuMmwxMTYuNzgxIDI5LjExOGwtMTMzLjEwMSA0OC40MDN6TTI4LjUgNDA4LjAxOHY2Mmg5NHYtNjJ6bTM1MiAwdjE2aDQ2di0xNnptLTQ1LjMyNCAxOC4xNWw5LjIzMiA0My44NWgtMTI5Ljgyem00NS4zMjQgMTUuODV2MjhoNDZ2LTI4em02NCAyOHYxOGgzOXYtMTh6Ii8+PC9zdmc+')`,
-            }}
-          />
-        );
+        return <img src={fieldSvg} alt="field" className={iconImgClass} />;
       case 'Well':
-        return (
-          <div
-            className={iconClass}
-            style={{
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMzI1LjkgMjMuOTgxTDMxMS45NCA0NS4yNWMzOC4xODIgMjQuODQ1IDY3LjY3NSA1OS4wMjQgOTYuODc4IDEyMy4xNzhsMTYuODI4LTI0LjgwN2MtNS4xNTUtMTcuNDAzLTEwLjgwMS0zNS44Ni0xNi01MS4zNTFjLTUuNTk3LTE2LjY4Mi0xMS41MzgtMzAuODY2LTEzLjEwNS0zMy4xOTRjLTEuMzItMS45Ni0xMC43NDgtOS40NTItMjQuNTMtMTYuMzRjLTEyLjI4NS02LjE0LTI4LjI3Mi0xMi42NTUtNDYuMTEtMTguNzU0em04LjMzIDYxLjUzbC01NC40NiA0Mi45OTRjMTAuNzYxIDYuMTc1IDE4LjUgMTcuMDgyIDIwLjMxNCAyOS44MjhsNTcuNS00NS4zOTZjLTcuNTIyLTEwLjQ4OS0xNS4yMzgtMTkuNDg1LTIzLjM1NC0yNy40MjZtLTc0LjczIDU1LjU3OGMtMTIuODEgMC0yMyAxMC4xOS0yMyAyM2MwIDEyLjgwOSAxMC4xOSAyMyAyMyAyM3MyMy0xMC4xOTEgMjMtMjNjMC0xMi44MS0xMC4xOS0yMy0yMy0yM20tMzkuMzQyIDM0LjQ3Nkw4Ny40OSAyODAuMzA0YzExLjgzOCA0LjY3IDIwLjQwNiAxNi4wMTMgMjAuOTc1IDI5LjMwNkwyNDQuNSAyMDIuMjE0Yy0xMS42NzYtNC42MzUtMjAuNzY2LTE0LjQ5Mi0yNC4zNDItMjYuNjQ5bTE3NC4zNDIgNC40NDh2MjEwLjAwNmgxOFYxOTUuMDYzbC03LjA4MiAxMC40NGwtNi40NTMtMTUuMjE5YTY4MyA2ODMgMCAwIDAtNC40NjUtMTAuMjcxbS05Mi42MzcuNTQzTDI4Ni4wNDcgMTkyLjhsMy43OTMgMTguMDE1bC0xNC41MjYtOS43MDdsLTE1LjAxIDExLjYyMWwyOC43OTYgMTkuMjQzbC03MS4zMDUgMzIuODMybDQuODItMjIuODk3bC0yMS45NzYgMTcuMDE0bC0yNC4zNTQgMTE1LjY3OGwtLjQ0LjE5NWwuMjcyLjYxbC0xOS45MiA5NC42MTVIMTQwLjV2MThoMjIyVjQ2OC41OHptLTQuMjI2IDY3LjNsMTIuMDIgNTcuMDg4bC03OS4wNTctMjYuMjE4em0tODUuNDc3IDQzLjcxN2w4Ni40MzIgMjguNjY2bC0xMDIuMDEyIDQ1LjMzOHpNNzUuNSAyOTYuMDJjLTguMzkgMC0xNSA2LjYwOS0xNSAxNXM2LjYxIDE1IDE1IDE1czE1LTYuNjEgMTUtMTVzLTYuNjEtMTUtMTUtMTVtMjM5Ljk0NSAzNi40MjdsMTQuOTUzIDcxLjAyOGwtMTExLjk1My0yNy45MTZ6bS0yMTguODI0IDMuODUyYy00LjU5NSAzLjg1MS0xMC4yNCA2LjQ4MS0xNi40MiA3LjM3N2wyMS4yNjYgNDYuMzQ0aDE5LjgwNHptLTQyLjIzMi4wMDhsLTI0LjY2IDUzLjcxM2gxOS44MDhsMjEuMjc2LTQ2LjM0MmMtNi4xODEtLjg5My0xMS44MjgtMy41MjEtMTYuNDI0LTcuMzcxbTEzNy41NzQgNTEuMmwxMTYuNzgxIDI5LjExOGwtMTMzLjEwMSA0OC40MDN6TTI4LjUgNDA4LjAxOHY2Mmg5NHYtNjJ6bTM1MiAwdjE2aDQ2di0xNnptLTQ1LjMyNCAxOC4xNWw5LjIzMiA0My44NWgtMTI5Ljgyem00NS4zMjQgMTUuODV2MjhoNDZ2LTI4em02NCAyOHYxOGgzOXYtMTh6Ii8+PC9zdmc+')`,
-            }}
-          />
-        );
+        return <img src={wellSvg} alt="well" className={iconImgClass} />;
       case 'Device':
-        return (
-          <div
-            className={iconClass}
-            style={{
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48ZyBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjIiPjxwYXRoIGQ9Ik0yMSAxN2EyIDIgMCAwIDAtMi0ySDVhMiAyIDAgMCAwLTIgMnYyYTIgMiAwIDAgMCAyIDJoMTRhMiAyIDAgMCAwIDItMnpNNiAxNXYtMm02IDJWOSIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNiIgcj0iMyIvPjwvZz48L3N2Zz4=')`,
-            }}
-          />
-        );
+        return <img src={deviceSvg} alt="device" className={iconImgClass} />;
       default:
-        return (
-          <div
-            className={iconClass}
-            style={{
-              backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjMiLz48cGF0aCBkPSJtMTIgMSA0IDQtNCA0LTQtNCA0LTR6Ii8+PHBhdGggZD0ibTEyIDIzLTQtNCA0LTQgNCA0LTQgNHoiLz48L3N2Zz4=')`,
-            }}
-          />
-        );
+        return <img src={deviceSvg} alt="icon" className={iconImgClass} />;
     }
   };
 
@@ -234,7 +198,7 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
     }`}
         onClick={() => handleDeviceClick(device)}
       >
-        <div className="w-4"></div>
+        <div className="w-4" />
         {getIconComponent('Device')}
         <span className="text-sm flex-1">{device.serial_number}</span>
         <div className="w-2 h-2 bg-[#17F083] rounded-full dark:bg-[#F35DCB]" />
@@ -281,7 +245,7 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
               onClick={(e) => handleArrowClick(e, item.id)}
             />
           )}
-          {!hasChildren && !hasDevices && <div className="w-4"></div>}
+          {!hasChildren && !hasDevices && <div className="w-4" />}
 
           {getIconComponent(item.level)}
 
@@ -349,15 +313,12 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
                 } ${theme === 'dark' ? 'text-white' : 'text-[#555768]'}`}
                 onClick={(e) => handleArrowClick(e, companyName)}
               />
-              <div
-                className={`w-[16px] h-[16px] bg-no-repeat bg-center bg-contain ${
-                  theme === 'dark'
-                    ? 'filter brightness-0 invert'
-                    : 'filter brightness-0'
+              <img
+                src={regionSvg}
+                alt="company"
+                className={`w-[16px] h-[16px] object-contain ${
+                  theme === 'dark' ? 'filter brightness-0 invert' : ''
                 }`}
-                style={{
-                  backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0zIDkgOS03IDkgNy05IDEzLTkgN3oiLz48L3N2Zz4=')`,
-                }}
               />
               <span className="text-sm">{companyName}</span>
             </div>

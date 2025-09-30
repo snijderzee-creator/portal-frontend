@@ -29,7 +29,7 @@ Icon.Default.mergeOptions({
 // Custom marker icons: now a simple filled circle (no text)
 const createCustomIcon = (isOnline: boolean) => {
   const size = 24; // size in px
-  const color = isOnline ? '#17F083' : '#EC4899'; // green for online, pink for offline
+  const color = isOnline ? '#17F083' : '#ec4856ff'; // green for online, pink for offline
 
   // Using ion--location-sharp SVG with dynamic color
   const svg = `
@@ -375,7 +375,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({
               className="inline-block"
             >
               <path
-                fill={theme === 'dark' ? '#EC4899' : '#F56C44'}
+                fill={theme === 'dark' ? '#ec4856ff' : '#ec4856ff'}
                 d="M256 32C167.67 32 96 96.51 96 176c0 128 160 304 160 304s160-176 160-304c0-79.49-71.67-144-160-144zm0 224a64 64 0 1 1 64-64 64.07 64.07 0 0 1-64 64z"
               />
             </svg>
@@ -640,7 +640,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({
             </div>
 
             <div className="flex items-center gap-5 py-2 pl-3">
-              <WifiOff className="text-[#555867] dark:text-[#EC4899] w-5 h-5" />
+              <WifiOff className="text-[#ec4856ff] dark:text-[#ec4856ff] w-5 h-5" />
               <span
                 className={`font-bold text-lg ${
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
