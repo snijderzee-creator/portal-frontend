@@ -57,9 +57,11 @@ function DevicesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className={`text-2xl font-bold ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        }`}>
+        <h2
+          className={`text-2xl font-medium mb-6 ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}
+        >
           Devices ({devices.length})
         </h2>
       </div>
@@ -76,20 +78,24 @@ function DevicesPage() {
           >
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className={`font-semibold text-lg ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
+                <h3
+                  className={`font-semibold text-lg ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
                   {device.serial_number}
                 </h3>
-                <p className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <p
+                  className={`text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
                   {device.type}
                 </p>
               </div>
               {device.logo && (
-                <img 
-                  src={device.logo} 
+                <img
+                  src={device.logo}
                   alt={device.type}
                   className="w-8 h-8 object-contain"
                 />
@@ -98,40 +104,52 @@ function DevicesPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <span
+                  className={`text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
                   Location:
                 </span>
-                <span className={`text-sm font-medium ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
+                <span
+                  className={`text-sm font-medium ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
                   {device.location || 'Not assigned'}
                 </span>
               </div>
-              
+
               <div className="flex justify-between">
-                <span className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <span
+                  className={`text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
                   Company:
                 </span>
-                <span className={`text-sm font-medium ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
+                <span
+                  className={`text-sm font-medium ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
                   {device.company}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <span
+                  className={`text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
                   Created:
                 </span>
-                <span className={`text-sm font-medium ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
+                <span
+                  className={`text-sm font-medium ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
                   {new Date(device.created_at).toLocaleDateString()}
                 </span>
               </div>
@@ -139,18 +157,28 @@ function DevicesPage() {
 
             {device.metadata && Object.keys(device.metadata).length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                <p className={`text-xs font-medium mb-2 ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <p
+                  className={`text-xs font-medium mb-2 ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
                   Metadata:
                 </p>
                 <div className="text-xs space-y-1">
                   {Object.entries(device.metadata).map(([key, value]) => (
                     <div key={key} className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                      <span
+                        className={
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                        }
+                      >
                         {key}:
                       </span>
-                      <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      <span
+                        className={
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        }
+                      >
                         {String(value)}
                       </span>
                     </div>
@@ -163,9 +191,11 @@ function DevicesPage() {
       </div>
 
       {devices.length === 0 && (
-        <div className={`text-center py-8 ${
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-        }`}>
+        <div
+          className={`text-center py-8 ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}
+        >
           No devices found.
         </div>
       )}

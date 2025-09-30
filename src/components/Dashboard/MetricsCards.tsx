@@ -132,21 +132,21 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       icon: '/oildark.png',
       title: 'Oil flow rate',
       value: flowRateData.totalOFR.toFixed(2),
-      unit: 'bpd',
+      unit: 'l/min',
       color: theme === 'dark' ? '#4D3DF7' : '#F56C44',
     },
     {
       icon: '/waterdark.png',
       title: 'Water flow rate',
       value: flowRateData.totalWFR.toFixed(2),
-      unit: 'bpd',
+      unit: 'l/min',
       color: theme === 'dark' ? '#46B8E9' : '#F6CA58',
     },
     {
       icon: '/gasdark.png',
       title: 'Gas flow rate',
       value: flowRateData.totalGFR.toFixed(2),
-      unit: 'bpd',
+      unit: 'l/min',
       color: theme === 'dark' ? '#F35DCB' : '#38BF9D',
     },
   ];
@@ -193,7 +193,7 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
             {/* intentionally no spinner for these metric cards */}
           </div>
 
-          {/* big number + adjacent "bpd" */}
+          {/* big number + adjacent "l/min" */}
           <div className="flex items-baseline gap-4 mb-2">
             <span
               className={`lg:text-5xl md:text-4xl font-bold ${

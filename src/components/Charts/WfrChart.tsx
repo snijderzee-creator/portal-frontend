@@ -56,7 +56,7 @@ export default function WFRChart({ chartData, hierarchyChartData }: WFRChartProp
           <h2 className={`text-sm font-semibold ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
-            {isHierarchyData ? 'Total WFR (bpd)' : 'WFR (bpd)'}
+            {isHierarchyData ? 'Total WFR (l/min)' : 'WFR (bpd)'}
           </h2>
           <Info size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} />
         </div>

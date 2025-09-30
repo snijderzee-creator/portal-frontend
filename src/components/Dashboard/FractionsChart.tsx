@@ -60,7 +60,6 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
       return chartData.chartData.map((point) => ({
         time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
           hour: '2-digit',
-          minute: '2-digit',
           hour12: false
         }),
         gvf: point.gvf != null ? round1(point.gvf) : 0,
@@ -70,7 +69,6 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
       return hierarchyChartData.chartData.map((point) => ({
         time: new Date(point.timestamp).toLocaleTimeString('en-GB', {
           hour: '2-digit',
-          minute: '2-digit',
           hour12: false
         }),
         gvf: point.totalGvf != null ? round1(point.totalGvf) : 0,
@@ -88,14 +86,16 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
 
   return (
     <div
-      className={`p-4 rounded-2xl shadow-md ${
-        theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
+      className={`p-4 rounded-lg ${
+        theme === 'dark'
+          ? 'bg-[#162345] border-none'
+          : 'bg-white border border-[#ececec]'
       }`}
     >
-      <div className="flex items-center justify-between py-3">
+      <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
           <h2
-            className={`text-sm font-semibold ${
+            className={`text-base font-medium ${
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             }`}
           >
@@ -114,7 +114,10 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
           }`}
         >
           <ExternalLink size={20} className="cursor-pointer hover:text-white" />
-          <MoreHorizontal size={20} className="cursor-pointer hover:text-white" />
+          <MoreHorizontal
+            size={20}
+            className="cursor-pointer hover:text-white"
+          />
         </div>
       </div>
 
@@ -132,13 +135,15 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
         </div>
       ) : (
         <>
-          <div className="mb-3">
+          <div className="mb-2">
             <div className="flex gap-6 py-3 text-sm">
               <div className="flex items-center gap-2">
-                <span className="w-4 h-[2px] bg-pink-500 rounded" />
+                <span className="w-4 h-[3px] dark:bg-[#4D3DF7] bg-[#38BF9D] rounded" />
                 <span
                   /* Label GVF — color/size/weight are tweakable above */
-                  className={`${theme === 'dark' ? labelColorDark : labelColorLight} ${labelSizeClass} ${labelFontWeight}`}
+                  className={`${
+                    theme === 'dark' ? labelColorDark : labelColorLight
+                  } ${labelSizeClass} ${labelFontWeight}`}
                 >
                   GVF (%)
                 </span>
@@ -151,10 +156,12 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="w-4 h-[2px] bg-indigo-500 rounded" />
+                <span className="w-4 h-[3px] dark:bg-[#FE44CC] bg-[#F56C44] rounded" />
                 <span
                   /* Label WLR — color/size/weight are tweakable above */
-                  className={`${theme === 'dark' ? labelColorDark : labelColorLight} ${labelSizeClass} ${labelFontWeight}`}
+                  className={`${
+                    theme === 'dark' ? labelColorDark : labelColorLight
+                  } ${labelSizeClass} ${labelFontWeight}`}
                 >
                   WLR (%)
                 </span>
@@ -173,14 +180,17 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
             height={350}
             style={{ outline: 'none', border: 'none' }}
           >
-            <LineChart data={data} margin={{ top: 30, right: 20, left: 10, bottom: 30 }}>
+            <LineChart
+              data={data}
+              margin={{ top: 30, right: 20, left: 10, bottom: 30 }}
+            >
               <CartesianGrid
                 stroke={theme === 'dark' ? '#2C3A65' : '#E5E7EB'}
                 strokeDasharray="3 3"
               />
-              <XAxis 
-                dataKey="time" 
-                stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'} 
+              <XAxis
+                dataKey="time"
+                stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
                 tickMargin={15}
                 tickFormatter={(value) => {
                   // Already formatted in data transformation, just return as is
@@ -206,8 +216,22 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
                 }}
                 cursor={false}
               />
-              <Line type="monotone" dataKey="gvf" stroke="#FE44CC" strokeWidth={2} dot={false} isAnimationActive={false} />
-              <Line type="monotone" dataKey="wlr" stroke="#4D3DF7" strokeWidth={2} dot={false} isAnimationActive={false} />
+              <Line
+                type="monotone"
+                dataKey="gvf"
+                stroke={theme === 'dark' ? '#4D3DF7' : '#38BF9D'}
+                strokeWidth={2}
+                dot={false}
+                isAnimationActive={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="wlr"
+                stroke={theme === 'dark' ? '#FE44CC' : '#F56C44'}
+                strokeWidth={2}
+                dot={false}
+                isAnimationActive={false}
+              />
             </LineChart>
           </ResponsiveContainer>
         </>

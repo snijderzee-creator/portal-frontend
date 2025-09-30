@@ -13,41 +13,49 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
   const { theme } = useTheme();
 
   // Calculate GVF and WLR values from chart data
-  let gvfValue = 65;
-  let wlrValue = 85;
+  let gvfValue: number | undefined;
+  let wlrValue: number | undefined;
 
   if (hierarchyChartData?.chartData && hierarchyChartData.chartData.length > 0) {
     const latestData = hierarchyChartData.chartData[hierarchyChartData.chartData.length - 1];
-    gvfValue = latestData.totalGvf || 65;
-    wlrValue = latestData.totalWlr || 85;
+    gvfValue = latestData?.totalGvf;
+    wlrValue = latestData?.totalWlr;
   } else if (chartData?.chartData && chartData.chartData.length > 0) {
     const latestData = chartData.chartData[chartData.chartData.length - 1];
-    gvfValue = latestData.gvf || 65;
-    wlrValue = latestData.wlr || 85;
+    gvfValue = latestData?.gvf;
+    wlrValue = latestData?.wlr;
   }
 
   const gvfData = [
-    { name: 'GVF', value: gvfValue, color: theme === 'dark' ? '#4D3DF7' : '#38BF9D' },
+    {
+      name: 'GVF',
+      value: gvfValue,
+      color: theme === 'dark' ? '#4D3DF7' : '#38BF9D',
+    },
     {
       name: 'Remaining',
-      value: 100 - gvfValue,
-      color: theme === 'dark' ? '#A2AED4' : '#96cfc2ff',
+      value: gvfValue!== undefined ? 100 - gvfValue : undefined,
+      color: theme === 'dark' ? '#A2AED4' : '#d4d4d4',
     },
   ];
 
   const wlrData = [
-    { name: 'WLR', value: wlrValue, color: theme === 'dark' ? '#4D3DF7' : '#38BF9D' },
+    {
+      name: 'WLR',
+      value: wlrValue,
+      color: theme === 'dark' ? '#F35DCB' : '#F56C44',
+    },
     {
       name: 'Remaining',
-      value: 100 - wlrValue,
-      color: theme === 'dark' ? '#A2AED4' : '#96cfc2ff',
+      value: wlrValue!== undefined ? 100 - wlrValue : undefined,
+      color: theme === 'dark' ? '#A2AED4' : '#d4d4d4',
     },
   ];
 
   return (
     <div className="p-4">
       {/* Title */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-2 mb-6">
         <h2
           className={`text-base font-medium ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -56,16 +64,15 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
           GVF/WLR
         </h2>
         <Info
-          className={`text-xs ${
-            theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-          }`}
+          size={16}
+          className={theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}
         />
       </div>
 
       {/* Charts Row */}
       <div className="flex flex-1 justify-around items-center">
         {/* GVF Chart */}
-        <div className="relative flex-1 h-80">
+        <div className="relative flex-1 h-96">
           {' '}
           {/* fills height */}
           <ResponsiveContainer width="100%" height="100%">
@@ -93,7 +100,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
-              {Math.round(gvfValue)}%
+              {gvfValue !== undefined ? Math.round(gvfValue): ''}{gvfValue !== undefined ? '%' : ''}
             </span>
             <span
               className={`lg:text-xL font-medium ${
@@ -106,7 +113,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
         </div>
 
         {/* WLR Chart */}
-        <div className="relative flex-1 h-80">
+        <div className="relative flex-1 h-96">
           {' '}
           {/* fills height */}
           <ResponsiveContainer width="100%" height="100%">
@@ -134,7 +141,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
-              {Math.round(wlrValue)}%
+              {wlrValue !== undefined ? Math.round(wlrValue): ''}{wlrValue !== undefined ? '%' : ''}
             </span>
             <span
               className={`text-xl font-medium ${

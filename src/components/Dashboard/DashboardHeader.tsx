@@ -21,10 +21,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     { label: 'Alarms' },
   ];
 
-  const logoSrcDark =
-    'https://res.cloudinary.com/drnak5yb2/image/upload/v1756278804/light_mode_logo_saher_btbdos.svg';
-  const logoSrcLight =
-    'https://res.cloudinary.com/drnak5yb2/image/upload/v1755589239/output-onlinepngtools_fnkcov.png';
+  const logoSrcDark = '/logolight.png';
+  const logoSrcLight = '/logodark.png';
 
   return (
     <header
