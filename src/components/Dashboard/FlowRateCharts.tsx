@@ -1,5 +1,5 @@
 // FlowRateCharts.tsx
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -95,7 +95,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
               return value.toString();
             }}
           />
-          <Line type="monotone" dataKey={dataKey} stroke={theme === 'dark' ? '#EC4899' : '#38BF9D'} strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey={dataKey} stroke={theme === 'dark' ? '#EC4899' : '#38BF9D'} strokeWidth={2} dot={false} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
     );
@@ -141,56 +141,106 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
 const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyChartData, timeRange }) => {
   const [modalOpen, setModalOpen] = useState<'ofr' | 'wfr' | 'gfr' | null>(null);
   const { theme } = useTheme();
-  // Transform API data to chart format with numeric timestamps
-  const ofrData = useMemo(() => {
+
+  const lastChartDataRef = useRef<any>(null);
+  const lastHierarchyDataRef = useRef<any>(null);
+  const cachedOfrDataRef = useRef<any[]>([]);
+  const cachedWfrDataRef = useRef<any[]>([]);
+  const cachedGfrDataRef = useRef<any[]>([]);
+
+  const shouldUpdateData = () => {
+    const currentData = chartData?.chartData || hierarchyChartData?.chartData;
+    const lastData = lastChartDataRef.current || lastHierarchyDataRef.current;
+
+    if (!currentData || currentData.length === 0) return false;
+    if (!lastData || lastData.length === 0) return true;
+
+    const currentLatest = currentData[currentData.length - 1]?.timestamp;
+    const lastLatest = lastData[lastData.length - 1]?.timestamp;
+
+    return currentLatest !== lastLatest || currentData.length !== lastData.length;
+  };
+
+  useEffect(() => {
     if (chartData?.chartData) {
-      return chartData.chartData.map((point) => ({
+      lastChartDataRef.current = chartData.chartData;
+      lastHierarchyDataRef.current = null;
+    } else if (hierarchyChartData?.chartData) {
+      lastHierarchyDataRef.current = hierarchyChartData.chartData;
+      lastChartDataRef.current = null;
+    }
+  }, [chartData, hierarchyChartData]);
+
+  const ofrData = useMemo(() => {
+    if (!shouldUpdateData() && cachedOfrDataRef.current.length > 0) {
+      return cachedOfrDataRef.current;
+    }
+
+    let newData: any[] = [];
+    if (chartData?.chartData) {
+      newData = chartData.chartData.map((point) => ({
         timestamp: new Date(point.timestamp).getTime(),
         line: point.ofr || 0,
         standard: point.ofr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
-      return hierarchyChartData.chartData.map((point) => ({
+      newData = hierarchyChartData.chartData.map((point) => ({
         timestamp: new Date(point.timestamp).getTime(),
         line: point.totalOfr || 0,
         standard: point.totalOfr || 0,
       }));
     }
-    return [];
+
+    cachedOfrDataRef.current = newData;
+    return newData;
   }, [chartData, hierarchyChartData]);
 
   const wfrData = useMemo(() => {
+    if (!shouldUpdateData() && cachedWfrDataRef.current.length > 0) {
+      return cachedWfrDataRef.current;
+    }
+
+    let newData: any[] = [];
     if (chartData?.chartData) {
-      return chartData.chartData.map((point) => ({
+      newData = chartData.chartData.map((point) => ({
         timestamp: new Date(point.timestamp).getTime(),
         line: point.wfr || 0,
         standard: point.wfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
-      return hierarchyChartData.chartData.map((point) => ({
+      newData = hierarchyChartData.chartData.map((point) => ({
         timestamp: new Date(point.timestamp).getTime(),
         line: point.totalWfr || 0,
         standard: point.totalWfr || 0,
       }));
     }
-    return [];
+
+    cachedWfrDataRef.current = newData;
+    return newData;
   }, [chartData, hierarchyChartData]);
 
   const gfrData = useMemo(() => {
+    if (!shouldUpdateData() && cachedGfrDataRef.current.length > 0) {
+      return cachedGfrDataRef.current;
+    }
+
+    let newData: any[] = [];
     if (chartData?.chartData) {
-      return chartData.chartData.map((point) => ({
+      newData = chartData.chartData.map((point) => ({
         timestamp: new Date(point.timestamp).getTime(),
         line: point.gfr || 0,
         standard: point.gfr || 0,
       }));
     } else if (hierarchyChartData?.chartData) {
-      return hierarchyChartData.chartData.map((point) => ({
+      newData = hierarchyChartData.chartData.map((point) => ({
         timestamp: new Date(point.timestamp).getTime(),
         line: point.totalGfr || 0,
         standard: point.totalGfr || 0,
       }));
     }
-    return [];
+
+    cachedGfrDataRef.current = newData;
+    return newData;
   }, [chartData, hierarchyChartData]);
 
   // Calculate max values for OFR and WFR to ensure same scale
@@ -244,7 +294,7 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyCha
                 return value.toString();
               }}
             />
-            <Line type="monotone" dataKey={dataKey} stroke={theme === 'dark' ? '#EC4899' : '#38BF9D'} strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey={dataKey} stroke={theme === 'dark' ? '#EC4899' : '#38BF9D'} strokeWidth={2} dot={false} isAnimationActive={false} />
           </LineChart>
         </ResponsiveContainer>
       </>

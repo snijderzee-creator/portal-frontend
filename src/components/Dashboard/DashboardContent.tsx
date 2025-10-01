@@ -1,6 +1,7 @@
 // DashboardContent.tsx
 import React from 'react';
 import { useState, useEffect, useRef } from 'react';
+import { shouldSkipUpdate } from '../../utils/chartUtils';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { apiService, DeviceChartData, HierarchyChartData, Device } from '../../services/api';
@@ -302,7 +303,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         token
       );
       if (response.success && response.data) {
-        setFlowRateChartData(transformDeviceData(response, deviceId));
+        const newData = transformDeviceData(response, deviceId);
+        if (!shouldSkipUpdate(flowRateChartData?.chartData, newData.chartData)) {
+          setFlowRateChartData(newData);
+        }
       }
     } catch (error) {
       console.error('Failed to load device flow rate data:', error);
@@ -340,7 +344,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         token
       );
       if (response.success && response.data) {
-        setFlowRateHierarchyChartData(response.data);
+        const newData = response.data;
+        if (!shouldSkipUpdate(flowRateHierarchyChartData?.chartData, newData.chartData)) {
+          setFlowRateHierarchyChartData(newData);
+        }
       }
     } catch (error) {
       console.error('Failed to load hierarchy flow rate data:', error);
