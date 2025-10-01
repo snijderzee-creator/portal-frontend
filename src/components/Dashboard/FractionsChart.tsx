@@ -11,6 +11,7 @@ import {
 import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
+import ChartModal from '../Charts/ChartModel';
 
 interface FractionsChartProps {
   chartData?: DeviceChartData | null;
@@ -24,6 +25,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
   hierarchyChartData,
 }) => {
   const { theme } = useTheme();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   /**
    * -------------------------
@@ -84,6 +86,68 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
   const latestWlr = data.length > 0 ? data[data.length - 1].wlr : 0;
   const isHierarchyData = !!hierarchyChartData;
 
+  const renderChart = (height: number, isFullScreen = false) => (
+    <ResponsiveContainer
+      width="100%"
+      height={height}
+      style={{ outline: 'none', border: 'none' }}
+    >
+      <LineChart
+        data={data}
+        margin={{ top: 30, right: 20, left: 10, bottom: 30 }}
+      >
+        <CartesianGrid
+          stroke={theme === 'dark' ? '#2C3A65' : '#E5E7EB'}
+          strokeDasharray="3 3"
+        />
+        <XAxis
+          dataKey="time"
+          stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
+          tickMargin={15}
+          interval={Math.floor(data.length / (isFullScreen ? 15 : 8))}
+          tickFormatter={(value) => {
+            return value;
+          }}
+        />
+        <YAxis
+          stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
+          domain={[0, 100]}
+          tickMargin={15}
+          tickFormatter={(value) => {
+            if (value === 0) return '00';
+            if (value >= 1000) return `${value / 1000}k`;
+            return value.toString();
+          }}
+        />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: theme === 'dark' ? '#1E1E2F' : '#FFFFFF',
+            border: 'none',
+            borderRadius: '8px',
+            color: theme === 'dark' ? '#FFFFFF' : '#000000',
+          }}
+          cursor={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="gvf"
+          stroke={theme === 'dark' ? '#4D3DF7' : '#38BF9D'}
+          strokeWidth={2}
+          dot={false}
+          isAnimationActive={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="wlr"
+          stroke={theme === 'dark' ? '#FE44CC' : '#F56C44'}
+          strokeWidth={2}
+          dot={false}
+          isAnimationActive={false}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+
   return (
     <div
       className={`p-4 rounded-lg ${
@@ -113,7 +177,11 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
               : 'text-gray-600 border-gray-300'
           }`}
         >
-          <ExternalLink size={20} className="cursor-pointer hover:text-white" />
+          <ExternalLink
+            size={20}
+            className="cursor-pointer hover:text-white transition-colors"
+            onClick={() => setIsModalOpen(true)}
+          />
           <MoreHorizontal
             size={20}
             className="cursor-pointer hover:text-white"
@@ -175,67 +243,50 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
             </div>
           </div>
 
-          <ResponsiveContainer
-            width="100%"
-            height={350}
-            style={{ outline: 'none', border: 'none' }}
-          >
-            <LineChart
-              data={data}
-              margin={{ top: 30, right: 20, left: 10, bottom: 30 }}
-            >
-              <CartesianGrid
-                stroke={theme === 'dark' ? '#2C3A65' : '#E5E7EB'}
-                strokeDasharray="3 3"
-              />
-              <XAxis
-                dataKey="time"
-                stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
-                tickMargin={15}
-                tickFormatter={(value) => {
-                  // Already formatted in data transformation, just return as is
-                  return value;
-                }}
-              />
-              <YAxis
-                stroke={theme === 'dark' ? '#A2AED4' : '#6B7280'}
-                domain={[0, 100]}
-                tickMargin={15}
-                tickFormatter={(value) => {
-                  if (value === 0) return '00';
-                  if (value >= 1000) return `${value / 1000}k`;
-                  return value.toString();
-                }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: theme === 'dark' ? '#1E1E2F' : '#FFFFFF',
-                  border: 'none',
-                  borderRadius: '8px',
-                  color: theme === 'dark' ? '#FFFFFF' : '#000000',
-                }}
-                cursor={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="gvf"
-                stroke={theme === 'dark' ? '#4D3DF7' : '#38BF9D'}
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="wlr"
-                stroke={theme === 'dark' ? '#FE44CC' : '#F56C44'}
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {renderChart(350, false)}
         </>
       )}
+
+      <ChartModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Fractions"
+      >
+        <div className="flex gap-6 py-3 text-sm mb-4">
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-[3px] dark:bg-[#4D3DF7] bg-[#38BF9D] rounded" />
+            <span
+              className={`${
+                theme === 'dark' ? labelColorDark : labelColorLight
+              } ${labelSizeClass} ${labelFontWeight}`}
+            >
+              GVF (%)
+            </span>
+            <span
+              className={`${valueColorClass} ${valueSizeClass} ${valueFontWeight}`}
+            >
+              {latestGvf.toFixed(1)}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-[3px] dark:bg-[#FE44CC] bg-[#F56C44] rounded" />
+            <span
+              className={`${
+                theme === 'dark' ? labelColorDark : labelColorLight
+              } ${labelSizeClass} ${labelFontWeight}`}
+            >
+              WLR (%)
+            </span>
+            <span
+              className={`${valueColorClass} ${valueSizeClass} ${valueFontWeight}`}
+            >
+              {latestWlr.toFixed(1)}
+            </span>
+          </div>
+        </div>
+        {renderChart(window.innerHeight * 0.7, true)}
+      </ChartModal>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SearchIcon, ChevronRightIcon } from 'lucide-react';
+import { Search as SearchIcon, ChevronRight as ChevronRightIcon } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import {
@@ -338,15 +338,14 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
 
   return (
     <div
-      className={`w-80 transition-colors ${
+      className={`w-80 h-screen transition-colors ${
         theme === 'dark'
           ? 'bg-[#162345]'
           : 'bg-[#fff] border-[#ececec] border-r'
       } flex flex-col overflow-hidden shadow-lg`}
     >
-      <div className="p-4">
-        {/* Header with close button */}
-
+      {/* Fixed Header */}
+      <div className="p-4 flex-shrink-0">
         <h1
           className={`text-xl mb-4 font-medium tracking-wider ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -372,18 +371,33 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
             }`}
           />
         </div>
+      </div>
 
-        {/* Scrollable content area - takes remaining space */}
-        <div className="border-t border-[#ececec] dark:border-[#364566] ">
-          <div
-            className={`max-h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin ${
-              theme === 'dark'
-                ? 'scrollbar-thumb-white scrollbar-track-transparent'
-                : 'scrollbar-thumb-[#38BF9D] scrollbar-track-transparent'
-            }`}
-          >
-            {renderCompanyHierarchy()}
-          </div>
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto px-4 border-t border-[#ececec] dark:border-[#364566]">
+        <div
+          className={`scrollbar-thin ${
+            theme === 'dark'
+              ? 'scrollbar-thumb-white scrollbar-track-transparent'
+              : 'scrollbar-thumb-[#38BF9D] scrollbar-track-transparent'
+          }`}
+        >
+          {renderCompanyHierarchy()}
+        </div>
+      </div>
+
+      {/* Fixed Footer with Version */}
+      <div className={`p-4 flex-shrink-0 border-t ${
+        theme === 'dark' ? 'border-[#364566]' : 'border-[#ececec]'
+      }`}>
+        <div className={`flex items-center justify-center py-2 px-4 rounded-lg ${
+          theme === 'dark' ? 'bg-[#1D2147]' : 'bg-[#EAEAEA]'
+        }`}>
+          <span className={`text-xs font-medium ${
+            theme === 'dark' ? 'text-gray-400' : 'text-[#555758]'
+          }`}>
+            v1.0.0
+          </span>
         </div>
       </div>
     </div>

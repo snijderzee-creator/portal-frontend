@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Bell, UserIcon, Sun, Menu } from 'lucide-react';
+import { Moon, Bell, User as UserIcon, Sun, Menu } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 
