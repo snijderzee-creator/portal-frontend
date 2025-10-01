@@ -7,6 +7,7 @@ import {
   DashboardData,
   HierarchyNode,
   Device,
+  EnhancedDevice,
 } from '../../services/api';
 
 const regionSvg = '/region.svg';
@@ -39,6 +40,7 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
   const [devicesByHierarchy, setDevicesByHierarchy] = useState<
     Record<string, Device[]>
   >({});
+  const [enhancedDevices, setEnhancedDevices] = useState<Record<string, EnhancedDevice>>({});
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -108,8 +110,34 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
       }
     };
 
+    const loadEnhancedDevices = async () => {
+      if (!token) return;
+
+      try {
+        const response = await apiService.getAllDevicesEnhanced(token);
+        if (response.success && response.data) {
+          // Create a map of device serial to enhanced device for quick lookup
+          const deviceMap: Record<string, EnhancedDevice> = {};
+          response.data.devices.forEach(device => {
+            deviceMap[device.deviceSerial] = device;
+          });
+          setEnhancedDevices(deviceMap);
+        }
+      } catch (error) {
+        console.error('Failed to load enhanced devices:', error);
+      }
+    };
+
     loadDashboardData();
     loadDevices();
+    loadEnhancedDevices();
+
+    // Auto-refresh enhanced devices every 5 seconds to keep status updated
+    const refreshInterval = setInterval(() => {
+      loadEnhancedDevices();
+    }, 5000);
+
+    return () => clearInterval(refreshInterval);
   }, [token, isInitialized]);
 
   const toggleExpanded = (id: string) => {
@@ -187,23 +215,35 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
 
     if (hierarchyDevices.length === 0) return null;
 
-    return hierarchyDevices.map((device) => (
-      <div
-        key={`device-${device.id}`}
-        className={`flex items-center gap-3 py-3 px-4 cursor-pointer rounded-md mt-1 transition-colors ml-8
-    ${
-      selectedDeviceId === device.id
-        ? 'dark:bg-[#6656F5] bg-[#F56C44] text-white' // selected state (same in both themes)
-        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#a79efa48] dark:hover:text-white'
-    }`}
-        onClick={() => handleDeviceClick(device)}
-      >
-        <div className="w-4" />
-        {getIconComponent('Device')}
-        <span className="text-sm flex-1">{device.serial_number}</span>
-        <div className="w-2 h-2 bg-[#17F083] rounded-full dark:bg-[#F35DCB]" />
-      </div>
-    ));
+    return hierarchyDevices.map((device) => {
+      // Get the enhanced device data to check status
+      const enhancedDevice = enhancedDevices[device.serial_number];
+      const isOnline = enhancedDevice?.status === 'Online';
+
+      return (
+        <div
+          key={`device-${device.id}`}
+          className={`flex items-center gap-3 py-3 px-4 cursor-pointer rounded-md mt-1 transition-colors ml-8
+      ${
+        selectedDeviceId === device.id
+          ? 'dark:bg-[#6656F5] bg-[#F56C44] text-white'
+          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#a79efa48] dark:hover:text-white'
+      }`}
+          onClick={() => handleDeviceClick(device)}
+        >
+          <div className="w-4" />
+          {getIconComponent('Device')}
+          <span className="text-sm flex-1">{device.serial_number}</span>
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isOnline
+                ? 'bg-[#17F083]'
+                : 'bg-[#ec4856ff]'
+            }`}
+          />
+        </div>
+      );
+    });
   };
 
   const renderNavigationItem = (item: HierarchyNode, level = 0) => {
