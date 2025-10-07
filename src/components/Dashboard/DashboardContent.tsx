@@ -424,8 +424,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           />
 
           {/* Main Content Grid */}
-          <div className="flex md:flex-row flex-col gap-4 my-4">
-            <div className="flex-1 ">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-4">
+            <div className="w-full">
               <FractionsChart
                 chartData={metricsChartData}
                 hierarchyChartData={metricsHierarchyChartData}
@@ -433,7 +433,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             </div>
 
             {/* GVF/WLR Charts */}
-            <div className="flex-1">
+            <div className="w-full">
               <div
                 className={`rounded-lg p-2 h-full ${
                   theme === 'dark'

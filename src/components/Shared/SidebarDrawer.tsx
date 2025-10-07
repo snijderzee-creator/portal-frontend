@@ -385,24 +385,24 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
       } flex flex-col overflow-hidden shadow-lg`}
     >
       {/* Fixed Header */}
-      <div className="p-4 flex-shrink-0">
+      <div className="px-4 pt-4 pb-3 flex-shrink-0">
         <h1
-          className={`text-xl mb-4 font-medium tracking-wider ${
+          className={`text-lg mb-3 font-medium tracking-wide ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}
         >
           Production Map
         </h1>
 
-        <div className="relative mb-2">
+        <div className="relative">
           <SearchIcon
-            className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
+            className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
             }`}
           />
           <input
             placeholder="Search"
-            className={`w-full pl-10 h-10 rounded-lg border transition-colors ${
+            className={`w-full pl-9 h-9 text-sm rounded-lg border transition-colors ${
               theme === 'dark'
                 ? 'bg-[#162345] border-[#5e728a] text-white placeholder-gray-400 focus:border-[#526d8d]'
                 : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500 focus:border-gray-300'
@@ -414,7 +414,7 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
       </div>
 
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto px-4 border-t border-[#ececec] dark:border-[#364566]">
+      <div className="flex-1 overflow-y-auto px-4 pt-3 border-t border-[#ececec] dark:border-[#364566]">
         <div
           className={`scrollbar-thin ${
             theme === 'dark'

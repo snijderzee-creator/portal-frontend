@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Moon, Bell, User as UserIcon, Sun, Menu, X } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
@@ -10,6 +10,12 @@ interface DashboardHeaderProps {
   isSidebarOpen: boolean;
 }
 
+const navigationItems = [
+  { label: 'Dashboard' },
+  { label: 'Devices' },
+  { label: 'Alarms' },
+];
+
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   activeTab,
   setActiveTab,
@@ -19,144 +25,204 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
-  const navigationItems = [
-    { label: 'Dashboard' },
-    { label: 'Devices' },
-    { label: 'Alarms' },
-  ];
+  const desktopNavRef = useRef<HTMLElement | null>(null);
+  const mobileNavRef = useRef<HTMLElement | null>(null);
+
+  const [sliderStyle, setSliderStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+  const [mobileSliderStyle, setMobileSliderStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+
+  const measureSlider = (container: HTMLElement | null) => {
+    if (!container) return { left: 0, width: 0 };
+    const containerRect = container.getBoundingClientRect();
+    const activeBtn = container.querySelector<HTMLButtonElement>('button[data-active="true"]') || container.querySelector<HTMLButtonElement>('button');
+    if (!activeBtn) return { left: 0, width: 0 };
+    const rect = activeBtn.getBoundingClientRect();
+    const left = Math.max(2, rect.left - containerRect.left + 4);
+    const width = Math.max(24, rect.width - 8);
+    return { left, width };
+  };
+
+  const updateSliders = () => {
+    const desktopContainer = desktopNavRef.current;
+    if (desktopContainer) {
+      const measured = measureSlider(desktopContainer);
+      setSliderStyle(measured);
+      requestAnimationFrame(() => {
+        const measured2 = measureSlider(desktopContainer);
+        setSliderStyle(measured2);
+      });
+    }
+
+    const mobileContainer = mobileNavRef.current;
+    if (mobileContainer) {
+      const measuredM = measureSlider(mobileContainer);
+      setMobileSliderStyle(measuredM);
+      requestAnimationFrame(() => {
+        const measuredM2 = measureSlider(mobileContainer);
+        setMobileSliderStyle(measuredM2);
+      });
+    }
+  };
+
+  useLayoutEffect(() => {
+    updateSliders();
+    const t = setTimeout(updateSliders, 60);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, theme]);
+
+  useEffect(() => {
+    updateSliders();
+    const onResize = () => updateSliders();
+    window.addEventListener('resize', onResize);
+
+    let desktopObserver: ResizeObserver | null = null;
+    let mobileObserver: ResizeObserver | null = null;
+
+    try {
+      if (desktopNavRef.current) {
+        desktopObserver = new ResizeObserver(() => updateSliders());
+        desktopObserver.observe(desktopNavRef.current);
+      }
+      if (mobileNavRef.current) {
+        mobileObserver = new ResizeObserver(() => updateSliders());
+        mobileObserver.observe(mobileNavRef.current);
+      }
+    } catch (e) {
+      // ignore if ResizeObserver unsupported
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      desktopObserver?.disconnect();
+      mobileObserver?.disconnect();
+    };
+  }, []);
 
   const logoSrcDark = '/logolight.png';
   const logoSrcLight = '/logodark.png';
 
   return (
     <header
-      className={`w-full h-20 md:h-24 px-3 md:px-5 flex items-center justify-between border-b flex-shrink-0 ${
-        theme === 'dark'
-          ? 'bg-[#121429] border-none'
-          : 'bg-white border-[#ececec]'
+      className={`w-full h-20 px-4 md:px-6 flex items-center justify-between border-b flex-shrink-0 ${
+        theme === 'dark' ? 'bg-[#121429] border-none' : 'bg-white border-[#ececec]'
       }`}
     >
-      {/* Left side: Mobile Menu + Logo + Navigation */}
-      <div className="flex items-center gap-3 md:gap-8 lg:gap-28">
+      {/* Left group: Mobile menu + Logo (in curved rectangle) + Desktop nav */}
+      <div className="flex items-center gap-4 md:gap-6 lg:gap-8">
         {/* Mobile Menu Toggle */}
         <button
           onClick={toggleSidebar}
-          className={`md:hidden h-10 w-10 rounded-full flex items-center justify-center transition-colors ${
-            theme === 'dark'
-              ? 'bg-[#1D2147] text-gray-400 hover:text-gray-200'
-              : 'bg-[#EAEAEA] text-[#555758] hover:text-gray-900'
+          className={`md:hidden flex items-center justify-center transition-colors ${
+            theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-[#555758] hover:text-gray-900'
           }`}
         >
-          {isSidebarOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
+          {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
-        {/* Logo */}
+        {/* Logo inside curved rectangle */}
         <div
-          className={`flex items-center gap-4 py-1 px-3 md:px-4 rounded-full ${
-            theme === 'dark'
-              ? 'bg-[#1D2147]'
-              : 'bg-[#fff] shadow-sm border border-[#ececec]'
+          className={`flex items-center rounded-2xl p-1.5 ${
+            theme === 'dark' ? 'bg-[#101428]/60' : 'bg-white shadow-sm border border-[#ececec]'
           }`}
+          style={{ paddingLeft: 8, paddingRight: 12 }}
         >
           <img
             src={theme === 'dark' ? logoSrcDark : logoSrcLight}
             alt="Saher Logo"
-            className={`w-auto transition-all duration-300 ${
-              theme === 'dark' ? 'h-6 md:h-8' : 'h-8 md:h-10 lg:h-12'
-            }`}
+            className="h-8 w-auto transition-all duration-300"
           />
         </div>
 
-        {/* Navigation - Desktop Only */}
+        {/* Desktop Navigation - now uses same background pill as mobile */}
         <nav
-          className={`hidden lg:flex relative items-center rounded-full h-12 p-1 ${
-            theme === 'dark'
-              ? 'bg-[#162345]'
-              : 'bg-white shadow-sm border border-[#ececec]'
+          ref={desktopNavRef as any}
+          className={`hidden lg:flex relative items-center rounded-full h-11 p-0.5 overflow-hidden lg:ml-10 ${
+            theme === 'dark' ? 'bg-[#162345]' : 'bg-white shadow-sm border border-[#ececec]'
           }`}
+          aria-label="Primary navigation"
         >
-          {/* Sliding background */}
+          {/* desktop slider: vertically centered and sized to container */}
           <div
-            className={`absolute h-10 rounded-full transition-all duration-300 ease-in-out ${
+            aria-hidden
+            className={`absolute rounded-full transition-all duration-250 ease-in-out pointer-events-none ${
               theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F97316]'
             }`}
             style={{
-              width: '120px',
-              left:
-                activeTab === 'Dashboard'
-                  ? '4px'
-                  : activeTab === 'Devices'
-                  ? '128px'
-                  : '252px',
+              left: sliderStyle.left,
+              width: sliderStyle.width,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              height: 'calc(100% - 8px)', // slightly inset so it doesn't overflow
             }}
           />
 
-          {navigationItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => setActiveTab(item.label)}
-              className={`relative z-10 h-10 w-[120px] flex items-center justify-center rounded-full text-sm font-medium transition-colors duration-300 ${
-                activeTab === item.label
-                  ? 'text-white'
-                  : theme === 'dark'
-                  ? 'text-gray-400 hover:text-gray-200'
-                  : 'text-[#555758] hover:text-gray-900'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
+          {navigationItems.map((item) => {
+            const isActive = activeTab === item.label;
+            return (
+              <button
+                key={item.label}
+                onClick={() => setActiveTab(item.label)}
+                data-active={isActive ? 'true' : 'false'}
+                className={`relative z-10 h-9 px-6 flex items-center justify-center rounded-full text-sm font-medium transition-colors duration-300 whitespace-nowrap ${
+                  isActive
+                    ? 'text-white'
+                    : theme === 'dark'
+                    ? 'text-gray-400 hover:text-gray-200'
+                    : 'text-[#555758] hover:text-gray-900'
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation: compact, same visual base */}
         <nav
-          className={`flex lg:hidden relative items-center rounded-full h-10 p-1 ${
-            theme === 'dark'
-              ? 'bg-[#162345]'
-              : 'bg-white shadow-sm border border-[#ececec]'
+          ref={mobileNavRef as any}
+          className={`flex lg:hidden relative items-center rounded-full h-10 p-0.5 overflow-hidden ${
+            theme === 'dark' ? 'bg-[#162345]' : 'bg-white shadow-sm border border-[#ececec]'
           }`}
         >
-          {/* Sliding background */}
           <div
-            className={`absolute h-8 rounded-full transition-all duration-300 ease-in-out ${
+            aria-hidden
+            className={`absolute rounded-full transition-all duration-200 ease-in-out pointer-events-none ${
               theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F97316]'
             }`}
             style={{
-              width: '70px',
-              left:
-                activeTab === 'Dashboard'
-                  ? '4px'
-                  : activeTab === 'Devices'
-                  ? '78px'
-                  : '152px',
+              left: mobileSliderStyle.left,
+              width: mobileSliderStyle.width,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              height: 'calc(100% - 8px)',
             }}
           />
 
-          {navigationItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => setActiveTab(item.label)}
-              className={`relative z-10 h-8 w-[70px] flex items-center justify-center rounded-full text-xs font-medium transition-colors duration-300 ${
-                activeTab === item.label
-                  ? 'text-white'
-                  : theme === 'dark'
-                  ? 'text-gray-400 hover:text-gray-200'
-                  : 'text-[#555758] hover:text-gray-900'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
+          {navigationItems.map((item) => {
+            const isActive = activeTab === item.label;
+            return (
+              <button
+                key={item.label}
+                onClick={() => setActiveTab(item.label)}
+                data-active={isActive ? 'true' : 'false'}
+                className={`relative z-10 h-9 px-3 flex items-center justify-center rounded-full text-xs font-medium transition-colors duration-300 whitespace-nowrap ${
+                  isActive
+                    ? 'text-white'
+                    : theme === 'dark'
+                    ? 'text-gray-400 hover:text-gray-200'
+                    : 'text-[#555758] hover:text-gray-900'
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </nav>
       </div>
 
       {/* Right side: Theme toggle, notifications, user */}
       <div className="flex items-center gap-2 md:gap-4">
-        {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
           className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center transition-colors ${
@@ -165,14 +231,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               : 'hover:bg-gray-100 bg-[#EAEAEA] text-[#555758] hover:text-gray-900'
           }`}
         >
-          {theme === 'dark' ? (
-            <Sun className="h-4 w-4 md:h-5 md:w-5" />
-          ) : (
-            <Moon className="h-4 w-4 md:h-5 md:w-5" />
-          )}
+          {theme === 'dark' ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
         </button>
 
-        {/* Notifications */}
         <button
           className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center relative transition-colors ${
             theme === 'dark'
@@ -185,20 +246,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             className={`absolute -top-1 -right-1 h-2.5 w-2.5 md:h-3 md:w-3 rounded-full ${
               theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F56C44]'
             }`}
-          ></div>
+          />
         </button>
 
-        {/* User Avatar */}
-        <div
-          className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center ${
-            theme === 'dark' ? 'bg-[#2b3168]' : 'bg-gray-200'
-          }`}
-        >
-          <UserIcon
-            className={`h-4 w-4 md:h-5 md:w-5 ${
-              theme === 'dark' ? 'text-gray-400' : 'text-[#555758]'
-            }`}
-          />
+        <div className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-[#2b3168]' : 'bg-gray-200'}`}>
+          <UserIcon className={`h-4 w-4 md:h-5 md:w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-[#555758]'}`} />
         </div>
       </div>
     </header>
