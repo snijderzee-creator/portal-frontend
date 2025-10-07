@@ -77,28 +77,6 @@ const DashboardLayout: React.FC = () => {
 
         {/* Main Content */}
         <div className="flex-1 md:p-4 md:ml-0">
-          {/* Mobile navigation tabs */}
-
-          <div className="md:hidden dark:bg-[#162345] flex justify-center items-center bg-white dark:border-none  my-2 shadow-sm border border-[#ececec] h-11 mx-14 p-1 rounded-full transition-all duration-300 ease-in-out">
-            {['Dashboard', 'Devices', 'Alarms'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  activeTab === tab
-                    ? theme === 'dark'
-                      ? 'bg-[#6656F5] text-white'
-                      : 'bg-[#F97316] text-white'
-                    : theme === 'dark'
-                    ? 'text-gray-400'
-                    : 'text-gray-700'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
           {/* Main Tab Content */}
           {activeTab === 'Dashboard' && (
             <DashboardContent
