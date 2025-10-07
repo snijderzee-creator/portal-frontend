@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRef } from 'react';
-import { Search, Grid, List, Wifi, WifiOff, Filter, RefreshCw, Download, MapPin, Settings, Eye } from 'lucide-react';
+import { Search, Grid2x2 as Grid, List, Wifi, WifiOff, Filter, RefreshCw, Download, MapPin, Settings, Eye } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { apiService, EnhancedDevice, DevicesResponse, HierarchyNode, Device } from '../../services/api';
