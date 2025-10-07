@@ -366,7 +366,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <h1
-                className={`text-2xl font-bold ${
+                className={`text-3xl font-semibold md:tracking-wide ${
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}
               >
@@ -424,7 +424,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           />
 
           {/* Main Content Grid */}
-          <div className="flex gap-4 my-4">
+          <div className="flex md:flex-row flex-col gap-4 my-4">
             <div className="flex-1 ">
               <FractionsChart
                 chartData={metricsChartData}

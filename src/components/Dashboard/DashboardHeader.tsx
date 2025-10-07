@@ -1,16 +1,29 @@
 import React from 'react';
-import { Moon, Bell, User as UserIcon, Sun, Menu } from 'lucide-react';
+import {
+  Moon,
+  Bell,
+  User as UserIcon,
+  Sun,
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  X,
+} from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 
 interface DashboardHeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  toggleSidebar: () => void;
+  isSidebarOpen: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   activeTab,
   setActiveTab,
+  toggleSidebar,
+  isSidebarOpen,
 }) => {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -22,21 +35,35 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   ];
 
   const logoSrcDark = '/logolight.png';
-  const logoSrcLight = '/logodark.png';
+  const logoSrcLight = '/logoblack.png';
 
   return (
     <header
-      className={`w-full h-24 px-5 flex items-center justify-between border-b flex-shrink-0 ${
+      className={`w-full h-24 Mmd:px-5 flex items-center justify-between border-b flex-shrink-0 ${
         theme === 'dark'
           ? 'bg-[#121429] border-none'
           : 'bg-white border-[#ececec]'
       }`}
     >
+      <div className="flex items-center dark:bg-[#1D2147] bg-white dark:border-none border border-[#ececec] rounded-md mx-4">
+        {/* Mobile: Arrow toggle only */}
+        <button
+          onClick={toggleSidebar}
+          className="md:hidden p-2 rounded-md z-50 relative"
+        >
+          {isSidebarOpen ? (
+            <X className="h-6 w-6 dark:text-gray-300 text-gray-600" />
+          ) : (
+            <Menu className="h-6 w-6 dark:text-gray-300 text-gray-600" />
+          )}
+        </button>
+      </div>
+
       {/* Left side: Logo + Navigation */}
-      <div className="flex items-center gap-28">
+      <div className="hidden md:flex items-center gap-28">
         {/* Logo */}
         <div
-          className={`flex items-center gap-4 py-1 px-4 rounded-full ${
+          className={`md:flex lg:flex xl:flex hidden items-center gap-4 py-1 px-4 rounded-full ${
             theme === 'dark'
               ? ' bg-[#1D2147]'
               : ' bg-[#fff] shadow-sm border border-[#ececec]'
@@ -53,7 +80,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
         {/* Navigation */}
         <nav
-          className={`relative flex items-center rounded-full h-12 p-1 ${
+          className={`hidden relative md:flex lg:flex xl:flex items-center rounded-full h-12 p-1 ${
             theme === 'dark'
               ? 'bg-[#162345]'
               : 'bg-white shadow-sm border border-[#ececec]'

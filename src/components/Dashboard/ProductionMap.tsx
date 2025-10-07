@@ -333,7 +333,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({
       }`}
     >
       <div
-        className={`flex items-center justify-between p-6 border-b ${
+        className={`flex flex-col md:flex-row md:items-center justify-between p-6 border-b ${
           theme === 'dark' ? 'border-[#b4c9e37d]' : 'border-gray-200'
         }`}
       >
@@ -346,7 +346,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({
             ? `${selectedHierarchy.name} - Device Locations`
             : 'Production Map - All Devices'}
         </h2>
-        <div className="flex items-center gap-4">
+        <div className="flex md:items-center justify-end gap-4  mt-4 md:mt-0">
           <div className="flex items-center gap-2">
             <svg
               width="16"
@@ -390,7 +390,7 @@ const ProductionMap: React.FC<ProductionMapProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
         {/* Map */}
         <div
           className={`col-span-2 relative h-80 rounded-bl-lg overflow-hidden ${
@@ -582,9 +582,9 @@ const ProductionMap: React.FC<ProductionMapProps> = ({
 
         {/* Statistics */}
         <div className="space-y-4 p-4">
-          <div className="">
+          <div className="flex md:flex-col flex-row md:gap-0 gap-8">
             <div
-              className={`lg:text-6xl font-bold ${
+              className={`text-6xl font-bold ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >

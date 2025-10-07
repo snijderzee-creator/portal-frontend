@@ -303,7 +303,7 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyCha
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 lg:grid-flow-cols-3 grid-cols-1 gap-4">
         <FlowRateChart
           title="OFR"
           unit="l/min"

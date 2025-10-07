@@ -27,3 +27,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #9CA3AF;
 }
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}

@@ -192,7 +192,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
 
   return (
     <div
-      className={`h-full overflow-y-auto ${
+      className={`p-4 h-full overflow-y-auto ${
         theme === 'dark' ? 'bg-[#121429]' : 'bg-gray-50'
       }`}
     >
@@ -392,7 +392,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
       {/* Search and Filters */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6 justify-between">
         {/* Search Bar */}
-        <div className="relative w-1/2 lg:w-1/4">
+        <div className="relative lg:w-1/4">
           <Search className="absolute left-3 top-5 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
@@ -546,14 +546,14 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}
             >
-              WFR (l/min)
+              WFR (bpd)
             </div>
             <div
               className={`text-sm font-semibold ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}
             >
-              OFR(l/min)
+              OFR(bpd)
             </div>
             <div
               className={`text-sm font-semibold ${

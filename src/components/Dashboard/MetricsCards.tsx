@@ -164,12 +164,14 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
   const lastRefreshLabel = lastRefresh ? 'From server' : 'Live';
 
   return (
-    <div className="grid grid-cols-4 gap-4 mb-4">
+    <div className="grid lg:grid-cols-4 md:grid-cols-4 grid-cols-2 gap-4 mb-4">
       {metrics.map((metric, idx) => (
         <div
           key={idx}
           className={`rounded-lg p-4 transition-all duration-300 ${
-            theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
+            theme === 'dark'
+              ? 'bg-[#162345]'
+              : 'bg-white border border-gray-200'
           }`}
         >
           <div className="flex items-center gap-4 mb-3">
@@ -196,14 +198,16 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
           {/* big number + adjacent "l/min" */}
           <div className="flex items-baseline gap-4 mb-2">
             <span
-              className={`lg:text-5xl md:text-4xl font-bold ${
+              className={`xl:text-5xl lg:text-2xl md:text-xl font-bold sm:3xl ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
               {metric.value}
             </span>
             <span
-              className={`text-xl ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`}
+              className={`xl:text-xl text-base ${
+                theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+              }`}
             >
               {metric.unit}
             </span>
@@ -215,7 +219,9 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
       <div
         className={`rounded-lg p-4 transition-all duration-300 flex flex-col justify-between ${
           theme === 'dark' ? 'bg-[#162345]' : 'bg-white border border-gray-200'
-        } ${isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''}`}
+        } ${
+          isRefreshing ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-lg' : ''
+        }`}
       >
         <div className="flex items-center gap-4 mb-3">
           <div
@@ -234,7 +240,9 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
               Last Refresh
             </div>
             <div
-              className={`text-xs mt-0.5 ${theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-500'}`}
+              className={`text-xs mt-0.5 ${
+                theme === 'dark' ? 'text-[#A2AED4]' : 'text-gray-500'
+              }`}
             >
               {lastRefreshLabel}
             </div>
@@ -243,23 +251,31 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({
           {/* spinner aligned with other cards — only visible for Last Refresh */}
           <div className="ml-2 flex items-center">
             {isRefreshing && (
-              <RefreshCw className={`w-4 h-4 animate-spin ${theme === 'dark' ? 'text-blue-400' : 'text-blue-500'}`} />
+              <RefreshCw
+                className={`w-4 h-4 animate-spin ${
+                  theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
+                }`}
+              />
             )}
           </div>
         </div>
 
         <div className="mt-2">
           <div
-            className={`text-3xl md:text-4xl font-semibold leading-none ${
+            className={`xl:text-3xl lg:text-xl md:text-xl sm:3xl font-semibold leading-none ${
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             }`}
           >
             {formattedLastRefresh}
           </div>
           <div
-            className={`text-xs mt-1 ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`}
+            className={`text-xs mt-1 ${
+              theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
+            }`}
           >
-            {lastRefresh ? new Date(lastRefresh).toLocaleDateString('en-GB') : ''}
+            {lastRefresh
+              ? new Date(lastRefresh).toLocaleDateString('en-GB')
+              : ''}
           </div>
         </div>
       </div>

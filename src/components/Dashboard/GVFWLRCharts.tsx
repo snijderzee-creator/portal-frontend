@@ -70,9 +70,9 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
       </div>
 
       {/* Charts Row */}
-      <div className="flex flex-1 justify-around items-center">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-8 w-full">
         {/* GVF Chart */}
-        <div className="relative flex-1 h-96">
+        <div className="relative w-80 h-80 md:w-96 md:h-96">
           {' '}
           {/* fills height */}
           <ResponsiveContainer width="100%" height="100%">
@@ -96,11 +96,12 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span
-              className={`lg:text-5xl font-bold ${
+              className={`text-5xl font-bold ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
-              {gvfValue !== undefined ? Math.round(gvfValue): ''}{gvfValue !== undefined ? '%' : ''}
+              {gvfValue !== undefined ? Math.round(gvfValue) : ''}
+              {gvfValue !== undefined ? '%' : ''}
             </span>
             <span
               className={`lg:text-xL font-medium ${
@@ -113,7 +114,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
         </div>
 
         {/* WLR Chart */}
-        <div className="relative flex-1 h-96">
+        <div className="relative w-80 h-80 md:w-96 md:h-96">
           {' '}
           {/* fills height */}
           <ResponsiveContainer width="100%" height="100%">
@@ -141,7 +142,8 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}
             >
-              {wlrValue !== undefined ? Math.round(wlrValue): ''}{wlrValue !== undefined ? '%' : ''}
+              {wlrValue !== undefined ? Math.round(wlrValue) : ''}
+              {wlrValue !== undefined ? '%' : ''}
             </span>
             <span
               className={`text-xl font-medium ${
