@@ -450,11 +450,18 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           </div>
 
           {/* Production Map */}
-          <div className="">
+          <div className="mt-2">
             <ProductionMap
               selectedHierarchy={selectedHierarchy}
               selectedDevice={selectedDevice}
             />
+          </div>
+
+          {/* Version Info */}
+          <div className={`text-center py-4 text-xs ${
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          }`}>
+            Version 1.0.0
           </div>
         </>
       )}

@@ -31,14 +31,53 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [sliderStyle, setSliderStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
   const [mobileSliderStyle, setMobileSliderStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
 
+  /**
+   * Measure slider left/width.
+   * - If the container's first child looks like the **slider** (absolute / aria-hidden etc), ignore it.
+   * - Otherwise prefer measuring relative to an inner wrapper (mobile), or to the container itself (desktop).
+   */
   const measureSlider = (container: HTMLElement | null) => {
     if (!container) return { left: 0, width: 0 };
-    const containerRect = container.getBoundingClientRect();
-    const activeBtn = container.querySelector<HTMLButtonElement>('button[data-active="true"]') || container.querySelector<HTMLButtonElement>('button');
+
+    // Candidate first child (could be the slider DIV in desktop).
+    const firstChild = container.querySelector<HTMLElement>(':scope > div') as HTMLElement | null;
+
+    // Decide whether to use the first child as the "base" (mobile inner wrapper)
+    let useInner = false;
+    if (firstChild) {
+      try {
+        const cs = window.getComputedStyle(firstChild);
+        // If firstChild is positioned absolute OR explicitly marked aria-hidden/pointer-events-none, it's likely the slider element -> don't use it.
+        if (cs.position !== 'absolute' && firstChild.getAttribute('aria-hidden') !== 'true' && !firstChild.classList.contains('pointer-events-none')) {
+          useInner = true;
+        }
+      } catch (e) {
+        // In very old browsers getComputedStyle might fail — fall back to not using inner.
+        useInner = false;
+      }
+    }
+
+    const baseRect = useInner && firstChild ? firstChild.getBoundingClientRect() : container.getBoundingClientRect();
+
+    // Find the active button (prefer data-active inside inner if we use inner)
+    const activeBtn =
+      (useInner && firstChild && firstChild.querySelector<HTMLButtonElement>('button[data-active="true"]')) ||
+      container.querySelector<HTMLButtonElement>('button[data-active="true"]') ||
+      (useInner && firstChild && firstChild.querySelector<HTMLButtonElement>('button')) ||
+      container.querySelector<HTMLButtonElement>('button');
+
     if (!activeBtn) return { left: 0, width: 0 };
+
     const rect = activeBtn.getBoundingClientRect();
-    const left = Math.max(2, rect.left - containerRect.left + 4);
-    const width = Math.max(24, rect.width - 8);
+
+    // Padding / breathing room for the pill
+    const horizontalPadding = useInner ? 8 : 6;
+    // sensible minimum width so a short label still produces a visible pill
+    const minWidth = useInner ? 56 : 40;
+
+    const left = Math.max(4, rect.left - baseRect.left + (useInner ? horizontalPadding : 4));
+    const width = Math.max(minWidth, rect.width - (useInner ? horizontalPadding * 2 : 8));
+
     return { left, width };
   };
 
@@ -104,90 +143,129 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   return (
     <header
-      className={`w-full h-20 px-4 md:px-6 flex items-center justify-between border-b flex-shrink-0 ${
+      className={`w-full flex-shrink-0 border-b ${
         theme === 'dark' ? 'bg-[#121429] border-none' : 'bg-white border-[#ececec]'
       }`}
     >
-      {/* Left group: Mobile menu + Logo (in curved rectangle) + Desktop nav */}
-      <div className="flex items-center gap-4 md:gap-6 lg:gap-8">
-        {/* Mobile Menu Toggle */}
-        <button
-          onClick={toggleSidebar}
-          className={`md:hidden flex items-center justify-center transition-colors ${
-            theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-[#555758] hover:text-gray-900'
-          }`}
-        >
-          {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+      {/* Top Row */}
+      <div className="h-16 md:h-20 px-4 md:px-6 flex items-center justify-between">
+        <div className="flex items-center gap-4 md:gap-6 lg:gap-8">
+          <button
+            onClick={toggleSidebar}
+            className={`md:hidden flex items-center justify-center transition-colors ${
+              theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-[#555758] hover:text-gray-900'
+            }`}
+            aria-label="Toggle menu"
+          >
+            {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
 
-        {/* Logo inside curved rectangle */}
-        <div
-          className={`flex items-center rounded-2xl p-1.5 ${
-            theme === 'dark' ? 'bg-[#101428]/60' : 'bg-white shadow-sm border border-[#ececec]'
-          }`}
-          style={{ paddingLeft: 8, paddingRight: 12 }}
-        >
-          <img
-            src={theme === 'dark' ? logoSrcDark : logoSrcLight}
-            alt="Saher Logo"
-            className="h-8 w-auto transition-all duration-300"
-          />
+          <div
+            className={`hidden md:flex items-center rounded-2xl p-1.5 ${theme === 'dark' ? 'bg-[#101428]/60' : 'bg-white shadow-sm border border-[#ececec]'}`}
+            style={{ paddingLeft: 8, paddingRight: 12 }}
+          >
+            <img
+              src={theme === 'dark' ? logoSrcDark : logoSrcLight}
+              alt="Saher Logo"
+              className="h-8 w-auto transition-all duration-300"
+            />
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav
+            ref={desktopNavRef as any}
+            className={`hidden lg:flex relative items-center rounded-full h-11 p-0.5 overflow-hidden lg:ml-10 ${
+              theme === 'dark' ? 'bg-[#162345]' : 'bg-white shadow-sm border border-[#ececec]'
+            }`}
+            aria-label="Primary navigation"
+          >
+            {/* desktop slider (absolute) */}
+            <div
+              aria-hidden
+              className={`absolute rounded-full transition-all duration-250 ease-in-out pointer-events-none ${
+                theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F97316]'
+              }`}
+              style={{
+                left: sliderStyle.left,
+                width: sliderStyle.width,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                height: 'calc(100% - 8px)',
+              }}
+            />
+
+            {navigationItems.map((item) => {
+              const isActive = activeTab === item.label;
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => setActiveTab(item.label)}
+                  data-active={isActive ? 'true' : 'false'}
+                  className={`relative z-10 h-9 px-6 flex items-center justify-center rounded-full text-sm font-medium transition-colors duration-300 whitespace-nowrap ${
+                    isActive
+                      ? 'text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:text-gray-200'
+                      : 'text-[#555758] hover:text-gray-900'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Desktop Navigation - now uses same background pill as mobile */}
-        <nav
-          ref={desktopNavRef as any}
-          className={`hidden lg:flex relative items-center rounded-full h-11 p-0.5 overflow-hidden lg:ml-10 ${
-            theme === 'dark' ? 'bg-[#162345]' : 'bg-white shadow-sm border border-[#ececec]'
-          }`}
-          aria-label="Primary navigation"
-        >
-          {/* desktop slider: vertically centered and sized to container */}
-          <div
-            aria-hidden
-            className={`absolute rounded-full transition-all duration-250 ease-in-out pointer-events-none ${
-              theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F97316]'
+        {/* Right side */}
+        <div className="flex items-center gap-2 md:gap-4">
+          <button
+            onClick={toggleTheme}
+            className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center transition-colors ${
+              theme === 'dark'
+                ? 'hover:bg-[#2b3168] bg-[#1D2147] text-gray-400 hover:text-gray-200'
+                : 'hover:bg-gray-100 bg-[#EAEAEA] text-[#555758] hover:text-gray-900'
             }`}
-            style={{
-              left: sliderStyle.left,
-              width: sliderStyle.width,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              height: 'calc(100% - 8px)', // slightly inset so it doesn't overflow
-            }}
-          />
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
+          </button>
 
-          {navigationItems.map((item) => {
-            const isActive = activeTab === item.label;
-            return (
-              <button
-                key={item.label}
-                onClick={() => setActiveTab(item.label)}
-                data-active={isActive ? 'true' : 'false'}
-                className={`relative z-10 h-9 px-6 flex items-center justify-center rounded-full text-sm font-medium transition-colors duration-300 whitespace-nowrap ${
-                  isActive
-                    ? 'text-white'
-                    : theme === 'dark'
-                    ? 'text-gray-400 hover:text-gray-200'
-                    : 'text-[#555758] hover:text-gray-900'
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </nav>
+          <button
+            className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center relative transition-colors ${
+              theme === 'dark'
+                ? 'hover:bg-[#2b3168] bg-[#1D2147] text-gray-400 hover:text-gray-200'
+                : 'hover:bg-gray-100 bg-[#EAEAEA] text-[#555758] hover:text-gray-900'
+            }`}
+            aria-label="Notifications"
+          >
+            <Bell className="h-4 w-4 md:h-5 md:w-5" />
+            <div
+              className={`absolute -top-1 -right-1 h-2.5 w-2.5 md:h-3 md:w-3 rounded-full ${
+                theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F56C44]'
+              }`}
+            />
+          </button>
 
-        {/* Mobile Navigation: compact, same visual base */}
-        <nav
-          ref={mobileNavRef as any}
-          className={`flex lg:hidden relative items-center rounded-full h-10 p-0.5 overflow-hidden ${
-            theme === 'dark' ? 'bg-[#162345]' : 'bg-white shadow-sm border border-[#ececec]'
+          <div className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-[#2b3168]' : 'bg-gray-200'}`}>
+            <UserIcon className={`h-4 w-4 md:h-5 md:w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-[#555758]'}`} />
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Navigation Row */}
+      <nav
+        ref={mobileNavRef as any}
+        className={`lg:hidden w-full px-4 pb-3 pt-1 flex justify-center ${theme === 'dark' ? 'bg-[#121429]' : 'bg-white'}`}
+        aria-label="Primary navigation"
+      >
+        <div
+          className={`relative inline-flex items-center rounded-full h-11 p-1 w-full max-w-md ${
+            theme === 'dark' ? 'bg-[#162345]' : 'bg-gray-100'
           }`}
         >
           <div
             aria-hidden
-            className={`absolute rounded-full transition-all duration-200 ease-in-out pointer-events-none ${
+            className={`absolute rounded-full transition-all duration-300 ease-in-out pointer-events-none ${
               theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F97316]'
             }`}
             style={{
@@ -206,53 +284,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 key={item.label}
                 onClick={() => setActiveTab(item.label)}
                 data-active={isActive ? 'true' : 'false'}
-                className={`relative z-10 h-9 px-3 flex items-center justify-center rounded-full text-xs font-medium transition-colors duration-300 whitespace-nowrap ${
-                  isActive
-                    ? 'text-white'
-                    : theme === 'dark'
-                    ? 'text-gray-400 hover:text-gray-200'
-                    : 'text-[#555758] hover:text-gray-900'
+                className={`relative z-10 h-9 flex-1 px-3 flex items-center justify-center rounded-full text-sm font-medium transition-colors duration-200 whitespace-nowrap ${
+                  isActive ? 'text-white font-semibold' : theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 {item.label}
               </button>
             );
           })}
-        </nav>
-      </div>
-
-      {/* Right side: Theme toggle, notifications, user */}
-      <div className="flex items-center gap-2 md:gap-4">
-        <button
-          onClick={toggleTheme}
-          className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center transition-colors ${
-            theme === 'dark'
-              ? 'hover:bg-[#2b3168] bg-[#1D2147] text-gray-400 hover:text-gray-200'
-              : 'hover:bg-gray-100 bg-[#EAEAEA] text-[#555758] hover:text-gray-900'
-          }`}
-        >
-          {theme === 'dark' ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
-        </button>
-
-        <button
-          className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center relative transition-colors ${
-            theme === 'dark'
-              ? 'hover:bg-[#2b3168] bg-[#1D2147] text-gray-400 hover:text-gray-200'
-              : 'hover:bg-gray-100 bg-[#EAEAEA] text-[#555758] hover:text-gray-900'
-          }`}
-        >
-          <Bell className="h-4 w-4 md:h-5 md:w-5" />
-          <div
-            className={`absolute -top-1 -right-1 h-2.5 w-2.5 md:h-3 md:w-3 rounded-full ${
-              theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F56C44]'
-            }`}
-          />
-        </button>
-
-        <div className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-[#2b3168]' : 'bg-gray-200'}`}>
-          <UserIcon className={`h-4 w-4 md:h-5 md:w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-[#555758]'}`} />
         </div>
-      </div>
+      </nav>
     </header>
   );
 };
