@@ -527,126 +527,249 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <div className={`rounded-lg border min-w-[900px] ${
-          theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-        }`}>
-          <table className="w-full">
-            <thead>
-              <tr
-                className={`${theme === 'dark' ? 'bg-[#1a2847]' : 'bg-gray-50'}`}
-              >
-                <th
-                  className={`text-left py-4 px-6 font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
-                >
-                  Device
-                </th>
-                <th
-                  className={`text-left py-4 px-6 font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
-                >
-                  Type
-                </th>
-                <th
-                  className={`text-left py-4 px-6 font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
-                >
-                  Severity
-                </th>
-                <th
-                  className={`text-left py-4 px-6 font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
-                >
-                  Time
-                </th>
-                <th
-                  className={`text-left py-4 px-6 font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
-                >
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {safeAlarms.map((alarm: any, idx: number) => {
-                const id = alarm?.id ?? idx;
-                const severityVal = getSeverityValue(alarm);
-                const created = getCreatedAt(alarm);
-                const statusName = getStatusName(alarm);
+      {/* Mobile Card View */}
+      <div className="block lg:hidden space-y-4">
+        {safeAlarms.map((alarm: any, idx: number) => {
+          const id = alarm?.id ?? idx;
+          const severityVal = getSeverityValue(alarm);
+          const created = getCreatedAt(alarm);
+          const statusName = getStatusName(alarm);
 
-                return (
-                  <tr
-                    key={id}
-                    className={`border-b transition-colors ${
-                      theme === 'dark'
-                        ? 'border-gray-700 hover:bg-[#1a2847]'
-                        : 'border-gray-200 hover:bg-gray-50'
+          return (
+            <div
+              key={id}
+              className={`rounded-lg p-4 ${
+                theme === 'dark'
+                  ? 'bg-[#162345] border border-[#1a2847]'
+                  : 'bg-white border border-gray-200'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3
+                    className={`font-semibold text-sm ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}
                   >
-                    <td
-                      className={`py-4 px-6 font-medium whitespace-nowrap ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    {getDeviceSerial(alarm)}
+                  </h3>
+                  <p
+                    className={`text-xs mt-1 ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}
+                  >
+                    {getAlarmTypeName(alarm)}
+                  </p>
+                </div>
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                    statusName === 'Active'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      : statusName === 'Acknowledged'
+                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                      : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                  }`}
+                >
+                  {statusName || 'Unknown'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span
+                    className={`${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}
+                  >
+                    Severity:
+                  </span>
+                  <div className="flex items-center gap-2 mt-1">
+                    {getSeverityIcon(severityVal)}
+                    <span
+                      className="font-medium"
+                      style={{ color: getSeverityColor(severityVal) }}
+                    >
+                      {severityVal || 'Unknown'}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <span
+                    className={`${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}
+                  >
+                    Time:
+                  </span>
+                  <p
+                    className={`font-medium mt-1 ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}
+                  >
+                    {created
+                      ? new Date(created).toLocaleString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : 'Unknown'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        {safeAlarms.length === 0 && (
+          <div className="text-center py-12">
+            <div
+              className={`text-lg mb-2 ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}
+            >
+              {searchTerm ? 'No alarms match your search' : 'No alarms found'}
+            </div>
+            <div
+              className={`text-sm ${
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+              }`}
+            >
+              {searchTerm
+                ? 'Try adjusting your search terms or filters'
+                : 'All systems are operating normally'}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden lg:block overflow-x-auto -mx-4 px-4">
+        <div
+          className={`rounded-lg overflow-hidden ${
+            theme === 'dark'
+              ? 'bg-[#162345] border border-[#1a2847]'
+              : 'bg-white border border-gray-200'
+          }`}
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr
+                  className={`${theme === 'dark' ? 'bg-[#1a2847]' : 'bg-gray-50'}`}
+                >
+                  <th
+                    className={`text-left py-4 px-6 font-semibold whitespace-nowrap ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                  >
+                    Device
+                  </th>
+                  <th
+                    className={`text-left py-4 px-6 font-semibold whitespace-nowrap ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                  >
+                    Type
+                  </th>
+                  <th
+                    className={`text-left py-4 px-6 font-semibold whitespace-nowrap ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                  >
+                    Severity
+                  </th>
+                  <th
+                    className={`text-left py-4 px-6 font-semibold whitespace-nowrap ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                  >
+                    Time
+                  </th>
+                  <th
+                    className={`text-left py-4 px-6 font-semibold whitespace-nowrap ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                  >
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {safeAlarms.map((alarm: any, idx: number) => {
+                  const id = alarm?.id ?? idx;
+                  const severityVal = getSeverityValue(alarm);
+                  const created = getCreatedAt(alarm);
+                  const statusName = getStatusName(alarm);
+
+                  return (
+                    <tr
+                      key={id}
+                      className={`border-b transition-colors ${
+                        theme === 'dark'
+                          ? 'border-gray-700 hover:bg-[#1a2847]'
+                          : 'border-gray-200 hover:bg-gray-50'
                       }`}
                     >
-                      {getDeviceSerial(alarm)}
-                    </td>
-
-                    <td
-                      className={`py-4 px-6 whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                      }`}
-                    >
-                      {getAlarmTypeName(alarm)}
-                    </td>
-
-                    <td className="py-4 px-6 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        {getSeverityIcon(severityVal)}
-                        <span
-                          className="font-medium"
-                          style={{ color: getSeverityColor(severityVal) }}
-                        >
-                          {severityVal || 'Unknown'}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td
-                      className={`py-4 px-6 whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                      }`}
-                    >
-                      {created ? new Date(created).toLocaleString() : 'Unknown'}
-                    </td>
-
-                    <td
-                      className={`py-4 px-6 whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                      }`}
-                    >
-                      <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          statusName === 'Active'
-                            ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                            : statusName === 'Acknowledged'
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
-                            : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                      <td
+                        className={`py-4 px-6 font-medium whitespace-nowrap ${
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
                         }`}
                       >
-                        {statusName || 'Unknown'}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                        {getDeviceSerial(alarm)}
+                      </td>
+
+                      <td
+                        className={`py-4 px-6 whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                      >
+                        {getAlarmTypeName(alarm)}
+                      </td>
+
+                      <td className="py-4 px-6 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          {getSeverityIcon(severityVal)}
+                          <span
+                            className="font-medium"
+                            style={{ color: getSeverityColor(severityVal) }}
+                          >
+                            {severityVal || 'Unknown'}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td
+                        className={`py-4 px-6 whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                      >
+                        {created ? new Date(created).toLocaleString() : 'Unknown'}
+                      </td>
+
+                      <td
+                        className={`py-4 px-6 whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                      >
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                            statusName === 'Active'
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                              : statusName === 'Acknowledged'
+                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                              : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                          }`}
+                        >
+                          {statusName || 'Unknown'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
           {safeAlarms.length === 0 && (
             <div className="text-center py-12">

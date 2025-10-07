@@ -484,194 +484,368 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
 
       {/* Content */}
       {viewMode === 'list' ? (
-        <div className="overflow-x-auto">
-          <div
-            className={`rounded-xl overflow-hidden shadow-lg min-w-[1200px] ${
-              theme === 'dark'
-                ? 'bg-[#162345]'
-                : 'bg-white border border-gray-200'
-            }`}
-          >
-            <table className="w-full">
-              <thead
-                className={`${
+        <>
+          {/* Mobile Card View */}
+          <div className="block lg:hidden space-y-4">
+            {devices.map((device) => (
+              <div
+                key={device.deviceId}
+                className={`rounded-lg p-4 ${
                   theme === 'dark'
-                    ? 'bg-[#1a2847] border-[#4A4D67]'
-                    : 'bg-gray-50 border-gray-200'
+                    ? 'bg-[#162345]'
+                    : 'bg-white border border-gray-200'
                 }`}
               >
-                <tr>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    Device Name
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    Well Name
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    Serial
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    Last Comm. Time
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    Water Cut (%)
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    GVF(%)
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    WFR (bpd)
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    OFR(bpd)
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    GFR
-                  </th>
-                  <th
-                    className={`text-left px-6 py-4 text-sm font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                className={`divide-y ${
-                  theme === 'dark' ? 'divide-[#1a2847]' : 'divide-gray-200'
-                }`}
-              >
-                {devices.map((device) => (
-                  <tr
-                    key={device.deviceId}
-                    className={`transition-colors ${
-                      theme === 'dark' ? 'hover:bg-[#1a2847]' : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <td
-                      className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex-1">
+                    <h3
+                      className={`font-semibold text-sm ${
                         theme === 'dark' ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       {device.deviceName}
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                      }`}
-                    >
-                      {device.wellName}
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    </h3>
+                    <p
+                      className={`text-xs mt-1 ${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                       }`}
                     >
                       {device.deviceSerial}
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                      device.status === 'Online'
+                        ? 'bg-[#38BF9D] text-white'
+                        : 'bg-[#555876] text-white'
+                    }`}
+                  >
+                    {device.status === 'Online' ? (
+                      <Wifi className="w-3 h-3 mr-1" />
+                    ) : (
+                      <WifiOff className="w-3 h-3 mr-1" />
+                    )}
+                    {device.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span
+                      className={`${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      Well Name:
+                    </span>
+                    <p
+                      className={`font-medium mt-1 ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      }`}
+                    >
+                      {device.wellName}
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      Last Comm:
+                    </span>
+                    <p
+                      className={`font-medium mt-1 ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       {device.lastCommTime
-                        ? new Date(device.lastCommTime).toLocaleString()
+                        ? new Date(device.lastCommTime).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
                         : 'N/A'}
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      Water Cut:
+                    </span>
+                    <p
+                      className={`font-medium mt-1 ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       {device.flowData.wlr.toFixed(1)}%
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      GVF:
+                    </span>
+                    <p
+                      className={`font-medium mt-1 ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       {device.flowData.gvf.toFixed(1)}%
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                       }`}
                     >
-                      {device.flowData.wfr.toFixed(0)}
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                      WFR:
+                    </span>
+                    <p
+                      className={`font-medium mt-1 ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
                       }`}
                     >
-                      {device.flowData.ofr.toFixed(0)}
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm whitespace-nowrap ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                      {device.flowData.wfr.toFixed(0)} bpd
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      OFR:
+                    </span>
+                    <p
+                      className={`font-medium mt-1 ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      }`}
+                    >
+                      {device.flowData.ofr.toFixed(0)} bpd
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      GFR:
+                    </span>
+                    <p
+                      className={`font-medium mt-1 ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       {device.flowData.gfr.toFixed(0)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          device.status === 'Online'
-                            ? 'bg-[#38BF9D] text-white'
-                            : 'bg-[#555876] text-white'
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden lg:block overflow-x-auto -mx-4 px-4">
+            <div
+              className={`rounded-xl overflow-hidden shadow-lg ${
+                theme === 'dark'
+                  ? 'bg-[#162345]'
+                  : 'bg-white border border-gray-200'
+              }`}
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead
+                    className={`${
+                      theme === 'dark'
+                        ? 'bg-[#1a2847] border-[#4A4D67]'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <tr>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                         }`}
                       >
-                        {device.status === 'Online' ? (
-                          <Wifi className="w-3 h-3 mr-1" />
-                        ) : (
-                          <WifiOff className="w-3 h-3 mr-1" />
-                        )}
-                        {device.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        Device Name
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        Well Name
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        Serial
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        Last Comm. Time
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        Water Cut (%)
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        GVF(%)
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        WFR (bpd)
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        OFR(bpd)
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        GFR
+                      </th>
+                      <th
+                        className={`text-left px-6 py-4 text-sm font-semibold whitespace-nowrap ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    className={`divide-y ${
+                      theme === 'dark' ? 'divide-[#1a2847]' : 'divide-gray-200'
+                    }`}
+                  >
+                    {devices.map((device) => (
+                      <tr
+                        key={device.deviceId}
+                        className={`transition-colors ${
+                          theme === 'dark' ? 'hover:bg-[#1a2847]' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <td
+                          className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${
+                            theme === 'dark' ? 'text-white' : 'text-gray-900'
+                          }`}
+                        >
+                          {device.deviceName}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.wellName}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.deviceSerial}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.lastCommTime
+                            ? new Date(device.lastCommTime).toLocaleString()
+                            : 'N/A'}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.flowData.wlr.toFixed(1)}%
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.flowData.gvf.toFixed(1)}%
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.flowData.wfr.toFixed(0)}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.flowData.ofr.toFixed(0)}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm whitespace-nowrap ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          {device.flowData.gfr.toFixed(0)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                              device.status === 'Online'
+                                ? 'bg-[#38BF9D] text-white'
+                                : 'bg-[#555876] text-white'
+                            }`}
+                          >
+                            {device.status === 'Online' ? (
+                              <Wifi className="w-3 h-3 mr-1" />
+                            ) : (
+                              <WifiOff className="w-3 h-3 mr-1" />
+                            )}
+                            {device.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {devices.map((device) => (
