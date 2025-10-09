@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search as SearchIcon, ChevronRight as ChevronRightIcon } from 'lucide-react';
+import { Search as SearchIcon, ChevronRight as ChevronRightIcon, X as XIcon } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import {
@@ -21,6 +21,7 @@ interface SidebarDrawerProps {
   selectedDeviceId?: string | null;
   selectedHierarchyId?: string | null;
   onInitialHierarchyLoad?: (hierarchy: HierarchyNode) => void;
+  onClose?: () => void;
 }
 
 const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
@@ -29,8 +30,9 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
   selectedDeviceId,
   selectedHierarchyId,
   onInitialHierarchyLoad,
+  onClose,
 }) => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { theme } = useTheme();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
@@ -378,12 +380,54 @@ const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
 
   return (
     <div
-      className={`w-80 h-screen transition-colors ${
+      className={`w-[85vw] max-w-[320px] md:w-80 h-screen transition-colors ${
         theme === 'dark'
           ? 'bg-[#162345]'
           : 'bg-[#fff] border-[#ececec] border-r'
       } flex flex-col overflow-hidden shadow-lg`}
     >
+      {/* User Profile Section - Only visible on mobile */}
+      <div className={`md:hidden px-4 pt-3 pb-4 flex-shrink-0 border-b ${
+        theme === 'dark' ? 'border-[#364566]' : 'border-[#ececec]'
+      }`}>
+        <div className="flex items-center gap-3">
+          {/* User Avatar */}
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-white ${
+            theme === 'dark' ? 'bg-[#6656F5]' : 'bg-[#F56C44]'
+          }`}>
+            {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
+          </div>
+
+          {/* User Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className={`text-sm font-semibold truncate ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              {user?.username || 'User'}
+            </h3>
+            <p className={`text-xs truncate ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            }`}>
+              {user?.email || 'user@example.com'}
+            </p>
+          </div>
+
+          {/* Close Button */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-lg transition-colors ${
+                theme === 'dark'
+                  ? 'hover:bg-[#1D2147] text-gray-400 hover:text-white'
+                  : 'hover:bg-gray-100 text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              <XIcon className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Fixed Header */}
       <div className="px-4 pt-4 pb-3 flex-shrink-0">
         <h1

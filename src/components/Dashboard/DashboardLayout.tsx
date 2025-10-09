@@ -36,7 +36,7 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen w-full ${
+      className={`min-h-screen w-full overflow-x-hidden ${
         theme === 'dark' ? 'bg-[#0F172A]' : 'bg-[#F7F7F7]'
       }`}
     >
@@ -52,7 +52,7 @@ const DashboardLayout: React.FC = () => {
         {/* Sidebar */}
         <div
           className={`
-    fixed md:static h-full z-40  
+    fixed md:static top-0 left-0 h-full z-50
     transform transition-transform duration-300 ease-in-out
     ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
     ${theme === 'dark' ? 'bg-[#121429]' : 'bg-white'}
@@ -64,13 +64,14 @@ const DashboardLayout: React.FC = () => {
             onInitialHierarchyLoad={handleInitialHierarchyLoad}
             selectedDeviceId={selectedDevice?.id}
             selectedHierarchyId={selectedHierarchy?.id}
+            onClose={toggleSidebar}
           />
         </div>
 
         {/* Backdrop for mobile */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={toggleSidebar}
           />
         )}
