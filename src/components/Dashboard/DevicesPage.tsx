@@ -406,9 +406,13 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
           onClick={() => setShowFilters(!showFilters)}
           className={`px-4 py-2 border rounded-lg flex items-center gap-2 transition-colors ${
             theme === 'dark'
-              ? 'border-[#3A3D57] text-gray-300 hover:bg-[#2A2D47]'
-              : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-          } ${showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}`}
+              ? showFilters
+                ? 'bg-[#1e2139] border-[#6366F1] text-[#6366F1]'
+                : 'bg-[#162345] border-[#3A3D57] text-gray-300 hover:bg-[#1e2139]'
+              : showFilters
+              ? 'bg-blue-50 border-blue-300 text-blue-700'
+              : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+          }`}
         >
           <Filter className="w-4 h-4" />
           Filters
@@ -420,12 +424,13 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
         <div
           className={`p-4 rounded-lg mb-6 border ${
             theme === 'dark'
-              ? 'bg-[#2A2D47] border-[#3A3D57]'
+              ? 'bg-[#1e2139] border-[#2e3147]'
               : 'bg-gray-50 border-gray-200'
           }`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-full overflow-hidden">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-visible min-w-0">
+
+            <div className="min-w-0">
               <label
                 className={`block text-sm font-medium mb-2 ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -433,21 +438,23 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
               >
                 Status
               </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => handleStatusFilter(e.target.value)}
-                className={`w-full max-w-full px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] text-xs md:text-sm ${
-                  theme === 'dark'
-                    ? 'bg-[#3A3D57] border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                }`}
-              >
-                <option value="all">All Status</option>
-                <option value="online">Online</option>
-                <option value="offline">Offline</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => handleStatusFilter(e.target.value)}
+                  className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] text-sm ${
+                    theme === 'dark'
+                      ? 'bg-[#162345] border-[#3A3D57] text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                >
+                  <option value="all">All Status</option>
+                  <option value="online">Online</option>
+                  <option value="offline">Offline</option>
+                </select>
+              </div>
             </div>
-            <div>
+            <div className="min-w-0">
               <label
                 className={`block text-sm font-medium mb-2 ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -455,22 +462,24 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
               >
                 Device Type
               </label>
-              <select
-                value={deviceTypeFilter}
-                onChange={(e) => handleDeviceTypeFilter(e.target.value)}
-                className={`w-full max-w-full px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] text-xs md:text-sm ${
-                  theme === 'dark'
-                    ? 'bg-[#3A3D57] border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                }`}
-              >
-                <option value="all">All Types</option>
-                {filters.availableDeviceTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={deviceTypeFilter}
+                  onChange={(e) => handleDeviceTypeFilter(e.target.value)}
+                  className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] text-sm ${
+                    theme === 'dark'
+                      ? 'bg-[#162345] border-[#3A3D57] text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                >
+                  <option value="all">All Types</option>
+                  {filters.availableDeviceTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>

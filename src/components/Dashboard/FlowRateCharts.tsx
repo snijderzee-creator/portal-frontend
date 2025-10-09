@@ -129,7 +129,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
         </div>
       </div>
 
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-1 bg-[#38BF9D] dark:bg-[#EC4899] rounded"></div>
@@ -138,7 +138,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {renderChart(200, false)}
     </div>
@@ -268,14 +268,14 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyCha
 
     return (
       <>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-1 bg-[#38BF9D] dark:bg-[#EC4899] rounded"></div>
             <span className={`text-sm font-thin ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               Line Condition
             </span>
           </div>
-        </div>
+        </div> */}
         <ResponsiveContainer width="100%" height={window.innerHeight * 0.65}>
           <LineChart data={data} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
             <CartesianGrid stroke={theme === 'dark' ? '#d5dae740' : '#E5E7EB'} strokeDasharray="3 3" />
