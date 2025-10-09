@@ -7,8 +7,9 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
+import { ExternalLink, MoreHorizontal } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
+import InfoPopup from '../Shared/InfoPopup';
 
 const data = [
   { region: 'Qatar', oil: 65000, water: 50000, gas: 35000 },
@@ -38,10 +39,9 @@ const TopRegionsChart: React.FC = () => {
           >
             Top Regions
           </h2>
-          <Info
-            className={`text-xs ${
-              theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'
-            }`}
+          <InfoPopup
+            title="Top Regions Production"
+            description="This bar chart compares production volumes across the top performing regions. Each region shows oil, water, and gas production levels, allowing you to quickly identify the highest producing areas and analyze the composition of their output. Use this data to prioritize resource allocation and identify optimization opportunities."
           />
         </div>
         <div

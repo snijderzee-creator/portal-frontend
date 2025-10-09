@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
 import { HierarchyChartData, DeviceChartData } from '../../services/api';
-import { Info } from 'lucide-react';
+import { Info, X } from 'lucide-react';
 
 interface GVFWLRChartsProps {
   chartData?: DeviceChartData | null;
@@ -11,6 +11,7 @@ interface GVFWLRChartsProps {
 
 const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartData }) => {
   const { theme } = useTheme();
+  const [showInfoCard, setShowInfoCard] = useState(false);
 
   // Calculate GVF and WLR values from chart data
   let gvfValue: number | undefined;
@@ -55,7 +56,7 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
   return (
     <div className="p-4">
       {/* Title */}
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-6 relative">
         <h2
           className={`text-base font-medium ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -65,8 +66,25 @@ const GVFWLRCharts: React.FC<GVFWLRChartsProps> = ({ chartData, hierarchyChartDa
         </h2>
         <Info
           size={16}
-          className={theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}
+          className={`cursor-pointer ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}
+          onClick={() => setShowInfoCard(!showInfoCard)}
         />
+        {showInfoCard && (
+          <div className={`absolute top-8 left-0 right-0 z-50 p-4 rounded-lg shadow-xl border ${theme === 'dark' ? 'bg-[#1a2847] border-gray-700' : 'bg-white border-gray-200'}`}>
+            <div className="flex items-start justify-between mb-2">
+              <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Gas Void Fraction / Water Liquid Ratio</h4>
+              <button onClick={() => setShowInfoCard(false)} className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              <strong>GVF (Gas Void Fraction):</strong> Represents the percentage of gas in the total flow. Higher GVF indicates more gas in the mixture.
+            </p>
+            <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              <strong>WLR (Water Liquid Ratio):</strong> Represents the percentage of water in the liquid phase. Higher WLR indicates more water cut in production.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Charts Row */}

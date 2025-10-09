@@ -282,30 +282,8 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
           </p>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefresh}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'bg-[#162345] hover:bg-[#4A4D67] text-gray-300'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-            }`}
-            title="Refresh"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleExport}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'bg-[#3A3D57] hover:bg-[#4A4D67] text-gray-300'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-            }`}
-            title="Export"
-          >
-            <Download className="w-4 h-4" />
-          </button>
+        {/* Action Buttons - Hidden */}
+        <div className="hidden">
         </div>
       </div>
 
@@ -446,7 +424,7 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
               : 'bg-gray-50 border-gray-200'
           }`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-full overflow-hidden">
             <div>
               <label
                 className={`block text-sm font-medium mb-2 ${
@@ -460,7 +438,7 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, severity: e.target.value }))
                 }
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full max-w-full px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm ${
                   theme === 'dark'
                     ? 'bg-[#2A2D47] border-gray-600 text-white'
                     : 'bg-white border-gray-300 text-gray-900'
@@ -486,7 +464,7 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, status_id: e.target.value }))
                 }
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full max-w-full px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm ${
                   theme === 'dark'
                     ? 'bg-[#2A2D47] border-gray-600 text-white'
                     : 'bg-white border-gray-300 text-gray-900'
@@ -511,7 +489,7 @@ const AlarmsTable: React.FC<AlarmsTableProps> = ({ selectedHierarchy, selectedDe
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, sort_by: e.target.value }))
                 }
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full max-w-full px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm ${
                   theme === 'dark'
                     ? 'bg-[#2A2D47] border-gray-600 text-white'
                     : 'bg-white border-gray-300 text-gray-900'

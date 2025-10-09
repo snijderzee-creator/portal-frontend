@@ -423,8 +423,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
             timeRange={timeRange as '1day' | '7days' | '1month'}
           />
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-4">
+          {/* Main Content Grid - Desktop */}
+          <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 gap-4 my-4">
             <div className="w-full">
               <FractionsChart
                 chartData={metricsChartData}
@@ -446,6 +446,33 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                   hierarchyChartData={metricsHierarchyChartData}
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Main Content Grid - Mobile (reversed order) */}
+          <div className="md:hidden grid grid-cols-1 gap-4 my-4">
+            {/* GVF/WLR Charts first on mobile */}
+            <div className="w-full">
+              <div
+                className={`rounded-lg p-2 h-full ${
+                  theme === 'dark'
+                    ? 'bg-[#162345]'
+                    : 'bg-white border border-gray-200'
+                }`}
+              >
+                <GVFWLRCharts
+                  chartData={metricsChartData}
+                  hierarchyChartData={metricsHierarchyChartData}
+                />
+              </div>
+            </div>
+
+            {/* Fractions Chart second on mobile */}
+            <div className="w-full">
+              <FractionsChart
+                chartData={metricsChartData}
+                hierarchyChartData={metricsHierarchyChartData}
+              />
             </div>
           </div>
 

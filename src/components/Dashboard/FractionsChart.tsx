@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal, X } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 import ChartModal from '../Charts/ChartModel';
@@ -26,6 +26,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
 }) => {
   const { theme } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showInfoCard, setShowInfoCard] = useState(false);
 
   /**
    * -------------------------
@@ -156,7 +157,7 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
           : 'bg-white border border-[#ececec]'
       }`}
     >
-      <div className="flex items-center justify-between py-2">
+      <div className="flex items-center justify-between py-2 relative">
         <div className="flex items-center gap-2">
           <h2
             className={`text-base font-medium ${
@@ -167,8 +168,25 @@ const FractionsChart: React.FC<FractionsChartProps> = ({
           </h2>
           <Info
             size={16}
-            className={theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}
+            className={`cursor-pointer ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}
+            onClick={() => setShowInfoCard(!showInfoCard)}
           />
+          {showInfoCard && (
+            <div className={`absolute top-10 left-0 right-0 z-50 p-4 rounded-lg shadow-xl border ${theme === 'dark' ? 'bg-[#1a2847] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <div className="flex items-start justify-between mb-2">
+                <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Production Fractions</h4>
+                <button onClick={() => setShowInfoCard(false)} className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                This chart displays the composition of production fluids over time, showing the percentages of gas (GVF) and water (WLR) in the total production.
+              </p>
+              <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Monitoring these fractions helps optimize production and identify changes in reservoir conditions.
+              </p>
+            </div>
+          )}
         </div>
         <div
           className={`flex items-center gap-2 border px-2 py-1 rounded-lg ${

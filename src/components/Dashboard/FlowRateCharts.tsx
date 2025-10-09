@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { ExternalLink, Info, MoreHorizontal } from 'lucide-react';
+import { ExternalLink, Info, MoreHorizontal, X } from 'lucide-react';
 import { DeviceChartData, HierarchyChartData } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 import ChartModal from '../Charts/ChartModel';
@@ -27,6 +27,7 @@ interface SingleFlowRateChartProps {
   maxValue?: number;
   timeRange: '1day' | '7days' | '1month';
   onExpandClick?: () => void;
+  onInfoClick?: () => void;
 }
 
 const formatTickByRange = (value: number, timeRange: string) => {
@@ -50,6 +51,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
   maxValue,
   timeRange,
   onExpandClick,
+  onInfoClick,
 }) => {
   const { theme } = useTheme();
 
@@ -110,7 +112,12 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
           <h3 className={`text-base font-medium ${theme === 'dark' ? 'text-[#fff]' : 'text-[#0f0f0f]'}`}>
             {title} ({unit})
           </h3>
-          <Info className={`text-sm ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`} />
+          <div className="relative">
+            <Info
+              className={`text-sm cursor-pointer ${theme === 'dark' ? 'text-[#D0CCD8]' : 'text-[#555758]'}`}
+              onClick={onInfoClick}
+            />
+          </div>
         </div>
         <div className={`flex items-center gap-2 border px-2 py-1 rounded-md ${theme === 'dark' ? 'border-[#D0CCD8] text-gray-400 hover:text-white' : 'border-[#EAEAEA] text-gray-600 hover:text-gray-900'}`}>
           <ExternalLink
@@ -140,6 +147,7 @@ const FlowRateChart: React.FC<SingleFlowRateChartProps> = ({
 
 const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyChartData, timeRange }) => {
   const [modalOpen, setModalOpen] = useState<'ofr' | 'wfr' | 'gfr' | null>(null);
+  const [showInfoCard, setShowInfoCard] = useState<'ofr' | 'wfr' | 'gfr' | null>(null);
   const { theme } = useTheme();
 
   const lastChartDataRef = useRef<any>(null);
@@ -304,33 +312,81 @@ const FlowRateCharts: React.FC<FlowRateChartsProps> = ({ chartData, hierarchyCha
   return (
     <>
       <div className="grid md:grid-cols-3 lg:grid-flow-cols-3 grid-cols-1 gap-4">
-        <FlowRateChart
-          title="OFR"
-          unit="l/min"
-          data={ofrData}
-          dataKey="line"
-          maxValue={ofrWfrMaxValue}
-          timeRange={timeRange}
-          onExpandClick={() => setModalOpen('ofr')}
-        />
-        <FlowRateChart
-          title="WFR"
-          unit="l/min"
-          data={wfrData}
-          dataKey="line"
-          maxValue={ofrWfrMaxValue}
-          timeRange={timeRange}
-          onExpandClick={() => setModalOpen('wfr')}
-        />
-        <FlowRateChart
-          title="GFR"
-          unit="l/min"
-          data={gfrData}
-          dataKey="line"
-          maxValue={gfrMaxValue}
-          timeRange={timeRange}
-          onExpandClick={() => setModalOpen('gfr')}
-        />
+        <div className="relative">
+          <FlowRateChart
+            title="OFR"
+            unit="l/min"
+            data={ofrData}
+            dataKey="line"
+            maxValue={ofrWfrMaxValue}
+            timeRange={timeRange}
+            onExpandClick={() => setModalOpen('ofr')}
+            onInfoClick={() => setShowInfoCard('ofr')}
+          />
+          {showInfoCard === 'ofr' && (
+            <div className={`absolute top-16 left-4 right-4 z-50 p-4 rounded-lg shadow-xl border ${theme === 'dark' ? 'bg-[#1a2847] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <div className="flex items-start justify-between mb-2">
+                <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Oil Flow Rate (OFR)</h4>
+                <button onClick={() => setShowInfoCard(null)} className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Oil Flow Rate measures the volume of oil flowing through the system per unit time, typically measured in liters per minute (l/min) or barrels per day (bpd).
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="relative">
+          <FlowRateChart
+            title="WFR"
+            unit="l/min"
+            data={wfrData}
+            dataKey="line"
+            maxValue={ofrWfrMaxValue}
+            timeRange={timeRange}
+            onExpandClick={() => setModalOpen('wfr')}
+            onInfoClick={() => setShowInfoCard('wfr')}
+          />
+          {showInfoCard === 'wfr' && (
+            <div className={`absolute top-16 left-4 right-4 z-50 p-4 rounded-lg shadow-xl border ${theme === 'dark' ? 'bg-[#1a2847] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <div className="flex items-start justify-between mb-2">
+                <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Water Flow Rate (WFR)</h4>
+                <button onClick={() => setShowInfoCard(null)} className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Water Flow Rate measures the volume of water flowing through the system per unit time. This is important for monitoring water production and managing water cut in oil wells.
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="relative">
+          <FlowRateChart
+            title="GFR"
+            unit="l/min"
+            data={gfrData}
+            dataKey="line"
+            maxValue={gfrMaxValue}
+            timeRange={timeRange}
+            onExpandClick={() => setModalOpen('gfr')}
+            onInfoClick={() => setShowInfoCard('gfr')}
+          />
+          {showInfoCard === 'gfr' && (
+            <div className={`absolute top-16 left-4 right-4 z-50 p-4 rounded-lg shadow-xl border ${theme === 'dark' ? 'bg-[#1a2847] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <div className="flex items-start justify-between mb-2">
+                <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Gas Flow Rate (GFR)</h4>
+                <button onClick={() => setShowInfoCard(null)} className={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Gas Flow Rate measures the volume of gas flowing through the system per unit time. Monitoring GFR is essential for optimizing gas production and understanding reservoir performance.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       <ChartModal

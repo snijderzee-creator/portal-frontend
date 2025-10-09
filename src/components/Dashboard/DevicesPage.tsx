@@ -20,7 +20,21 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
   const [statusFilter, setStatusFilter] = useState('all');
   const [deviceTypeFilter, setDeviceTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'card'>('card');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile view
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth < 1024) {
+        setViewMode('card');
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const [showFilters, setShowFilters] = useState(false);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const itemsPerPage = 20;
@@ -225,9 +239,9 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
         </div>
 
         <div className="flex items-center gap-3">
-          {/* View Toggle */}
+          {/* View Toggle - Hidden on mobile */}
           <div
-            className={`flex items-center rounded-lg p-1 ${
+            className={`hidden lg:flex items-center rounded-lg p-1 ${
               theme === 'dark' ? 'bg-[#162345]' : 'bg-gray-200'
             }`}
           >
@@ -259,29 +273,9 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
             </button>
           </div>
 
-          {/* Action Buttons */}
-          <button
-            onClick={handleRefresh}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'bg-[#3A3D57] hover:bg-[#4A4D67] text-gray-300'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-            }`}
-            title="Refresh"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleExport}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'bg-[#3A3D57] hover:bg-[#4A4D67] text-gray-300'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-            }`}
-            title="Export"
-          >
-            <Download className="w-4 h-4" />
-          </button>
+          {/* Action Buttons - Hidden */}
+          <div className="hidden">
+          </div>
         </div>
       </div>
 
@@ -430,7 +424,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
               : 'bg-gray-50 border-gray-200'
           }`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-full overflow-hidden">
             <div>
               <label
                 className={`block text-sm font-medium mb-2 ${
@@ -442,7 +436,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
               <select
                 value={statusFilter}
                 onChange={(e) => handleStatusFilter(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] ${
+                className={`w-full max-w-full px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] text-xs md:text-sm ${
                   theme === 'dark'
                     ? 'bg-[#3A3D57] border-gray-600 text-white'
                     : 'bg-white border-gray-300 text-gray-900'
@@ -464,7 +458,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
               <select
                 value={deviceTypeFilter}
                 onChange={(e) => handleDeviceTypeFilter(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] ${
+                className={`w-full max-w-full px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] text-xs md:text-sm ${
                   theme === 'dark'
                     ? 'bg-[#3A3D57] border-gray-600 text-white'
                     : 'bg-white border-gray-300 text-gray-900'
@@ -482,7 +476,7 @@ const DevicesPage: React.FC<DevicesPageProps> = ({ selectedHierarchy, selectedDe
         </div>
       )}
 
-      {/* Content */}
+      {/* Content - Force card view on mobile */}
       {viewMode === 'list' ? (
         <>
           {/* Mobile Card View */}
